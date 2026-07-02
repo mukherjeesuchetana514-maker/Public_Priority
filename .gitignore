@@ -1,0 +1,13 @@
+config.js
+.firebase/
+
+# Ignore Python cache files
+__pycache__/
+*.pyc
+
+# Ignore Environment Variables (API Keys)
+.env
+
+# Ignore Firebase Secrets (VERY IMPORTANT)
+backend/serviceAccountKey.json
+serviceAccountKey.json
