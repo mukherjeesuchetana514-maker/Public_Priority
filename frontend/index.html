@@ -105,7 +105,7 @@
                 
                 <ul class="navbar-nav ms-auto align-items-center" id="nav-citizen">
                     <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('home-section')">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" onclick="checkAuthAndShow('report-section')">Report Waste</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" onclick="checkAuthAndShow('report-section')">Suggest Development</a></li>
                     <li class="nav-item"><a class="nav-link" href="#" onclick="checkAuthAndShow('user-dashboard-section')">My Reports</a></li>
                     <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('about-section')">About Us</a></li>
                     <li class="nav-item ms-lg-3">
@@ -172,16 +172,59 @@
 
     <div id="report-section" class="section-view container mt-5 pt-5">
         <div class="glass-card text-center p-5 rounded-4 shadow-sm" style="max-width: 600px; margin: auto; background: white;">
-            <h2 class="mb-2 text-success fw-bold">Report an Issue</h2>
-            <p class="text-muted mb-4">Point your camera at the garbage or pothole.</p>
+            <h2 class="mb-2 text-success fw-bold">Suggest Development</h2>
+            <p class="text-muted mb-4">Share your ideas, record voice, or upload photos.</p>
 
-            <div class="mb-4 position-relative">
-                <input type="file" id="cameraInput" accept="image/*" capture="environment" class="form-control form-control-lg rounded-pill mb-3">
+            <div class="mb-3 text-start">
+                <label class="form-label fw-bold small text-muted">Title</label>
+                <input type="text" id="devTitle" class="form-control rounded-pill" placeholder="Short title for your suggestion">
+            </div>
+
+            <div class="mb-3 text-start">
+                <label class="form-label fw-bold small text-muted">Category</label>
+                <select id="devCategory" class="form-select rounded-pill">
+                    <option value="Infrastructure">Infrastructure</option>
+                    <option value="Environment">Environment</option>
+                    <option value="Education">Education</option>
+                    <option value="Health">Health</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+
+            <div class="mb-3 text-start">
+                <label class="form-label fw-bold small text-muted">Description</label>
+                <textarea id="devDescription" class="form-control rounded-4" rows="4" placeholder="Type your text and suggestions here..."></textarea>
+            </div>
+
+            <div class="mb-3 text-start">
+                <label class="form-label fw-bold small text-muted">Location</label>
+                <div class="d-flex gap-2">
+                    <input type="text" id="devLocation" class="form-control rounded-pill" placeholder="Enter location manually or use GPS">
+                    <button class="btn btn-outline-primary rounded-pill px-3" type="button" onclick="detectDevLocation()">
+                        <i class="bi bi-geo-alt"></i> Detect
+                    </button>
+                </div>
+            </div>
+
+            <div class="mb-4 text-start position-relative">
+                <label class="form-label fw-bold small text-muted">Image Upload</label>
+                <input type="file" id="cameraInput" accept="image/*" capture="environment" class="form-control rounded-pill mb-3">
                 <img id="preview" src="" alt="Issue Preview" class="img-fluid rounded-4 shadow-sm" style="display:none; max-height: 300px;">
             </div>
 
-            <button id="reportBtn" class="btn btn-enchanting w-100 rounded-pill py-3 fw-bold" style="display:none;">
-                🚀 Analyze with AI
+            <div class="mb-4 text-start">
+                <label class="form-label fw-bold small text-muted d-block">Voice Message</label>
+                <div class="d-flex align-items-center gap-3">
+                    <button id="recordBtn" class="btn btn-danger rounded-circle p-3 shadow-sm d-flex align-items-center justify-content-center" style="width:60px; height:60px;" type="button">
+                        <i class="bi bi-mic-fill fs-4" id="micIcon"></i>
+                    </button>
+                    <span id="recordStatus" class="text-muted small">Tap to record</span>
+                    <audio id="audioPlayback" controls style="display:none; width: 100%;"></audio>
+                </div>
+            </div>
+
+            <button id="reportBtn" class="btn btn-enchanting w-100 rounded-pill py-3 fw-bold">
+                🚀 Submit Suggestion
             </button>
 
             <div id="loading" class="mt-4" style="display:none;">

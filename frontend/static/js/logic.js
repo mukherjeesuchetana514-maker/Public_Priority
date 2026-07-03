@@ -12,14 +12,15 @@ console.log("Device Detected:", isMobile ? "Mobile (Lite Mode)" : "Desktop (Pro 
 // ============================================
 // 🛑 YOUR FIREBASE KEYS
 // ============================================
+
 const firebaseConfig = {
-  apiKey: "AIzaSyCV9_BVsNRw3WREubkBEvRqRzN33_nOW6Y",
-  authDomain: "civicfix-55318.firebaseapp.com",
-  projectId: "civicfix-55318",
-  storageBucket: "civicfix-55318.firebasestorage.app",
-  messagingSenderId: "801249186002",
-  appId: "1:801249186002:web:ba73e0bc2685450e80dd0b",
-  measurementId: "G-SGFRJBWRE2"
+    apiKey: "AIzaSyCAueBHGfZhXDiTBpV54tLgwHzo3bs8VVY",
+    authDomain: "public-priority-db.firebaseapp.com",
+    projectId: "public-priority-db",
+    storageBucket: "public-priority-db.firebasestorage.app",
+    messagingSenderId: "1006933089317",
+    appId: "1:1006933089317:web:efeff71f9021e4474cf3cc",
+    measurementId: "G-KF5CJDLZWK"
 };
 
 // Initialize Firebase
@@ -49,19 +50,19 @@ onAuthStateChanged(auth, async (user) => {
             const userData = userDoc.data();
             currentUser.role = userData.role;
             currentUser.org = userData.org || "";
-            currentUser.zone_name = userData.zone_name || ""; 
-            
+            currentUser.zone_name = userData.zone_name || "";
+
             if (userData.role === 'official') {
                 currentLoginType = 'official';
                 document.getElementById('nav-citizen').style.display = 'none';
                 document.getElementById('nav-official').style.display = 'flex';
                 const orgDisplay = document.getElementById('org-name-display');
-                if(orgDisplay) orgDisplay.innerText = `🏛️ ${userData.org || userData.zone_name}`;
+                if (orgDisplay) orgDisplay.innerText = `🏛️ ${userData.org || userData.zone_name}`;
             } else {
                 currentLoginType = 'citizen';
                 document.getElementById('loginBtn').style.display = 'none';
                 document.getElementById('logoutBtn').style.display = 'block';
-                
+
                 const pointsEl = document.getElementById("civic-points");
                 if (pointsEl) pointsEl.innerText = userData.civicPoints || 0;
             }
@@ -108,8 +109,8 @@ window.forgotPassPopup = () => {
     });
 };
 
-window.openImage = function(imgData) {
-    if(!imgData || imgData === '#' || imgData.length < 100) {
+window.openImage = function (imgData) {
+    if (!imgData || imgData === '#' || imgData.length < 100) {
         showPopup("No Image", "This report has no valid image.", "info");
         return;
     }
@@ -119,22 +120,22 @@ window.openImage = function(imgData) {
 
 // 🟢 SMART COMPRESSION
 const compressImage = async (file) => {
-    const targetWidth = isMobile ? 400 : 800; 
-    
+    const targetWidth = isMobile ? 400 : 800;
+
     if (window.createImageBitmap) {
         try {
-            const bitmap = await createImageBitmap(file, { 
-                resizeWidth: targetWidth, 
-                resizeQuality: 'medium' 
+            const bitmap = await createImageBitmap(file, {
+                resizeWidth: targetWidth,
+                resizeQuality: 'medium'
             });
-            
+
             const canvas = document.createElement('canvas');
             canvas.width = bitmap.width;
             canvas.height = bitmap.height;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(bitmap, 0, 0);
-            
-            bitmap.close(); 
+
+            bitmap.close();
             return canvas.toDataURL('image/jpeg', 0.6);
         } catch (e) {
             console.log("Bitmap method failed, using fallback.");
@@ -148,7 +149,7 @@ const compressImage = async (file) => {
         img.onload = () => {
             const canvas = document.createElement('canvas');
             const scaleSize = targetWidth / img.width;
-            
+
             if (img.width > targetWidth) {
                 canvas.width = targetWidth;
                 canvas.height = img.height * scaleSize;
@@ -159,15 +160,15 @@ const compressImage = async (file) => {
 
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            
+
             URL.revokeObjectURL(url);
-            resolve(canvas.toDataURL('image/jpeg', 0.6)); 
+            resolve(canvas.toDataURL('image/jpeg', 0.6));
         };
         img.onerror = (error) => reject(error);
     });
 };
 
-window.setLoginType = function(type) {
+window.setLoginType = function (type) {
     currentLoginType = type;
     const btn = document.getElementById('loginSubmitBtn');
     const orgInput = document.getElementById('orgInputGroup');
@@ -177,22 +178,22 @@ window.setLoginType = function(type) {
 
     if (type === 'official') {
         btn.innerText = "Login to Dashboard";
-        btn.className = "btn btn-dark-official w-100 rounded-pill py-3 fw-bold shadow-sm"; 
-        orgInput.style.display = 'block'; 
-        createLink.style.display = 'block'; 
+        btn.className = "btn btn-dark-official w-100 rounded-pill py-3 fw-bold shadow-sm";
+        orgInput.style.display = 'block';
+        createLink.style.display = 'block';
         tabCitizen.classList.remove('active');
         tabOfficial.classList.add('active');
     } else {
         btn.innerText = "Login as Citizen";
-        btn.className = "btn btn-enchanting w-100 rounded-pill py-3 fw-bold shadow-sm"; 
+        btn.className = "btn btn-enchanting w-100 rounded-pill py-3 fw-bold shadow-sm";
         orgInput.style.display = 'none';
-        createLink.style.display = 'block'; 
+        createLink.style.display = 'block';
         tabCitizen.classList.add('active');
         tabOfficial.classList.remove('active');
     }
 }
 
-window.prepareSignupModal = function() {
+window.prepareSignupModal = function () {
     // const orgGroup = document.getElementById('signupOrgGroup');
     const title = document.getElementById('signupTitle');
     const btn = document.getElementById('signupSubmitBtn');
@@ -200,7 +201,7 @@ window.prepareSignupModal = function() {
     const z_type = document.getElementById('signupZoneType');
     const z_name = document.getElementById('signupZoneName');
     if (currentLoginType === 'official') {
-        z.style.display ='block';
+        z.style.display = 'block';
         z_type.disabled = false;
         z_name.disabled = false;
         // orgGroup.style.display = 'block';
@@ -208,7 +209,7 @@ window.prepareSignupModal = function() {
         btn.innerText = "Create Official Account";
         btn.className = "btn btn-dark-official w-100 rounded-pill py-3 fw-bold";
     } else {
-        z.style.display ='none';
+        z.style.display = 'none';
         z_type.disabled = true;
         z_name.disabled = true;
         // orgGroup.style.display = 'none';
@@ -218,15 +219,15 @@ window.prepareSignupModal = function() {
     }
 }
 
-window.showSection = function(sectionId) {
+window.showSection = function (sectionId) {
     document.querySelectorAll('.section-view').forEach(el => el.classList.remove('active'));
     document.getElementById(sectionId).classList.add('active');
     const navbarToggler = document.querySelector('.navbar-toggler');
     const navbarCollapse = document.querySelector('.navbar-collapse');
-    if(navbarCollapse.classList.contains('show')) navbarToggler.click();
+    if (navbarCollapse.classList.contains('show')) navbarToggler.click();
 }
 
-window.loadLeaderboard = async function() {
+window.loadLeaderboard = async function () {
     const tableBody = document.getElementById('leaderboard-body');
     if (!tableBody) return;
 
@@ -237,7 +238,7 @@ window.loadLeaderboard = async function() {
             collection(db, "users"),
             where("role", "==", "citizen"),
             orderBy("civicPoints", "desc"),
-            limit(50) 
+            limit(50)
         );
 
         const querySnapshot = await getDocs(q);
@@ -258,7 +259,7 @@ window.loadLeaderboard = async function() {
                 let showUser = true;
                 if (currentUser.role === 'official') {
                     if (!userZone.includes(myZone) && !myZone.includes(userZone)) {
-                        showUser = false; 
+                        showUser = false;
                     }
                 }
 
@@ -291,7 +292,7 @@ window.loadLeaderboard = async function() {
     } catch (error) {
         console.error("Error loading leaderboard:", error);
         if (error.message.includes("index")) {
-             tableBody.innerHTML = `
+            tableBody.innerHTML = `
                 <tr>
                     <td colspan="4" class="text-center p-4">
                         <span class="text-danger fw-bold">⚠️ Database Index Missing</span><br>
@@ -308,7 +309,7 @@ window.loadLeaderboard = async function() {
 
 let map;
 
-window.initMap = async function() {
+window.initMap = async function () {
     if (map) {
         setTimeout(() => map.invalidateSize(), 100);
         return;
@@ -316,10 +317,10 @@ window.initMap = async function() {
 
     if (!currentUser) {
         showPopup("Login Required", "Please login to view the map.", "warning");
-        return; 
+        return;
     }
 
-    map = L.map('civicMap').setView([22.75, 88.34], 13); 
+    map = L.map('civicMap').setView([22.75, 88.34], 13);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors'
@@ -351,19 +352,19 @@ window.initMap = async function() {
     }
 }
 
-window.checkAuthAndShow = function(sectionId) {
+window.checkAuthAndShow = function (sectionId) {
     if (!currentUser) {
         showPopup("Access Restricted", "Please Login to report issues.", "warning");
         const loginModal = new bootstrap.Modal(document.getElementById('loginModal'));
         loginModal.show();
     } else {
         showSection(sectionId);
-        if(sectionId === 'user-dashboard-section') loadUserDashboard();
-        if(sectionId === 'leaderboard-section') loadLeaderboard();
+        if (sectionId === 'user-dashboard-section') loadUserDashboard();
+        if (sectionId === 'leaderboard-section') loadLeaderboard();
     }
 }
 
-if(cameraInput) {
+if (cameraInput) {
     cameraInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -403,20 +404,20 @@ async function addCivicPoints(user, points = 10) {
 
 // 🟢 NEW: HELPER FOR EXIF DATA
 function convertDMSToDD(coords, ref) {
-    let dd = coords[0] + coords[1]/60 + coords[2]/3600;
+    let dd = coords[0] + coords[1] / 60 + coords[2] / 3600;
     if (ref == "S" || ref == "W") dd = dd * -1;
     return dd;
 }
 
 // 🟢 REPORT ACTION (UPDATED WITH EXIF & ZONE DETECTION)
-if(reportBtn) {
+if (reportBtn) {
     reportBtn.addEventListener('click', async () => {
         if (!fileToAnalyze) return;
 
         // UI Updates
         loading.style.display = 'block';
         reportBtn.disabled = true;
-        reportBtn.innerText = "Locating..."; 
+        reportBtn.innerText = "Locating...";
 
         const API_KEY = (window.CONFIG && window.CONFIG.GEMINI_API_KEY) ? window.CONFIG.GEMINI_API_KEY : "KEY_NOT_FOUND";
         if (API_KEY === "KEY_NOT_FOUND") console.error("API Key not found.");
@@ -424,7 +425,7 @@ if(reportBtn) {
         // 🧠 Core Processing Function (Called after we get Location)
         const processReport = async (lat, lng, locationSource) => {
             reportBtn.innerText = "Analyzing...";
-            
+
             try {
                 // 1. REVERSE GEOCODING (FIND ZONE)
                 // 1. REVERSE GEOCODING (BigDataCloud - Mobile Friendly)
@@ -432,24 +433,24 @@ if(reportBtn) {
                 try {
                     // 🟢 CHANGED: Using BigDataCloud instead of OpenStreetMap (Nominatim blocks mobile)
                     const geoUrl = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`;
-                    
+
                     const geoResponse = await fetch(geoUrl);
                     const geoData = await geoResponse.json();
-                    
+
                     console.log("📍 Geo Data:", geoData); // Debugging
 
                     // BigDataCloud gives slightly different fields, so we check them in order:
-                    detectedZone = geoData.locality || 
-                                   geoData.city || 
-                                   geoData.principalSubdivision || 
-                                   geoData.countryName || 
-                                   "Unknown Zone";
-                                   
+                    detectedZone = geoData.locality ||
+                        geoData.city ||
+                        geoData.principalSubdivision ||
+                        geoData.countryName ||
+                        "Unknown Zone";
+
                     detectedZone = detectedZone.trim();
                     console.log("📍 Detected Zone:", detectedZone);
 
-                } catch (e) { 
-                    console.log("Zone detection failed", e); 
+                } catch (e) {
+                    console.log("Zone detection failed", e);
                     // Fallback to coordinates if API fails
                     detectedZone = `Zone (${lat.toFixed(2)}, ${lng.toFixed(2)})`;
                 }
@@ -458,9 +459,9 @@ if(reportBtn) {
                 if (currentUser && currentUser.zone_name) {
                     const userHomeZone = currentUser.zone_name.trim();
                     if (userHomeZone.toLowerCase() !== detectedZone.toLowerCase() && detectedZone !== "Unknown Zone") {
-                         showPopup(
-                            "📍 Outside Home Zone", 
-                            `You are currently in ${detectedZone}. This report will be sent to ${detectedZone} officials, not ${userHomeZone}.`, 
+                        showPopup(
+                            "📍 Outside Home Zone",
+                            `You are currently in ${detectedZone}. This report will be sent to ${detectedZone} officials, not ${userHomeZone}.`,
                             "info"
                         );
                     }
@@ -468,7 +469,7 @@ if(reportBtn) {
 
                 // 3. COMPRESS & AI ANALYSIS
                 const compressedImage = await compressImage(fileToAnalyze);
-                
+
                 let tfResultText = "Skipped (Mobile Optimization)";
                 if (tfModel) {
                     try {
@@ -479,7 +480,7 @@ if(reportBtn) {
                         } else {
                             tfResultText = "No specific objects found.";
                         }
-                    } catch(e) { console.log("TF Skipped", e); }
+                    } catch (e) { console.log("TF Skipped", e); }
                 }
 
                 let geminiText = "Analysis Failed";
@@ -526,13 +527,13 @@ if(reportBtn) {
                     <p style="color:rgb(20,231,20); font-weight: bolder;">REPORT SENT! +10 POINTS</P>
                     
                 `;
-                
+
                 loading.style.display = 'none';
                 resultDiv.style.display = 'block';
                 // 🟢 UPDATED POPUP: Shows exactly where it went
                 showPopup(
-                    "Report Filed! ✅", 
-                    `Your report has been sent to the ${detectedZone} Corporation/Official. (+10 Points)`, 
+                    "Report Filed! ✅",
+                    `Your report has been sent to the ${detectedZone} Corporation/Official. (+10 Points)`,
                     "success"
                 );
                 reportBtn.innerText = "Report Issue";
@@ -549,7 +550,7 @@ if(reportBtn) {
 
         // 🟢 LOCATING LOGIC: EXIF -> GPS -> ERROR
         if (typeof EXIF !== 'undefined') {
-            EXIF.getData(fileToAnalyze, function() {
+            EXIF.getData(fileToAnalyze, function () {
                 const lat = EXIF.getTag(this, "GPSLatitude");
                 const lng = EXIF.getTag(this, "GPSLongitude");
 
@@ -573,10 +574,10 @@ if(reportBtn) {
                 navigator.geolocation.getCurrentPosition(
                     (pos) => processReport(pos.coords.latitude, pos.coords.longitude, "Device GPS"),
                     (err) => {
-                         loading.style.display = 'none';
-                         reportBtn.disabled = false;
-                         reportBtn.innerText = "Report Issue";
-                         showPopup("Location Error", "Could not find location from Image or Device. Please enable GPS.", "error");
+                        loading.style.display = 'none';
+                        reportBtn.disabled = false;
+                        reportBtn.innerText = "Report Issue";
+                        showPopup("Location Error", "Could not find location from Image or Device. Please enable GPS.", "error");
                     },
                     { enableHighAccuracy: true, timeout: 5000 }
                 );
@@ -591,20 +592,20 @@ if(reportBtn) {
 
 // ... (Rest of Auth/Dashboard handlers) ...
 
-window.handleLogin = async function() {
+window.handleLogin = async function () {
     const email = document.getElementById('loginEmail').value;
     const pass = document.getElementById('loginPass').value;
     const role = document.getElementById('tab-official') && document.getElementById('tab-official').classList.contains('active') ? 'official' : 'citizen';
     const btn = document.getElementById('loginSubmitBtn');
     const originalText = btn.innerText;
-    
+
     btn.innerText = "Verifying...";
     btn.disabled = true;
 
     try {
         const userCredential = await signInWithEmailAndPassword(auth, email, pass);
         const user = userCredential.user;
-        
+
         // 🟢 SECURITY: CHECK VERIFICATION
         if (!user.emailVerified) {
             await signOut(auth);
@@ -612,16 +613,16 @@ window.handleLogin = async function() {
         }
 
         const userDoc = await getDoc(doc(db, "users", user.uid));
-        
+
         if (userDoc.exists()) {
             const data = userDoc.data();
             if (data.role !== role) throw new Error(`Please login as ${data.role}`);
 
             currentUser = { uid: user.uid, name: data.name, email: email, role: data.role, zone_name: data.zone_name, zone_type: data.zone_type };
             localStorage.setItem('user', JSON.stringify(currentUser));
-            
+
             const modal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
-            if(modal) modal.hide();
+            if (modal) modal.hide();
             showPopup("Welcome!", `Logged in as ${data.role}`, "success");
 
             if (currentUser.role === 'official') {
@@ -642,11 +643,11 @@ window.handleLogin = async function() {
     } catch (error) { showPopup("Login Failed", error.message, "error"); } finally { btn.innerText = originalText; btn.disabled = false; }
 }
 
-window.handleSignup = async function() {
+window.handleSignup = async function () {
     const email = document.getElementById('signupEmail').value;
     const pass = document.getElementById('signupPass').value;
     const name = document.getElementById('signupName').value;
-    
+
 
     // 🟢 SECURITY: STRONG PASSWORD CHECK
     const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
@@ -656,11 +657,11 @@ window.handleSignup = async function() {
     }
 
     try {
-        
+
         const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
         const uid = userCredential.user.uid;
         // 🟢 SECURITY: SEND VERIFICATION EMAIL
-        await sendEmailVerification(userCredential.user);  
+        await sendEmailVerification(userCredential.user);
 
         const commonData = { name: name, email: email, createdAt: serverTimestamp() };
 
@@ -673,28 +674,28 @@ window.handleSignup = async function() {
             await setDoc(doc(db, "users", uid), { ...commonData, zone_type: zoneType, zone_name: zoneName, role: 'official', organization: zoneName });
         } else {
 
-            if (!name || !email || !pass ) throw new Error("Please fill in all fields.");
-                      
+            if (!name || !email || !pass) throw new Error("Please fill in all fields.");
+
 
 
             await setDoc(doc(db, "users", uid), { ...commonData, role: 'citizen', civicPoints: 0 });
         }
-        
+
         // 🟢 LOGOUT IMMEDIATELY FOR VERIFICATION
         await signOut(auth);
-        
+
         const modal = bootstrap.Modal.getInstance(document.getElementById('signupModal'));
-        if(modal) modal.hide();
+        if (modal) modal.hide();
         showPopup("Registration Successful", `Verification link sent to ${email}. Please verify before logging in.`, "success");
-        
+
     } catch (error) { showPopup("Signup Failed", error.message, "error"); }
 }
 
 // 🟢 NEW: AUTO DETECT ZONE FOR SIGNUP
-window.detectSignupLocation = function() {
+window.detectSignupLocation = function () {
     const btn = document.querySelector('button[onclick="detectSignupLocation()"]');
-    if(btn) btn.innerText = "Locating...";
-    
+    if (btn) btn.innerText = "Locating...";
+
     if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(async (pos) => {
             try {
@@ -707,28 +708,28 @@ window.detectSignupLocation = function() {
                 const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`;
                 const response = await fetch(url);
                 const data = await response.json();
-                
+
                 const zone = data.address.city || data.address.town || data.address.village || data.address.state_district || data.address.county || "Unknown";
                 console.log(data.address.state_district);
                 console.log(latitude);
                 console.log(longitude);
                 // console.log("accuracy ",accuracy, "meter");
                 document.getElementById('signupZoneName').value = zone;
-                if(btn) {
+                if (btn) {
                     btn.innerText = "✅ Found";
                     btn.className = "btn btn-success";
                 }
-            } catch(e) {
-                if(btn) btn.innerText = "❌ Failed";
+            } catch (e) {
+                if (btn) btn.innerText = "❌ Failed";
                 alert("Could not detect. Please type manually.");
             }
-        }, console.error, {enableHighAccuracy: true});
+        }, console.error, { enableHighAccuracy: true });
     } else {
         alert("Geolocation not supported.");
     }
 }
 
-window.handleLogout = async function() {
+window.handleLogout = async function () {
     await signOut(auth);
     currentUser = null;
     localStorage.removeItem('user');
@@ -736,43 +737,43 @@ window.handleLogout = async function() {
     setTimeout(() => window.location.reload(), 1500);
 }
 
-window.handleReset = async function(email) {
-    if(!email) return;
+window.handleReset = async function (email) {
+    if (!email) return;
     try {
-        await sendPasswordResetEmail(auth, email); 
+        await sendPasswordResetEmail(auth, email);
         showPopup("Email Sent", "Check your inbox.", "success");
-    } catch (error) { 
-        showPopup("Error", error.message, "error"); 
+    } catch (error) {
+        showPopup("Error", error.message, "error");
     }
 }
 
-window.loadUserDashboard = async function() {
-    if(!currentUser) return;
+window.loadUserDashboard = async function () {
+    if (!currentUser) return;
     const container = document.getElementById('user-reports-container');
     container.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-success"></div></div>';
-    
+
     try {
         const userDoc = await getDoc(doc(db, "users", currentUser.uid));
         const pointsEl = document.getElementById("civic-points");
         if (pointsEl && userDoc.exists()) pointsEl.innerText = userDoc.data().civicPoints || 0;
-    } catch(e) {}
+    } catch (e) { }
 
     try {
         const q = query(
-                    collection(db, "reports"),
-                    where("userEmail", "==", currentUser.email),
-                    orderBy("timestamp", "desc")
-                );
+            collection(db, "reports"),
+            where("userEmail", "==", currentUser.email),
+            orderBy("timestamp", "desc")
+        );
         const querySnapshot = await getDocs(q);
         let html = "";
-        
+
         querySnapshot.forEach((doc) => {
             const data = doc.data();
             const date = data.timestamp ? new Date(data.timestamp.seconds * 1000).toLocaleDateString() : "Just now";
             let statusColor = data.status === "Resolved" ? "bg-success" : (data.status === "In Progress" ? "bg-primary" : "bg-warning");
             let bgImage = data.imageUrl || 'https://via.placeholder.com/600x400?text=No+Image';
             let replyHtml = `<div class="p-3 bg-light rounded text-muted small text-center mt-3">Waiting for official response...</div>`;
-            if(data.adminComment && data.adminComment.trim() !== "") {
+            if (data.adminComment && data.adminComment.trim() !== "") {
                 replyHtml = `<div class="p-3 bg-info bg-opacity-10 border border-info rounded mt-3"><strong>🏛️ Official Reply:</strong><p class="mb-0 mt-1 text-dark">${data.adminComment}</p></div>`;
             }
 
@@ -792,16 +793,16 @@ window.loadUserDashboard = async function() {
             </div>`;
         });
         container.innerHTML = html || '<div class="text-center text-muted mt-5"><h5>No reports found.</h5></div>';
-    } catch (e) { 
+    } catch (e) {
         container.innerHTML = '<p class="text-danger text-center">Error loading history.</p>';
         console.error(e);
-     }
+    }
 }
 
-window.loadDashboard = async function() {
+window.loadDashboard = async function () {
     const container = document.getElementById('reports-container');
     container.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary"></div></div>';
-    
+
     if (!currentUser || currentUser.role !== 'official') {
         container.innerHTML = '<div class="text-center text-danger py-5">Access Denied.</div>';
         return;
@@ -811,23 +812,23 @@ window.loadDashboard = async function() {
 
     try {
 
-        const q=query(collection(db, "reports"),orderBy("timestamp","desc"));
+        const q = query(collection(db, "reports"), orderBy("timestamp", "desc"));
 
 
         const querySnapshot = await getDocs(q);
         let html = "";
         let count = 0;
-        
+
         querySnapshot.forEach((doc) => {
             const data = doc.data();
             const reportZone = (data.zone_name || "").toLowerCase().trim();
-            
+
             if (reportZone && (myZone.includes(reportZone) || reportZone.includes(myZone))) {
                 count++;
                 const date = data.timestamp ? new Date(data.timestamp.seconds * 1000).toLocaleDateString() : "Just now";
                 let statusColor = data.status === "In Progress" ? "bg-primary" : (data.status === "Resolved" ? "bg-success" : "bg-warning");
                 let bgImage = data.imageUrl || 'https://via.placeholder.com/600x400';
-                
+
                 html += `
                 <div class="col-md-6 mb-4">
                     <div class="card h-100 shadow-sm border-0 rounded-4">
@@ -860,48 +861,144 @@ window.loadDashboard = async function() {
         });
         container.innerHTML = html || '<div class="text-center py-5"><h3>No reports found for this zone.</h3></div>';
         const totalCounter = document.getElementById('total-reports');
-        if(totalCounter) totalCounter.innerText = count;
+        if (totalCounter) totalCounter.innerText = count;
     } catch (e) {
         console.error(e);
         container.innerHTML = '<p class="text-danger text-center">Error loading data.</p>';
     }
 }
 
-window.updateStatus = async function(docId, newStatus) {
+window.updateStatus = async function (docId, newStatus) {
     try {
         await updateDoc(doc(db, "reports", docId), { status: newStatus });
         const badge = document.getElementById(`badge-${docId}`);
         badge.innerText = newStatus;
         badge.className = `badge ${newStatus === 'Resolved' ? 'bg-success' : (newStatus === 'In Progress' ? 'bg-primary' : 'bg-warning')} position-absolute top-0 end-0 m-3 px-3 py-2 shadow-sm`;
         showPopup("Updated", "Status changed successfully.", "success");
-    } catch(e) { showPopup("Error", e.message, "error"); }
+    } catch (e) { showPopup("Error", e.message, "error"); }
 }
 
-window.saveComment = async function(docId) {
+window.saveComment = async function (docId) {
     const comment = document.getElementById(`comment-${docId}`).value;
     try {
         await updateDoc(doc(db, "reports", docId), { adminComment: comment });
         showPopup("Success", "Official comment saved!", "success");
-    } catch(e) { showPopup("Error", e.message, "error"); }
+    } catch (e) { showPopup("Error", e.message, "error"); }
 }
 
-window.deleteReport = function(docId) {
+window.deleteReport = function (docId) {
     Swal.fire({
         title: 'Are you sure?',
         text: "You won't be able to recover this report!",
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#dc3545', 
-        cancelButtonColor: '#6c757d', 
+        confirmButtonColor: '#dc3545',
+        cancelButtonColor: '#6c757d',
         confirmButtonText: 'Yes, delete it!',
         borderRadius: '20px'
     }).then(async (result) => {
         if (result.isConfirmed) {
             try {
                 await deleteDoc(doc(db, "reports", docId));
-                loadDashboard(); 
+                loadDashboard();
                 Swal.fire('Deleted!', 'The report has been removed.', 'success')
             } catch (e) { showPopup("Error", e.message, "error"); }
         }
     });
+}
+
+// ============================================
+// 🎤 MEDIA RECORDER (VOICE RECORDING)
+// ============================================
+let mediaRecorder;
+let audioChunks = [];
+let voiceBlob = null;
+const recordBtn = document.getElementById('recordBtn');
+const recordStatus = document.getElementById('recordStatus');
+const audioPlayback = document.getElementById('audioPlayback');
+const micIcon = document.getElementById('micIcon');
+
+if (recordBtn) {
+    let isRecording = false;
+
+    recordBtn.addEventListener('click', async () => {
+        if (!isRecording) {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                
+                mediaRecorder.ondataavailable = event => {
+                    audioChunks.push(event.data);
+                };
+
+                mediaRecorder.onstop = () => {
+                    voiceBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                    audioChunks = [];
+                    const audioUrl = URL.createObjectURL(voiceBlob);
+                    audioPlayback.src = audioUrl;
+                    audioPlayback.style.display = 'block';
+                };
+
+                mediaRecorder.start();
+                isRecording = true;
+                
+                // UI Changes
+                recordBtn.classList.remove('btn-danger');
+                recordBtn.classList.add('btn-success');
+                micIcon.classList.remove('bi-mic-fill');
+                micIcon.classList.add('bi-stop-fill');
+                recordStatus.innerText = "Recording... Tap to stop";
+                recordStatus.classList.add('text-danger', 'fw-bold');
+            } catch (err) {
+                console.error("Microphone access denied:", err);
+                showPopup("Mic Error", "Could not access microphone. Please allow permissions.", "error");
+            }
+        } else {
+            // Stop Recording
+            mediaRecorder.stop();
+            isRecording = false;
+            
+            // Stop tracks to release mic
+            mediaRecorder.stream.getTracks().forEach(track => track.stop());
+
+            // UI Changes
+            recordBtn.classList.remove('btn-success');
+            recordBtn.classList.add('btn-danger');
+            micIcon.classList.remove('bi-stop-fill');
+            micIcon.classList.add('bi-mic-fill');
+            recordStatus.innerText = "Recording saved. Tap play to listen.";
+            recordStatus.classList.remove('text-danger', 'fw-bold');
+        }
+    });
+}
+
+// 🟢 Location Detection for Dev Form
+window.detectDevLocation = function() {
+    const locInput = document.getElementById('devLocation');
+    if (!locInput) return;
+    
+    locInput.value = "Locating...";
+    
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+            try {
+                const latitude = pos.coords.latitude;
+                const longitude = pos.coords.longitude;
+                const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`;
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                const locationStr = data.address.city || data.address.town || data.address.village || data.address.state_district || data.address.county || `${latitude}, ${longitude}`;
+                locInput.value = locationStr;
+            } catch(e) {
+                locInput.value = `${pos.coords.latitude}, ${pos.coords.longitude}`;
+            }
+        }, (err) => {
+            locInput.value = "";
+            showPopup("Location Error", "Could not detect location. Please type manually.", "error");
+        }, {enableHighAccuracy: true});
+    } else {
+        locInput.value = "";
+        showPopup("Error", "Geolocation not supported.", "error");
+    }
 }
