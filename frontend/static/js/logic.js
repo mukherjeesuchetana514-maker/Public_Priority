@@ -377,6 +377,70 @@ window.checkAuthAndShow = function (sectionId) {
     }
 }
 
+// Global variables to store detected location
+window.detectedGlobalLocation = null;
+window.detectedGlobalSource = "Manual/None";
+window.detectedGlobalZone = "Unknown Zone";
+
+async function reverseGeocodeAndSetLocation(lat, lng, source) {
+    let detectedZone = "Unknown Zone";
+    const locInput = document.getElementById('devLocation');
+    try {
+        const geoUrl = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`;
+        const geoResponse = await fetch(geoUrl);
+        const geoData = await geoResponse.json();
+
+        detectedZone = geoData.locality || geoData.city || geoData.principalSubdivision || geoData.countryName || "Unknown Zone";
+        detectedZone = detectedZone.trim();
+        if (locInput) locInput.value = detectedZone;
+        
+        window.detectedGlobalLocation = { lat, lng };
+        window.detectedGlobalSource = source;
+        window.detectedGlobalZone = detectedZone;
+    } catch (e) {
+        console.log("Zone detection failed", e);
+        detectedZone = `Zone (${lat.toFixed(2)}, ${lng.toFixed(2)})`;
+        if (locInput) locInput.value = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+        window.detectedGlobalLocation = { lat, lng };
+        window.detectedGlobalSource = source;
+        window.detectedGlobalZone = detectedZone;
+    }
+}
+
+function autoDetectLocation(file) {
+    const locInput = document.getElementById('devLocation');
+    if (locInput) locInput.value = "Detecting location...";
+
+    function getDeviceLocation() {
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(
+                (pos) => reverseGeocodeAndSetLocation(pos.coords.latitude, pos.coords.longitude, "Device GPS"),
+                (err) => {
+                    if (locInput) locInput.value = "";
+                },
+                { enableHighAccuracy: true, timeout: 5000 }
+            );
+        }
+    }
+
+    if (file && typeof EXIF !== 'undefined') {
+        EXIF.getData(file, function () {
+            const lat = EXIF.getTag(this, "GPSLatitude");
+            const lng = EXIF.getTag(this, "GPSLongitude");
+
+            if (lat && lng) {
+                const finalLat = convertDMSToDD(lat, EXIF.getTag(this, "GPSLatitudeRef"));
+                const finalLng = convertDMSToDD(lng, EXIF.getTag(this, "GPSLongitudeRef"));
+                reverseGeocodeAndSetLocation(finalLat, finalLng, "Image Data (EXIF)");
+            } else {
+                getDeviceLocation();
+            }
+        });
+    } else {
+        getDeviceLocation();
+    }
+}
+
 if (cameraInput) {
     cameraInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
@@ -384,7 +448,65 @@ if (cameraInput) {
             fileToAnalyze = file;
             preview.src = URL.createObjectURL(file);
             preview.style.display = 'block';
+            const aiAnalyzeBtn = document.getElementById('aiAnalyzeBtn');
+            if (aiAnalyzeBtn) aiAnalyzeBtn.style.display = 'block';
             reportBtn.style.display = 'block';
+            
+            // Auto detect location immediately
+            autoDetectLocation(file);
+        }
+    });
+}
+
+const aiAnalyzeBtn = document.getElementById('aiAnalyzeBtn');
+const aiLoading = document.getElementById('aiLoading');
+const devTitle = document.getElementById('devTitle');
+const devDescription = document.getElementById('devDescription');
+const devCategory = document.getElementById('devCategory');
+
+if (aiAnalyzeBtn) {
+    aiAnalyzeBtn.addEventListener('click', async () => {
+        if (!fileToAnalyze) return;
+        
+        const API_KEY = (window.CONFIG && window.CONFIG.GEMINI_API_KEY) ? window.CONFIG.GEMINI_API_KEY : "KEY_NOT_FOUND";
+        if (API_KEY === "KEY_NOT_FOUND" || API_KEY === "YOUR_GEMINI_API_KEY_HERE") {
+            showPopup("Error", "Gemini API Key not found in config.js", "error");
+            return;
+        }
+
+        aiAnalyzeBtn.style.display = 'none';
+        if (aiLoading) aiLoading.style.display = 'block';
+
+        try {
+            const compressedImage = await compressImage(fileToAnalyze);
+            const genAI = new GoogleGenerativeAI(API_KEY);
+            const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+            const base64Data = compressedImage.split(',')[1];
+            
+            const prompt = "Analyze this image of a civic issue (e.g., garbage, pothole). Provide a short title, a detailed description, and the category it belongs to. Valid categories are: Infrastructure, Environment, Education, Health, Other. Return strictly in JSON format like this: {\"title\": \"Short Title Here\", \"description\": \"Detailed description here.\", \"category\": \"Environment\"}";
+            const imagePart = { inlineData: { data: base64Data, mimeType: "image/jpeg" } };
+            
+            const result = await model.generateContent([prompt, imagePart]);
+            let textResult = (await result.response).text();
+            
+            textResult = textResult.replace(/```json/g, '').replace(/```/g, '').trim();
+            const aiData = JSON.parse(textResult);
+            
+            if (devTitle) devTitle.value = aiData.title || "";
+            if (devDescription) devDescription.value = aiData.description || "";
+            if (devCategory && aiData.category) {
+                const validCategories = ["Infrastructure", "Environment", "Education", "Health", "Other"];
+                const matchedCategory = validCategories.find(c => c.toLowerCase() === aiData.category.toLowerCase());
+                if (matchedCategory) devCategory.value = matchedCategory;
+            }
+            
+            showPopup("AI Analysis Complete", "Details have been auto-filled.", "success");
+        } catch (error) {
+            console.error("AI Analysis Error:", error);
+            showPopup("Error", "Could not analyze image. Please try again.", "error");
+        } finally {
+            if (aiLoading) aiLoading.style.display = 'none';
+            aiAnalyzeBtn.style.display = 'block';
         }
     });
 }
@@ -422,216 +544,103 @@ function convertDMSToDD(coords, ref) {
     return dd;
 }
 
-
-
-
-
-
-
-// 🟢 REPORT ACTION (UPDATED WITH EXIF & ZONE DETECTION)
+// 🟢 REPORT ACTION
 if (reportBtn) {
-    
     reportBtn.addEventListener('click', async () => {
-        if (!fileToAnalyze) return;
-        
         // UI Updates
         loading.style.display = 'block';
         reportBtn.disabled = true;
-        reportBtn.innerText = "Locating...";
+        reportBtn.innerText = "Submitting...";
 
-        const API_KEY = (window.CONFIG && window.CONFIG.GEMINI_API_KEY) ? window.CONFIG.GEMINI_API_KEY : "KEY_NOT_FOUND";
-        if (API_KEY === "KEY_NOT_FOUND") console.error("API Key not found.");
-        
-        // 🧠 Core Processing Function (Called after we get Location)
-        const processReport = async (lat, lng, locationSource) => {
-            reportBtn.innerText = "Analyzing...";
+        try {
+            const title = document.getElementById('devTitle').value || "Untitled Report";
+            const category = document.getElementById('devCategory').value || "Other";
+            const description = document.getElementById('devDescription').value || "";
+            const transcript = window.transcript || "";
+            const locationStr = document.getElementById('devLocation').value || "Unknown Location";
+            
+            let lat = 0; let lng = 0;
+            let detectedZone = locationStr;
+            let locationSource = "Manual Entry";
+            
+            if (window.detectedGlobalLocation) {
+                lat = window.detectedGlobalLocation.lat;
+                lng = window.detectedGlobalLocation.lng;
+                detectedZone = window.detectedGlobalZone;
+                locationSource = window.detectedGlobalSource;
+            }
 
-            try {
-                // 1. REVERSE GEOCODING (FIND ZONE)
-                // 1. REVERSE GEOCODING (BigDataCloud - Mobile Friendly)
-                let detectedZone = "Unknown Zone";
-                try {
-                    // 🟢 CHANGED: Using BigDataCloud instead of OpenStreetMap (Nominatim blocks mobile)
-                    const geoUrl = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}&localityLanguage=en`;
-
-                    const geoResponse = await fetch(geoUrl);
-                    const geoData = await geoResponse.json();
-
-                    console.log("📍 Geo Data:", geoData); // Debugging
-
-                    // BigDataCloud gives slightly different fields, so we check them in order:
-                    detectedZone = geoData.locality ||
-                        geoData.city ||
-                        geoData.principalSubdivision ||
-                        geoData.countryName ||
-                        "Unknown Zone";
-
-                    detectedZone = detectedZone.trim();
-                    console.log("📍 Detected Zone:", detectedZone);
-
-                } catch (e) {
-                    console.log("Zone detection failed", e);
-                    // Fallback to coordinates if API fails
-                    detectedZone = `Zone (${lat.toFixed(2)}, ${lng.toFixed(2)})`;
+            // VACATION CHECK (Home vs Detected)
+            if (currentUser && currentUser.zone_name) {
+                const userHomeZone = currentUser.zone_name.trim();
+                if (userHomeZone.toLowerCase() !== detectedZone.toLowerCase() && detectedZone !== "Unknown Zone") {
+                    showPopup("📍 Outside Home Zone", `You are currently in ${detectedZone}. This report will be sent to ${detectedZone} officials, not ${userHomeZone}.`, "info");
                 }
+            }
 
-                const title = document.getElementById('devTitle').value;
-                const category = document.getElementById('devCategory').value;
-                const description = document.getElementById('devDescription').value;
-                
-                console.log(title);
-                console.log(category);
-                console.log(description);
-                console.log(transcript);
-
-                // 2. VACATION CHECK (Home vs Detected)
-                if (currentUser && currentUser.zone_name) {
-                    const userHomeZone = currentUser.zone_name.trim();
-                    if (userHomeZone.toLowerCase() !== detectedZone.toLowerCase() && detectedZone !== "Unknown Zone") {
-                        showPopup(
-                            "📍 Outside Home Zone",
-                            `You are currently in ${detectedZone}. This report will be sent to ${detectedZone} officials, not ${userHomeZone}.`,
-                            "info"
-                        );
-                    }
-                }
-
-                // 3. COMPRESS & AI ANALYSIS
-                const compressedImage = await compressImage(fileToAnalyze);
-
-                let tfResultText = "Skipped (Mobile Optimization)";
+            // COMPRESS & SAVE TO FIREBASE
+            let compressedImage = "";
+            let tfResultText = "Skipped";
+            if (fileToAnalyze) {
+                compressedImage = await compressImage(fileToAnalyze);
                 if (tfModel) {
                     try {
                         const imgForTf = document.getElementById('preview');
                         const predictions = await tfModel.detect(imgForTf);
-                        if (predictions.length > 0) {
-                            tfResultText = `Found: ${predictions.map(p => p.class).join(", ")}`;
-                        } else {
-                            tfResultText = "No specific objects found.";
-                        }
+                        if (predictions.length > 0) tfResultText = `Found: ${predictions.map(p => p.class).join(", ")}`;
+                        else tfResultText = "No specific objects found.";
                     } catch (e) { console.log("TF Skipped", e); }
                 }
-
-                let geminiText = "Analysis Failed";
-                try {
-                    const genAI = new GoogleGenerativeAI(API_KEY);
-                    const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
-                    const base64Data = compressedImage.split(',')[1];
-                    const prompt = "Identify the civic issue in this image (e.g., garbage, pothole) in 1 short sentence.";
-                    const imagePart = { inlineData: { data: base64Data, mimeType: "image/jpeg" } };
-                    const result = await model.generateContent([prompt, imagePart]);
-                    geminiText = (await result.response).text();
-                } catch (apiError) {
-                    geminiText = "Error: " + (apiError.message || "Unknown API Error");
-                }
-
-
-
-
-
-
-
-
-                // 4. SAVE TO FIREBASE (With Detected Zone)
-                const mapUrl = `https://www.google.com/maps?q=${lat},${lng}`;
-                await addDoc(collection(db, "reports"), {
-                    issue: geminiText,
-                    imageUrl: compressedImage,
-                    tf_detection: tfResultText,
-                    title: title,
-                    category: category,
-                    description: description,
-                    transcript: transcript,
-                    severity: "High",
-                    status: "Pending",
-                    adminComment: "",
-                    location: { lat: lat, lng: lng },
-                    locationSource: locationSource, // Track if it was GPS or EXIF
-                    zone_name: detectedZone, // 🟢 USE DETECTED ZONE
-                    googleMapsLink: mapUrl,
-                    timestamp: serverTimestamp(),
-                    userEmail: currentUser ? currentUser.email : "Anonymous"
-                });
-
-
-
-
-
-
-
-                if (currentUser && currentUser.uid) {
-                    await addCivicPoints(currentUser, 10);
-                }
-
-                // UI Finalize
-                aiText.innerHTML = `
-                    <div class="alert alert-secondary py-1 mb-2" style="font-size:0.9em">⚡ <strong>Edge AI:</strong> ${tfResultText}</div>
-                    <strong>Analysis:</strong> ${geminiText}<br>
-                    <small class="text-muted">📍 Location Source: ${locationSource}</small><br><br>
-                    <p>This report is sent to ${detectedZone} Corporation</p>
-                    <a href="${mapUrl}" target="_blank" style="color:var(--primary-color);">View Map</a>
-                    <p style="color:rgb(20,231,20); font-weight: bolder;">REPORT SENT! +10 POINTS</P>
-                    
-                `;
-
-                loading.style.display = 'none';
-                resultDiv.style.display = 'block';
-                // 🟢 UPDATED POPUP: Shows exactly where it went
-                showPopup(
-                    "Report Filed! ✅",
-                    `Your report has been sent to the ${detectedZone} Corporation/Official. (+10 Points)`,
-                    "success"
-                );
-                reportBtn.innerText = "Report Issue";
-                reportBtn.disabled = false;
-
-            } catch (error) {
-                console.error("Error:", error);
-                loading.style.display = 'none';
-                showPopup("Error", "Debug: " + error.message, "error");
-                reportBtn.innerText = "Report Issue";
-                reportBtn.disabled = false;
             }
-        };
 
-        // 🟢 LOCATING LOGIC: EXIF -> GPS -> ERROR
-        if (typeof EXIF !== 'undefined') {
-            EXIF.getData(fileToAnalyze, function () {
-                const lat = EXIF.getTag(this, "GPSLatitude");
-                const lng = EXIF.getTag(this, "GPSLongitude");
+            let geminiText = (title && description) ? `${title} - ${description}` : "User Report without details";
+            const mapUrl = `https://www.google.com/maps?q=${lat},${lng}`;
 
-                if (lat && lng) {
-                    const finalLat = convertDMSToDD(lat, EXIF.getTag(this, "GPSLatitudeRef"));
-                    const finalLng = convertDMSToDD(lng, EXIF.getTag(this, "GPSLongitudeRef"));
-                    console.log("📍 Found location inside image (EXIF)");
-                    processReport(finalLat, finalLng, "Image Data (EXIF)");
-                } else {
-                    console.log("No EXIF, falling back to Device GPS");
-                    getDeviceLocation();
-                }
+            await addDoc(collection(db, "reports"), {
+                issue: geminiText,
+                imageUrl: compressedImage,
+                tf_detection: tfResultText,
+                title: title,
+                category: category,
+                description: description,
+                transcript: transcript,
+                severity: "High",
+                status: "Pending",
+                adminComment: "",
+                location: { lat: lat, lng: lng },
+                locationSource: locationSource,
+                zone_name: detectedZone,
+                googleMapsLink: mapUrl,
+                timestamp: serverTimestamp(),
+                userEmail: currentUser ? currentUser.email : "Anonymous"
             });
-        } else {
-            // If library missing, fallback
-            getDeviceLocation();
-        }
 
-        function getDeviceLocation() {
-            if ("geolocation" in navigator) {
-                navigator.geolocation.getCurrentPosition(
-                    (pos) => processReport(pos.coords.latitude, pos.coords.longitude, "Device GPS"),
-                    (err) => {
-                        loading.style.display = 'none';
-                        reportBtn.disabled = false;
-                        reportBtn.innerText = "Report Issue";
-                        showPopup("Location Error", "Could not find location from Image or Device. Please enable GPS.", "error");
-                    },
-                    { enableHighAccuracy: true, timeout: 5000 }
-                );
-            } else {
-                showPopup("Error", "Geolocation not supported.", "error");
-                loading.style.display = 'none';
-                reportBtn.disabled = false;
+            if (currentUser && currentUser.uid) {
+                await addCivicPoints(currentUser, 10);
             }
+
+            // UI Finalize
+            aiText.innerHTML = `
+                <div class="alert alert-secondary py-1 mb-2" style="font-size:0.9em">⚡ <strong>Edge AI:</strong> ${tfResultText}</div>
+                <strong>Details:</strong> ${title}<br>
+                <small class="text-muted">📍 Location: ${detectedZone} (${locationSource})</small><br><br>
+                <p>This report is sent to ${detectedZone} Corporation</p>
+                <a href="${mapUrl}" target="_blank" style="color:var(--primary-color);">View Map</a>
+                <p style="color:rgb(20,231,20); font-weight: bolder;">REPORT SENT! +10 POINTS</P>
+            `;
+
+            loading.style.display = 'none';
+            resultDiv.style.display = 'block';
+            showPopup("Report Filed! ✅", `Your report has been sent to the ${detectedZone} Corporation/Official. (+10 Points)`, "success");
+            reportBtn.innerText = "Report Issue";
+            reportBtn.disabled = false;
+
+        } catch (error) {
+            console.error("Error:", error);
+            loading.style.display = 'none';
+            showPopup("Error", "Debug: " + error.message, "error");
+            reportBtn.innerText = "Report Issue";
+            reportBtn.disabled = false;
         }
     });
 }
@@ -1006,18 +1015,48 @@ recognition.onerror = (event) => {
     console.log("❌ Error:", event.error);
 };
 
-recognition.onend = () => {
+recognition.onend = async () => {
     console.log("🔚 Recognition ended");
-
     isRecording = false;
-
-    
 
     recordBtn.classList.remove("btn-success");
     recordBtn.classList.add("btn-danger");
-
     micIcon.classList.remove("bi-stop-fill");
     micIcon.classList.add("bi-mic-fill");
+
+    // 🟢 VOICE AI ANALYSIS
+    if (window.transcript) {
+        const API_KEY = (window.CONFIG && window.CONFIG.GEMINI_API_KEY) ? window.CONFIG.GEMINI_API_KEY : "KEY_NOT_FOUND";
+        if (API_KEY !== "KEY_NOT_FOUND") {
+            recordStatus.innerText = "Analyzing voice note...";
+            try {
+                const genAI = new GoogleGenerativeAI(API_KEY);
+                const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
+                const prompt = `Analyze this civic issue report transcript: "${window.transcript}". Provide a short title, a detailed description, and the category it belongs to. Valid categories are: Infrastructure, Environment, Education, Health, Other. Return strictly in JSON format like this: {"title": "Short Title Here", "description": "Detailed description here.", "category": "Environment"}`;
+                
+                const result = await model.generateContent([prompt]);
+                let textResult = (await result.response).text();
+                
+                textResult = textResult.replace(/```json/g, '').replace(/```/g, '').trim();
+                const aiData = JSON.parse(textResult);
+                
+                const devTitle = document.getElementById('devTitle');
+                const devDescription = document.getElementById('devDescription');
+                const devCategory = document.getElementById('devCategory');
+
+                if (devTitle) devTitle.value = aiData.title || "";
+                if (devDescription) devDescription.value = aiData.description || "";
+                if (devCategory && aiData.category) devCategory.value = aiData.category;
+                
+                recordStatus.innerText = "Voice analysis complete! Form auto-filled.";
+            } catch (e) {
+                console.error("Voice AI Error:", e);
+                recordStatus.innerText = "Voice recorded (AI auto-fill failed).";
+            }
+        } else {
+            recordStatus.innerText = "Voice recorded (API Key missing for auto-fill).";
+        }
+    }
 };
 
 
