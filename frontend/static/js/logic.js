@@ -28,6 +28,43 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
+// ============================================
+// 🌍 GLOBAL LANGUAGE TRANSLATION LOGIC
+// ============================================
+window.addEventListener('DOMContentLoaded', () => {
+    const langSet = localStorage.getItem('appLanguage');
+    if (!langSet) {
+        // Show modal if user has never selected a language
+        setTimeout(() => {
+            const modalEl = document.getElementById('languageModal');
+            if (modalEl) {
+                const langModal = new bootstrap.Modal(modalEl);
+                langModal.show();
+            }
+        }, 800); // slight delay to let UI render nicely behind
+    }
+});
+
+window.saveLanguageAndReload = function() {
+    const selectedLang = document.getElementById('appLanguageSelect').value;
+    localStorage.setItem('appLanguage', selectedLang);
+    
+    if (selectedLang !== 'en') {
+        // Set Google Translate cookie
+        document.cookie = `googtrans=/en/${selectedLang}; path=/`;
+        document.cookie = `googtrans=/en/${selectedLang}; domain=.${window.location.hostname}; path=/`;
+        document.cookie = `googtrans=/en/${selectedLang}; domain=${window.location.hostname}; path=/`;
+    } else {
+        // Clear cookie if English (default)
+        document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+        document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=.${window.location.hostname}; path=/;`;
+        document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=${window.location.hostname}; path=/;`;
+    }
+    
+    // Reload page to apply translation immediately
+    window.location.reload();
+}
+
 // Variables
 const cameraInput = document.getElementById('cameraInput');
 const preview = document.getElementById('preview');
