@@ -1,13 +1,13 @@
 {
-  "name": "CivicFix",
-  "short_name": "CivicFix",
+  "name": "Public Priority",
+  "short_name": "Public Priority",
   "start_url": "/index.html",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#198754",
+  "theme_color": "#0f4c75",
   "icons": [
     {
-      "src": "https://cdn-icons-png.flaticon.com/512/3063/3063822.png",
+      "src": "static/logo.png",
       "sizes": "192x192",
       "type": "image/png"
     }
