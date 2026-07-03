@@ -132,6 +132,21 @@
             z-index: 2;
         }
 
+        /* Voice Recorder */
+        #recordBtn.recording {
+            animation: recordPulse 1.2s ease-in-out infinite;
+            background-color: #dc3545 !important;
+        }
+        @keyframes recordPulse {
+            0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.5); }
+            70% { box-shadow: 0 0 0 12px rgba(220, 53, 69, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+        }
+        #recordBtn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         @media (max-width: 768px) {
             .parallax-hero {
                 height: 60vh !important;
@@ -313,17 +328,33 @@
                         </div>
 
                         <div class="col-md-6 mb-4 text-start">
-                            <label class="form-label fw-bold small text-muted"><i class="bi bi-mic"></i> Voice
-                                Message</label>
-                            <div class="d-flex align-items-center gap-3 bg-light rounded-pill p-2">
-                                <button id="recordBtn"
-                                    class="btn btn-danger rounded-circle p-2 shadow-sm d-flex align-items-center justify-content-center"
-                                    style="width:45px; height:45px;" type="button">
-                                    <i class="bi bi-mic-fill fs-5" id="micIcon"></i>
+                            <label class="form-label fw-bold small text-muted">
+                                <i class="bi bi-mic"></i> Voice Message
+                            </label>
+                            <div class="bg-light rounded-4 p-3">
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <button id="recordBtn"
+                                            class="btn btn-danger rounded-circle"
+                                            type="button"
+                                            style="width:45px;height:45px;">
+                                        <i class="bi bi-mic-fill" id="micIcon"></i>
+                                    </button>
+                                    <span id="recordStatus" class="small text-muted">
+                                        Tap to record
+                                    </span>
+                                    <span id="recordDuration" class="small fw-bold text-danger ms-1" style="display:none;">
+                                        00:00
+                                    </span>
+                                </div>
+                                <audio id="audioPlayback"
+                                       controls
+                                       style="display:none;width:100%;margin-top:10px;">
+                                </audio>
+                                <button id="deleteAudioBtn"
+                                        class="btn btn-outline-danger btn-sm mt-2"
+                                        style="display:none;">
+                                    🗑 Delete Recording
                                 </button>
-                                <span id="recordStatus" class="text-muted small mb-0">Tap to record</span>
-                                <audio id="audioPlayback" controls
-                                    style="display:none; width: 100%; height: 35px;"></audio>
                             </div>
                         </div>
                     </div>
@@ -579,6 +610,7 @@
 
     <script src="static/js/config.js"></script>
     <script type="module" src="static/js/logic.js"></script>
+
 
 </body>
 

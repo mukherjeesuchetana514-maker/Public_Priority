@@ -39,6 +39,19 @@ let fileToAnalyze = null;
 let currentUser = null;
 let currentLoginType = 'citizen';
 
+
+
+
+const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+
+const recognition = new SpeechRecognition();
+
+recognition.lang = "en-IN";          // English (India)
+recognition.interimResults = true;   // Show text while speaking
+recognition.continuous = false;      // Stop after one sentence
+
+
 // ============================================
 // 🟢 SESSION RESTORER
 // ============================================
@@ -409,11 +422,18 @@ function convertDMSToDD(coords, ref) {
     return dd;
 }
 
+
+
+
+
+
+
 // 🟢 REPORT ACTION (UPDATED WITH EXIF & ZONE DETECTION)
 if (reportBtn) {
+    
     reportBtn.addEventListener('click', async () => {
         if (!fileToAnalyze) return;
-
+        
         // UI Updates
         loading.style.display = 'block';
         reportBtn.disabled = true;
@@ -421,7 +441,7 @@ if (reportBtn) {
 
         const API_KEY = (window.CONFIG && window.CONFIG.GEMINI_API_KEY) ? window.CONFIG.GEMINI_API_KEY : "KEY_NOT_FOUND";
         if (API_KEY === "KEY_NOT_FOUND") console.error("API Key not found.");
-
+        
         // 🧠 Core Processing Function (Called after we get Location)
         const processReport = async (lat, lng, locationSource) => {
             reportBtn.innerText = "Analyzing...";
@@ -454,6 +474,15 @@ if (reportBtn) {
                     // Fallback to coordinates if API fails
                     detectedZone = `Zone (${lat.toFixed(2)}, ${lng.toFixed(2)})`;
                 }
+
+                const title = document.getElementById('devTitle').value;
+                const category = document.getElementById('devCategory').value;
+                const description = document.getElementById('devDescription').value;
+                
+                console.log(title);
+                console.log(category);
+                console.log(description);
+                console.log(transcript);
 
                 // 2. VACATION CHECK (Home vs Detected)
                 if (currentUser && currentUser.zone_name) {
@@ -496,12 +525,23 @@ if (reportBtn) {
                     geminiText = "Error: " + (apiError.message || "Unknown API Error");
                 }
 
+
+
+
+
+
+
+
                 // 4. SAVE TO FIREBASE (With Detected Zone)
                 const mapUrl = `https://www.google.com/maps?q=${lat},${lng}`;
                 await addDoc(collection(db, "reports"), {
                     issue: geminiText,
                     imageUrl: compressedImage,
                     tf_detection: tfResultText,
+                    title: title,
+                    category: category,
+                    description: description,
+                    transcript: transcript,
                     severity: "High",
                     status: "Pending",
                     adminComment: "",
@@ -512,6 +552,12 @@ if (reportBtn) {
                     timestamp: serverTimestamp(),
                     userEmail: currentUser ? currentUser.email : "Anonymous"
                 });
+
+
+
+
+
+
 
                 if (currentUser && currentUser.uid) {
                     await addCivicPoints(currentUser, 10);
@@ -907,70 +953,76 @@ window.deleteReport = function (docId) {
     });
 }
 
-// ============================================
-// 🎤 MEDIA RECORDER (VOICE RECORDING)
-// ============================================
-let mediaRecorder;
-let audioChunks = [];
-let voiceBlob = null;
-const recordBtn = document.getElementById('recordBtn');
-const recordStatus = document.getElementById('recordStatus');
-const audioPlayback = document.getElementById('audioPlayback');
-const micIcon = document.getElementById('micIcon');
 
-if (recordBtn) {
-    let isRecording = false;
+// speech recoding and convertion 
 
-    recordBtn.addEventListener('click', async () => {
-        if (!isRecording) {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                mediaRecorder = new MediaRecorder(stream);
+let isRecording = false;
 
-                mediaRecorder.ondataavailable = event => {
-                    audioChunks.push(event.data);
-                };
+recordBtn.addEventListener("click", () => {
 
-                mediaRecorder.onstop = () => {
-                    voiceBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                    audioChunks = [];
-                    const audioUrl = URL.createObjectURL(voiceBlob);
-                    audioPlayback.src = audioUrl;
-                    audioPlayback.style.display = 'block';
-                };
+    if (!isRecording) {
 
-                mediaRecorder.start();
-                isRecording = true;
+        recognition.start();
 
-                // UI Changes
-                recordBtn.classList.remove('btn-danger');
-                recordBtn.classList.add('btn-success');
-                micIcon.classList.remove('bi-mic-fill');
-                micIcon.classList.add('bi-stop-fill');
-                recordStatus.innerText = "Recording... Tap to stop";
-                recordStatus.classList.add('text-danger', 'fw-bold');
-            } catch (err) {
-                console.error("Microphone access denied:", err);
-                showPopup("Mic Error", "Could not access microphone. Please allow permissions.", "error");
-            }
-        } else {
-            // Stop Recording
-            mediaRecorder.stop();
-            isRecording = false;
+        isRecording = true;
 
-            // Stop tracks to release mic
-            mediaRecorder.stream.getTracks().forEach(track => track.stop());
+        recordStatus.innerText = "Listening...";
 
-            // UI Changes
-            recordBtn.classList.remove('btn-success');
-            recordBtn.classList.add('btn-danger');
-            micIcon.classList.remove('bi-stop-fill');
-            micIcon.classList.add('bi-mic-fill');
-            recordStatus.innerText = "Recording saved. Tap play to listen.";
-            recordStatus.classList.remove('text-danger', 'fw-bold');
-        }
-    });
+        recordBtn.classList.remove("btn-danger");
+        recordBtn.classList.add("btn-success");
+
+        micIcon.classList.remove("bi-mic-fill");
+        micIcon.classList.add("bi-stop-fill");
+
+    } else {
+
+        recognition.stop();
+
+    }
+
+});
+
+
+
+recognition.onstart = () => {
+    console.log("🎤 Recognition started");
+};
+
+recognition.onspeechstart = () => {
+    console.log("🗣️ Speech detected");
+};
+
+recognition.onresult = (event) => {
+    console.log("✅ Result received");
+
+    window.transcript = event.results[0][0].transcript;
+
+    console.log("Transcript:", transcript);
+
+    recordStatus.innerText = transcript;
+    
 }
+recognition.onerror = (event) => {
+    console.log("❌ Error:", event.error);
+};
+
+recognition.onend = () => {
+    console.log("🔚 Recognition ended");
+
+    isRecording = false;
+
+    
+
+    recordBtn.classList.remove("btn-success");
+    recordBtn.classList.add("btn-danger");
+
+    micIcon.classList.remove("bi-stop-fill");
+    micIcon.classList.add("bi-mic-fill");
+};
+
+
+
+
 
 // 🟢 Location Detection for Dev Form
 window.detectDevLocation = function () {
