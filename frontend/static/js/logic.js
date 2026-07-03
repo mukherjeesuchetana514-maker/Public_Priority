@@ -926,7 +926,7 @@ if (recordBtn) {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
                 mediaRecorder = new MediaRecorder(stream);
-                
+
                 mediaRecorder.ondataavailable = event => {
                     audioChunks.push(event.data);
                 };
@@ -941,7 +941,7 @@ if (recordBtn) {
 
                 mediaRecorder.start();
                 isRecording = true;
-                
+
                 // UI Changes
                 recordBtn.classList.remove('btn-danger');
                 recordBtn.classList.add('btn-success');
@@ -957,7 +957,7 @@ if (recordBtn) {
             // Stop Recording
             mediaRecorder.stop();
             isRecording = false;
-            
+
             // Stop tracks to release mic
             mediaRecorder.stream.getTracks().forEach(track => track.stop());
 
@@ -973,12 +973,12 @@ if (recordBtn) {
 }
 
 // 🟢 Location Detection for Dev Form
-window.detectDevLocation = function() {
+window.detectDevLocation = function () {
     const locInput = document.getElementById('devLocation');
     if (!locInput) return;
-    
+
     locInput.value = "Locating...";
-    
+
     if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition(async (pos) => {
             try {
@@ -987,16 +987,16 @@ window.detectDevLocation = function() {
                 const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`;
                 const response = await fetch(url);
                 const data = await response.json();
-                
+
                 const locationStr = data.address.city || data.address.town || data.address.village || data.address.state_district || data.address.county || `${latitude}, ${longitude}`;
                 locInput.value = locationStr;
-            } catch(e) {
+            } catch (e) {
                 locInput.value = `${pos.coords.latitude}, ${pos.coords.longitude}`;
             }
         }, (err) => {
             locInput.value = "";
             showPopup("Location Error", "Could not detect location. Please type manually.", "error");
-        }, {enableHighAccuracy: true});
+        }, { enableHighAccuracy: true });
     } else {
         locInput.value = "";
         showPopup("Error", "Geolocation not supported.", "error");
