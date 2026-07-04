@@ -1109,7 +1109,35 @@ window.officialMenu = async function(page){
 }
 
 
+window.dashbord = async function() {
+    const total_reports = document.getElementById('development_suggstion');
+    const approve = document.getElementById('approve_project');
+    const pending_review = document.getElementById('pending_review');
 
+    const snapshot = await getDocs(collection(db, "reports"));
+
+    let totalReports = 0;
+    let approvedReports = 0;
+    let pendingReports = 0;
+
+    snapshot.forEach((doc) => {
+        totalReports++;
+
+        const data = doc.data();
+
+        if (data.status === "Resolved") {
+            approvedReports++;
+        } else if (data.status === "Pending") {
+            pendingReports++;
+        }
+    });
+
+    // Update the dashboard
+    total_reports.innerText = totalReports;
+    approve.innerText = approvedReports;
+    pending_review.innerText = pendingReports;
+
+}
 
 
 window.updateStatus = async function (docId, newStatus) {

@@ -312,7 +312,7 @@
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="checkAuthAndShow('admin-section'); officialMenu('dash')">
+                        <a class="nav-link" href="#" onclick="checkAuthAndShow('admin-section'); officialMenu('dash'); dashbord();">
                             🏛️ <span data-i18n="nav-dashboard">Dashboard</span>
                         </a>
                     </li>
@@ -730,7 +730,7 @@
 
         <ul class="official-menu">
 
-        <li><a href="#" onclick="officialMenu('dash')">📊 Dashboard</a></li>
+        <li><a href="#" onclick="officialMenu('dash'); dashbord();">📊 Dashboard</a></li>
 
         <li><a href="#" onclick="officialMenu('suggestion');loadDashboard();">🏗 Development Suggestions</a></li>
 
@@ -812,7 +812,7 @@
 
         </h5>
 
-        <div class="stat-number">
+        <div id="development_suggstion" class="stat-number">
 
         124
 
@@ -828,7 +828,7 @@
 
         </h5>
 
-        <div class="stat-number">
+        <div id="approve_project" class="stat-number">
 
         38
 
@@ -844,7 +844,7 @@
 
         </h5>
 
-        <div class="stat-number">
+        <div id="pending_review" class="stat-number">
 
         57
 
@@ -862,7 +862,7 @@
 
         <div class="stat-number">
 
-        18
+        1
 
         </div>
 
