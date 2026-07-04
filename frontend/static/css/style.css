@@ -763,17 +763,45 @@ body.pp-nav-dark .navbar-toggler-icon { filter: invert(1); }
     background-color: #ffffff;
 }
 
+/* 1. The Brand Container */
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 12px; /* Creates perfect space between the logo and the text */
+    margin-right: 40px; /* Forces a large gap between the brand name and the Language button */
+    margin-left: -10px; /* Pulls the entire brand section a little further to the left */
+}
+
+/* 2. The "Open" Logo */
+.brand img {
+    height: 32px; /* Adjust this to fit your specific logo perfectly */
+    width: auto;
+    border: none; /* Removes any existing borders */
+    background: transparent; /* Ensures it blends into the navbar */
+    box-shadow: none; /* Removes any shadow making it look like a picture/card */
+    padding: 0;
+}
+
+/* 3. The Brand Text */
+.brand-name {
+    font-size: 20px; /* Shrinks the text slightly for a more official look */
+    font-weight: 700;
+    color: #1a365d; /* A strong, official dark blue (adjust to your exact theme) */
+    letter-spacing: 0.5px; /* Adds a tiny bit of space between letters for readability */
+    white-space: nowrap; /* Keeps it strictly on one line */
+}
+
 /* Middle Links Container */
 .nav-links {
     display: flex;
     align-items: center;
-    gap: 15px; /* Tighter spacing so all links fit */
+    gap: 4px; /* Tighter spacing so all links fit seamlessly */
     margin: 0 auto;
 }
 
 /* Make all text links dark and bold to match "Heat Map" */
 .nav-links a {
-    font-size: 12px;
+    font-size: 14px; /* Increased font size for better legibility */
     font-weight: 600;      /* Increases thickness to match Heat Map */
     color: #111827;        /* A very dark, sharp grey/black for high readability */
     text-decoration: none;
@@ -804,6 +832,20 @@ body.pp-nav-dark .navbar-toggler-icon { filter: invert(1); }
     height: 14px;
     width: 14px;
     font-size: 14px;
+}
+
+/* Custom Login Button */
+.login-btn {
+    background-color: #0d6efd !important; /* Official blue background */
+    color: #ffffff !important;            /* Pure white text */
+    border: none !important;              /* Remove the thin gray border */
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+}
+
+/* Hover effect for login button */
+.login-btn:hover {
+    background-color: #0b5ed7 !important; /* Darker blue on hover */
 }
 
 /* Update your existing logout button class */
