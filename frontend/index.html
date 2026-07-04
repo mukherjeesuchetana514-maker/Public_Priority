@@ -28,6 +28,7 @@
     <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
 
     <link rel="stylesheet" href="static/css/style.css">
+    <link rel="stylesheet" href="static/css/official.css">
 
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
@@ -450,22 +451,161 @@
         </div>
     </div>
 
-    <div id="admin-section" class="section-view container mt-5 pt-5">
-        <h2 class="text-center mb-4">🏛️ <span data-i18n="admin-title">Official Dashboard</span></h2>
-        <div class="row mb-4">
-            <div class="col-md-4">
-                <div class="card p-3 border-0 shadow-sm text-center rounded-4">
-                    <h1 id="total-reports" class="display-4 fw-bold text-danger">0</h1>
-                    <small class="text-muted"><span data-i18n="admin-active">Active Complaints</span></small>
-                </div>
-            </div>
-            <div class="col-md-8 d-flex align-items-center justify-content-end">
-                <button onclick="loadDashboard()" class="btn btn-outline-primary rounded-pill px-4 me-2"><i
-                        class="bi bi-arrow-clockwise"></i> <span data-i18n="btn-refresh">Refresh</span></button>
-            </div>
+    <div id="admin-section" class="section-view">
+        <div class="official-wrapper">
+        <div class="official-sidebar">
+        <div class="official-logo">
+
+        🏛️ <span>Modern Civic Platform</span>
+
         </div>
-        <div id="reports-container" class="row">
-            <div class="text-center text-muted">Loading reports...</div>
+
+        <ul class="official-menu">
+
+        <li><a href="#" onclick="officialMenu('dashboard')">📊 Dashboard</a></li>
+
+        <li><a href="#" onclick="officialMenu('development')">🏗 Development Suggestions</a></li>
+
+        <li><a href="#" onclick="officialMenu('analysis')">🤖 AI Analysis</a></li>
+
+        <li><a href="#" onclick="officialMenu('heatmap')">🗺 Heatmap</a></li>
+
+        <li><a href="#" onclick="officialMenu('infra')">🏥 Infrastructure Gap</a></li>
+
+        <li><a href="#" onclick="officialMenu('budget')">💰 Budget Planner</a></li>
+
+        <li><a href="#" onclick="officialMenu('analytics')">📈 Analytics</a></li>
+
+        <li><a href="#" onclick="officialMenu('assistant')">💬 AI Assistant</a></li>
+
+        <li><a href="#" onclick="officialMenu('settings')">⚙ Settings</a></li>
+
+        </ul>
+
+        </div>
+
+        <div class="official-content">
+
+        <div class="top-header">
+
+        <div>
+
+        <h2>
+
+        Official Dashboard
+
+        </h2>
+
+        <p>
+
+        Welcome,
+
+        <span id="officialName">
+
+        Municipality
+
+        </span>
+
+        </p>
+
+        </div>
+
+        <button class="btn btn-primary">
+
+        Refresh
+
+        </button>
+
+        </div>
+
+        <div class="welcome-card">
+
+        <h3>
+
+        AI Powered Development Portal
+
+        </h3>
+
+        <p>
+
+        Monitor citizen development requests, prioritize projects using AI and manage constituency development from one dashboard.
+
+        </p>
+
+        </div>
+
+        <div class="stats-grid">
+
+        <div class="stat-card blue">
+
+        <h5>
+
+        Development Suggestions
+
+        </h5>
+
+        <div class="stat-number">
+
+        124
+
+        </div>
+
+        </div>
+
+        <div class="stat-card green">
+
+        <h5>
+
+        Approved Projects
+
+        </h5>
+
+        <div class="stat-number">
+
+        38
+
+        </div>
+
+        </div>
+
+        <div class="stat-card orange">
+
+        <h5>
+
+        Pending Review
+
+        </h5>
+
+        <div class="stat-number">
+
+        57
+
+        </div>
+
+        </div>
+
+        <div class="stat-card red">
+
+        <h5>
+
+        High Priority
+
+        </h5>
+
+        <div class="stat-number">
+
+        18
+
+        </div>
+
+        </div>
+
+        </div>
+
+        </div>
+
+        </div>
+
         </div>
     </div>
 
@@ -677,6 +817,7 @@
     <script src="static/js/config.js"></script>
     <script src="static/js/i18n.js"></script>
     <script type="module" src="static/js/logic.js"></script>
+    <script src="static/js/official.js"></script>
 
 
 </body>

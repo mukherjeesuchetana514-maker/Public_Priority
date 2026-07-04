@@ -999,12 +999,32 @@ window.deleteReport = function (docId) {
 
 // speech recoding and convertion 
 
+// language map
+const speechLanguageMap = {
+    en: "en-IN",
+    hi: "hi-IN",
+    bn: "bn-IN",
+    te: "te-IN",
+    ta: "ta-IN",
+    es: "es-ES",
+    fr: "fr-FR"
+};
+
 let isRecording = false;
 
 recordBtn.addEventListener("click", () => {
 
     if (!isRecording) {
 
+        
+
+
+        console.log("Selected:", localStorage.getItem("appLanguage"));
+        console.log("Mapped:", speechLanguageMap[localStorage.getItem("appLanguage")]);
+
+        recognition.lang = speechLanguageMap[localStorage.getItem("appLanguage")] || "en-IN";
+
+        console.log("Recognition:", recognition.lang);
         recognition.start();
 
         isRecording = true;
