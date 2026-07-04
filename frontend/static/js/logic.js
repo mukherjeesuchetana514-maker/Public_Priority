@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-import { getFirestore, collection, addDoc, serverTimestamp, getDocs, deleteDoc, doc, updateDoc, setDoc, getDoc, query, where, increment, orderBy, limit } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+import { getFirestore, collection, addDoc, serverTimestamp, getDocs, deleteDoc, doc, updateDoc, setDoc, getDoc, query, where, increment, orderBy, limit, arrayUnion } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, signOut, onAuthStateChanged, sendEmailVerification } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
 import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
 
@@ -651,6 +651,8 @@ if (reportBtn) {
                 zone_name: detectedZone,
                 googleMapsLink: mapUrl,
                 timestamp: serverTimestamp(),
+                vote: 0,
+                votedBy: [],
                 userEmail: currentUser ? currentUser.email : "Anonymous"
             });
 
@@ -1138,6 +1140,159 @@ window.dashbord = async function() {
     pending_review.innerText = pendingReports;
 
 }
+
+
+
+
+// function for community suggstion
+
+window.community = async function () {
+    const container = document.getElementById('community-reports-container');
+    container.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary"></div></div>';
+
+
+    
+    try {
+
+        const q = query(collection(db, "reports"), orderBy("timestamp", "desc"));
+
+
+        const querySnapshot = await getDocs(q);
+        let html = "";
+        let count = 0;
+        const myZone = (currentUser.zone_name || "").toLowerCase().trim();
+
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            const reportZone = (data.zone_name || "").toLowerCase().trim();
+            const hasVoted = data.votedBy?.includes(currentUser.uid);
+            const time = timeAgo(data.timestamp);
+            if (reportZone && (myZone.includes(reportZone) || reportZone.includes(myZone))) {
+                count++;
+                const date = data.timestamp ? new Date(data.timestamp.seconds * 1000).toLocaleDateString() : "Just now";
+                let statusColor = data.status === "In Progress" ? "bg-primary" : (data.status === "Resolved" ? "bg-success" : "bg-warning");
+                let bgImage = data.imageUrl || 'https://via.placeholder.com/600x400';
+
+                html += `<div class="col-md-6 col-lg-4">
+
+                <div class="glass-card p-4 rounded-4 shadow-sm h-100 d-flex flex-column"
+                    style="background: white;">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="badge rounded-pill bg-primary-subtle text-primary fw-bold px-3 py-2" data-i18n="cat-infra-badge">
+                            ${data.category}
+                        </span>
+                        <span class="badge rounded-pill bg-light text-muted small" data-i18n="time-2days">
+                            ${time}
+                        </span>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2" data-i18n="comm-card1-title">
+                        ${data.title}
+                    </h5>
+                    <p class="text-muted small mb-3 flex-grow-1" data-i18n="comm-card1-desc">
+                        ${data.description}
+                    </p>
+                    <div class="d-flex align-items-center text-muted small mb-3">
+                        <i class="bi bi-geo-alt-fill me-1 text-danger"></i>
+                        <span data-i18n="comm-card1-loc">
+                            ${data.zone_name}
+                        </span>
+                    </div>
+                    <hr class="my-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <button
+                            id="vote-btn-${doc.id}"
+                            onclick="${hasVoted ? '' : `voteSuggestion('${doc.id}')`}"
+                            class="btn ${hasVoted ? 'btn-success' : 'btn-outline-success'} rounded-pill px-3 fw-bold"
+                            ${hasVoted ? 'disabled' : ''}>
+
+                            <i class="bi ${hasVoted ? 'bi-check-lg' : 'bi-hand-thumbs-up-fill'} me-1"></i>
+
+                            ${hasVoted ? 'Supported' : 'Support'}
+
+                            <span class="badge bg-success rounded-pill ms-2">
+                                ${data.vote}
+                            </span>
+
+                        </button>
+
+                        <span class="small fw-bold ${hasVoted ? '' : 'd-none'}">
+                            <i class="bi bi-check-circle-fill me-1"></i>
+                            You supported this
+                        </span>
+                        <span id="status-${doc.id}" class="small fw-bold voting-status d-none">
+                            <i class="bi bi-check-circle-fill me-1"></i>
+                            You supported this
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+                `;
+            }
+        });
+        container.innerHTML = html || '<div class="text-center py-5"><h3>No reports found for this zone.</h3></div>';
+        const totalCounter = document.getElementById('total-reports');
+        if (totalCounter) totalCounter.innerText = count;
+    } catch (e) {
+        console.error(e);
+        container.innerHTML = '<p class="text-danger text-center">Error loading data.</p>';
+    }
+}
+
+
+window.voteSuggestion = async function(id) {
+
+    const reportRef = doc(db, "reports", id);
+
+    await updateDoc(reportRef, {
+        vote: increment(1),
+        votedBy: arrayUnion(currentUser.uid)
+    });
+
+    community();
+}
+
+function timeAgo(timestamp) {
+    if (!timestamp) return "Just now";
+
+    const date = timestamp.toDate(); // Firestore Timestamp
+    const now = new Date();
+
+    const diff = Math.floor((now - date) / 1000);
+
+    if (diff < 60) {
+        return `${diff} second${diff !== 1 ? "s" : ""} ago`;
+    }
+
+    const minutes = Math.floor(diff / 60);
+    if (minutes < 60) {
+        return `${minutes} minute${minutes !== 1 ? "s" : ""} ago`;
+    }
+
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) {
+        return `${hours} hour${hours !== 1 ? "s" : ""} ago`;
+    }
+
+    const days = Math.floor(hours / 24);
+    if (days < 7) {
+        return `${days} day${days !== 1 ? "s" : ""} ago`;
+    }
+
+    const weeks = Math.floor(days / 7);
+    if (weeks < 5) {
+        return `${weeks} week${weeks !== 1 ? "s" : ""} ago`;
+    }
+
+    const months = Math.floor(days / 30);
+    if (months < 12) {
+        return `${months} month${months !== 1 ? "s" : ""} ago`;
+    }
+
+    const years = Math.floor(days / 365);
+    return `${years} year${years !== 1 ? "s" : ""} ago`;
+}
+
 
 
 window.updateStatus = async function (docId, newStatus) {

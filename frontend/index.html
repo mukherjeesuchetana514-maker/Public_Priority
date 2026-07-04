@@ -283,7 +283,7 @@
                     <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('home-section')" data-i18n="nav-home">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="#" onclick="checkAuthAndShow('report-section')" data-i18n="nav-suggest">Suggest Development</a></li>
                     <li class="nav-item"><a class="nav-link" href="#" onclick="checkAuthAndShow('user-dashboard-section')" data-i18n="nav-my-reports">My Reports</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" onclick="checkAuthAndShow('community-section')" data-i18n="nav-community">Community Suggestions</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" onclick="checkAuthAndShow('community-section'); community();" data-i18n="nav-community">Community Suggestions</a></li>
                     <li class="nav-item">
                         <a class="nav-link" href="#" onclick="checkAuthAndShow('recommendations-section')" data-i18n="nav-recommended">
                         Recommendations
@@ -562,102 +562,7 @@
     </div>
     <div class="container position-relative" style="z-index: 10;">
         <div id="community-reports-container" class="row g-4">
-            <!--EXAMPLE CARD #--->
-            <div class="col-md-6 col-lg-4">
-
-                <div class="glass-card p-4 rounded-4 shadow-sm h-100 d-flex flex-column"
-                    style="background: white;">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <span class="badge rounded-pill bg-primary-subtle text-primary fw-bold px-3 py-2" data-i18n="cat-infra-badge">
-                            Infrastructure
-                        </span>
-                        <span class="badge rounded-pill bg-light text-muted small" data-i18n="time-2days">
-                            2 days ago
-                        </span>
-                    </div>
-                    <h5 class="fw-bold text-dark mb-2" data-i18n="comm-card1-title">
-                        Streetlight repair on MG Road
-                    </h5>
-                    <p class="text-muted small mb-3 flex-grow-1" data-i18n="comm-card1-desc">
-                        Several streetlights near the market have been
-                        non-functional for weeks, creating a safety
-                        hazard at night.
-                    </p>
-                    <div class="d-flex align-items-center text-muted small mb-3">
-                        <i class="bi bi-geo-alt-fill me-1 text-danger"></i>
-                        <span data-i18n="comm-card1-loc">
-                            MG Road, Ward 12
-                        </span>
-                    </div>
-                    <hr class="my-2">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <button type="button"
-                            class="btn btn-outline-success rounded-pill px-3 fw-bold vote-btn voted">
-                            <i class="bi bi-hand-thumbs-up-fill me-1"></i>
-                            <span data-i18n="btn-support">
-                                Support
-                            </span>
-                            <span class="badge bg-success rounded-pill ms-2 vote-count">
-                                128
-                            </span>
-                        </button>
-                        <span class="small fw-bold voting-status voted">
-                            <i class="bi bi-check-circle-fill me-1"></i>
-                            <span data-i18n="status-voted">
-                                You supported this
-                            </span>
-                        </span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- EXAMPLE CARD #2 -->
-            <div class="col-md-6 col-lg-4">
-                <div class="glass-card p-4 rounded-4 shadow-sm h-100 d-flex flex-column"
-                    style="background: white;">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <span class="badge rounded-pill bg-primary-subtle text-primary fw-bold px-3 py-2" data-i18n="cat-env-badge">
-                            Environment
-                        </span>
-                        <span class="badge rounded-pill bg-light text-muted small" data-i18n="time-5days">
-                            5 days ago
-                        </span>
-                    </div>
-                    <h5 class="fw-bold text-dark mb-2" data-i18n="comm-card2-title">
-                        Plant trees along river bank
-                    </h5>
-                    <p class="text-muted small mb-3 flex-grow-1" data-i18n="comm-card2-desc">
-                        Proposal to plant native trees along the eroding
-                        river bank to prevent soil loss and improve
-                        air quality.
-                    </p>
-                    <div class="d-flex align-items-center text-muted small mb-3">
-                        <i class="bi bi-geo-alt-fill me-1 text-danger"></i>
-                        <span data-i18n="comm-card2-loc">
-                            Riverside Colony
-                        </span>
-                    </div>
-                    <hr class="my-2">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <button type="button"
-                            class="btn btn-outline-success rounded-pill px-3 fw-bold vote-btn">
-                            <i class="bi bi-hand-thumbs-up-fill me-1"></i>
-                            <span data-i18n="btn-support">
-                                Support
-                            </span>
-                            <span class="badge bg-success rounded-pill ms-2 vote-count">
-                                76
-                            </span>
-                        </button>
-                        <span class="small fw-bold voting-status text-muted">
-                            <i class="bi bi-circle me-1"></i>
-                            <span data-i18n="status-not-voted">
-                                Not voted yet
-                            </span>
-                        </span>
-                    </div>
-                </div>
-            </div>
+            
         </div>
     </div>
 </div>
