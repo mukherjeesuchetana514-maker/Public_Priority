@@ -191,11 +191,39 @@
                 padding-right: 15px !important;
             }
         }
-
+            /*For Community votings*/
             .vote-btn {
                 transition: all 0.2s ease;
                 border-width: 2px;
             }
+          /*For AI Recommendations*/
+            .reco-match-badge {
+            background: linear-gradient(135deg,#6f42c1 0%,#0d6efd 100%);
+            color:#fff;
+            font-weight:600;
+            font-size:.75rem;
+            padding:6px 12px;
+        }
+
+        .reco-reason {
+            background:#f4f7ff;
+            border-radius:12px;
+            padding:8px 12px;
+            font-size:.8rem;
+            color:#495057;
+        }
+
+        .reco-card {
+            transition:transform .2s ease,
+                    box-shadow .2s ease;
+            border:1px solid transparent;
+        }
+
+        .reco-card:hover {
+            transform:translateY(-4px);
+            box-shadow:0 10px 25px rgba(13,110,253,.1)!important;
+            border-color:rgba(13,110,253,.15);
+        }
 
     </style>
 </head>
@@ -231,6 +259,13 @@
                             onclick="checkAuthAndShow('community-section')"
                             data-i18n="nav-community">
                             Community Suggestions</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#"
+                        onclick="checkAuthAndShow('recommendations-section')"
+                        data-i18n="nav-recommended">
+                        ✨ Recommended
+                        </a>
                     </li>
                     <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('about-section')" data-i18n="nav-about">About Us</a></li>
                     <li class="nav-item ms-lg-3">
@@ -289,6 +324,258 @@
                 </button>
             </div>
         </div>
+
+        <!--RECOMMENDED FOR WIDGET -->
+
+    <div class="container mt-5 mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+
+        <div>
+            <h3 class="fw-bold text-dark mb-1">
+                <i class="bi bi-stars text-warning"></i>
+                <span data-i18n="reco-home-title">
+                    Recommended For You
+                </span>
+            </h3>
+
+            <p class="text-muted mb-0 small"
+               data-i18n="reco-home-desc">
+                Based on your area and past reports,
+                our AI thinks you'd care about these
+            </p>
+        </div>
+
+        <a href="#"
+           class="btn btn-outline-primary rounded-pill px-4"
+           onclick="checkAuthAndShow('recommendations-section')"
+           data-i18n="reco-see-all">
+            See All
+        </a>
+
+    </div>
+
+
+    <!-- Recommendation Cards Container -->
+
+    <div class="row g-4" id="home-recommendations-container">
+
+        <!-- Recommendation Card 1 -->
+
+        <div class="col-md-6 col-lg-4">
+
+            <div class="glass-card p-4 rounded-4 shadow-sm h-100 d-flex flex-column reco-card"
+                 style="background: white;">
+
+                <div class="d-flex justify-content-between align-items-start mb-2">
+
+                    <span class="badge rounded-pill bg-primary-subtle text-primary fw-bold px-3 py-2">
+                        Infrastructure
+                    </span>
+
+                    <span class="badge rounded-pill reco-match-badge">
+                        <i class="bi bi-stars"></i>
+                        92% match
+                    </span>
+
+                </div>
+
+                <h5 class="fw-bold text-dark mb-2">
+                    Pothole repairs on Station Road
+                </h5>
+
+                <p class="text-muted small mb-3 flex-grow-1">
+                    Multiple citizens near your locality have reported
+                    similar road damage issues this month.
+                </p>
+
+                <div class="d-flex align-items-center text-muted small mb-3">
+                    <i class="bi bi-geo-alt-fill me-1 text-danger"></i>
+
+                    <span>
+                        Station Road, 1.2 km away
+                    </span>
+                </div>
+
+                <div class="reco-reason mb-3">
+                    <i class="bi bi-robot text-primary me-1"></i>
+
+                    <span data-i18n="reco-reason-1">
+                        Recommended because it's near your reported issues
+                    </span>
+                </div>
+
+                <hr class="my-2">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <button type="button"
+                            class="btn btn-outline-success rounded-pill px-3 fw-bold vote-btn">
+
+                        <i class="bi bi-hand-thumbs-up-fill me-1"></i>
+
+                        <span data-i18n="btn-support">
+                            Support
+                        </span>
+
+                        <span class="badge bg-success rounded-pill ms-2">
+                            54
+                        </span>
+
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-light rounded-pill px-3 text-muted"
+                            title="Not interested">
+
+                        <i class="bi bi-x-lg"></i>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Recommendation Card 2 -->
+
+        <div class="col-md-6 col-lg-4">
+
+            <div class="glass-card p-4 rounded-4 shadow-sm h-100 d-flex flex-column reco-card"
+                 style="background: white;">
+
+                <div class="d-flex justify-content-between align-items-start mb-2">
+
+                    <span class="badge rounded-pill bg-primary-subtle text-primary fw-bold px-3 py-2">
+                        Environment
+                    </span>
+
+                    <span class="badge rounded-pill reco-match-badge">
+                        <i class="bi bi-stars"></i>
+                        87% match
+                    </span>
+
+                </div>
+
+                <h5 class="fw-bold text-dark mb-2">
+                    Community park cleanup drive
+                </h5>
+
+                <p class="text-muted small mb-3 flex-grow-1">
+                    Trending in your ward — a growing number
+                    of neighbours are supporting this proposal.
+                </p>
+
+                <div class="d-flex align-items-center text-muted small mb-3">
+
+                    <i class="bi bi-geo-alt-fill me-1 text-danger"></i>
+
+                    <span>
+                        Central Park, Ward 12
+                    </span>
+
+                </div>
+
+                <div class="reco-reason mb-3">
+
+                    <i class="bi bi-robot text-primary me-1"></i>
+
+                    <span data-i18n="reco-reason-2">
+                        Trending among citizens in your ward
+                    </span>
+
+                </div>
+
+                <hr class="my-2">
+
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <button type="button"
+                            class="btn btn-outline-success rounded-pill px-3 fw-bold vote-btn">
+
+                        <i class="bi bi-hand-thumbs-up-fill me-1"></i>
+
+                        <span data-i18n="btn-support">
+                            Support
+                        </span>
+
+                        <span class="badge bg-success rounded-pill ms-2">
+                            41
+                        </span>
+
+                    </button>
+
+                    <button type="button"
+                            class="btn btn-light rounded-pill px-3 text-muted"
+                            title="Not interested">
+
+                        <i class="bi bi-x-lg"></i>
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Recommendation Card 3 -->
+        <div class="col-md-6 col-lg-4">
+            <div class="glass-card p-4 rounded-4 shadow-sm h-100 d-flex flex-column reco-card"
+                 style="background: white;">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <span class="badge rounded-pill bg-primary-subtle text-primary fw-bold px-3 py-2">
+                        Health
+                    </span>
+                    <span class="badge rounded-pill reco-match-badge">
+                        <i class="bi bi-stars"></i>
+                        81% match
+                    </span>
+                </div>
+                <h5 class="fw-bold text-dark mb-2">
+                    New health camp near Bus Stand
+                </h5>
+                <p class="text-muted small mb-3 flex-grow-1">
+                    Matches your past interest in healthcare-related
+                    civic suggestions.
+                </p>
+                <div class="d-flex align-items-center text-muted small mb-3">
+                    <i class="bi bi-geo-alt-fill me-1 text-danger"></i>
+                    <span>
+                        Bus Stand Area
+                    </span>
+                </div>
+                <div class="reco-reason mb-3">
+                    <i class="bi bi-robot text-primary me-1"></i>
+                    <span data-i18n="reco-reason-3">
+                        Matches categories you've engaged with before
+                    </span>
+                </div>
+                <hr class="my-2">
+                <div class="d-flex justify-content-between align-items-center">
+                    <button type="button"
+                            class="btn btn-outline-success rounded-pill px-3 fw-bold vote-btn">
+                        <i class="bi bi-hand-thumbs-up-fill me-1"></i>
+                        <span data-i18n="btn-support">
+                            Support
+                        </span>
+                        <span class="badge bg-success rounded-pill ms-2">
+                            23
+                        </span>
+                    </button>
+                    <button type="button"
+                            class="btn btn-light rounded-pill px-3 text-muted"
+                            title="Not interested">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
     </div>
     <div id="report-section" class="section-view container mt-5 pt-5">
         <div class="row justify-content-center">
@@ -587,7 +874,64 @@
     </div>
 </div>
 
+<!--Recommendations section-->
 
+<div id="recommendations-section" class="section-view">
+    <div class="section-banner"
+         style="background-image: url('https://images.unsplash.com/photo-1518186285589-2f7649de83e0?auto=format&fit=crop&w=1920&q=80');">
+
+        <div class="section-banner-content text-center text-white">
+
+            <h2 class="fw-bold display-5"
+                style="text-shadow: 0 2px 10px rgba(0,0,0,0.5);">
+
+                <i class="bi bi-stars text-warning"></i>
+                <span data-i18n="reco-title">
+                    Recommended For You
+                </span>
+            </h2>
+            <p class="fs-5 opacity-75">
+                <span data-i18n="reco-desc">
+                    Suggestions picked by AI based on your location and activity
+                </span>
+            </p>
+        </div>
+    </div>
+    <div class="container position-relative"
+         style="z-index: 10;">
+
+        <!-- AI Information Box -->
+        <div class="alert alert-light border-0 shadow-sm rounded-4 mb-4 d-flex align-items-center gap-3">
+            <i class="bi bi-robot fs-3 text-primary"></i>
+            <div>
+                <strong data-i18n="reco-how-title">
+                    How this works
+                </strong>
+                <p class="mb-0 small text-muted"
+                   data-i18n="reco-how-desc">
+                    Our AI looks at your location,
+                    your past reports,
+                    and trending issues nearby
+                    to surface development projects
+                    you're most likely to care about.
+                </p>
+            </div>
+        </div>
+
+        <div class="row g-4"
+             id="full-recommendations-container">
+
+            <div class="text-center text-muted py-5">
+                <i class="bi bi-stars fs-1 d-block mb-2"></i>
+                Personalized recommendations
+                will appear here.
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <!--Admin section-->
     <div id="admin-section" class="section-view">
         <div class="official-wrapper">
         <div class="official-sidebar">
