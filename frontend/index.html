@@ -283,7 +283,7 @@
                         </button>
                     </li>
 
-                    <li class="nav-item"><a class="nav-link" href="#" onclick="checkAuthAndShow('admin-section')" data-i18n="nav-dashboard">🏛️ Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" onclick="checkAuthAndShow('admin-section'); officialMenu('dash')" data-i18n="nav-dashboard">🏛️ Dashboard</a></li>
 
                     <li class="nav-item">
                         <a class="nav-link text-danger fw-bold" href="#"
@@ -943,9 +943,9 @@
 
         <ul class="official-menu">
 
-        <li><a href="#" onclick="officialMenu('dashboard')">📊 Dashboard</a></li>
+        <li><a href="#" onclick="officialMenu('dash')">📊 Dashboard</a></li>
 
-        <li><a href="#" onclick="officialMenu('development')">🏗 Development Suggestions</a></li>
+        <li><a href="#" onclick="officialMenu('suggestion')">🏗 Development Suggestions</a></li>
 
         <li><a href="#" onclick="officialMenu('analysis')">🤖 AI Analysis</a></li>
 
@@ -965,7 +965,7 @@
 
         </div>
 
-        <div class="official-content">
+        <div id="dash" class="official-content official-page">
 
         <div class="top-header">
 
@@ -1082,9 +1082,13 @@
         </div>
 
         </div>
+        
+
+        </div>
+
         <!-- Recent Suggestions -->
 
-        <div class="dashboard-panel mt-4">
+        <div id="suggestion" class="dashboard-panel official-page mt-4">
 
             <div class="panel-header">
                 <h4>📋 Recent Development Suggestions</h4>
@@ -1152,7 +1156,7 @@
             </table>
 
         </div>
-        <div class="dashboard-row">
+        <div id="analysis" class="dashboard-row official-page">
 
         <div class="recommendation-panel">
 
@@ -1227,8 +1231,6 @@
         💰 Budget Planner
 
         </button>
-
-        </div>
 
         </div>
 

@@ -171,6 +171,18 @@ width:100%;
     font-weight:600;
 }
 
+
+
+.official-page{
+    display:none;
+}
+
+.official-page.active{
+    display:block;
+}
+
+
+
 @media(max-width:992px){
 
 .dashboard-row{

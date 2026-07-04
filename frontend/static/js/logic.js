@@ -274,6 +274,7 @@ window.showSection = function (sectionId) {
     if (navbarCollapse.classList.contains('show')) navbarToggler.click();
 }
 
+
 window.loadLeaderboard = async function () {
     const tableBody = document.getElementById('leaderboard-body');
     if (!tableBody) return;
@@ -888,6 +889,22 @@ window.loadUserDashboard = async function () {
     }
 }
 
+
+window.toggle_official_sidebar = async function () {
+    
+    const sidebar = document.getElementById("official-sidebar");
+    const toggle = document.getElementById("toggleSidebar");
+
+    sidebar.classList.toggle("open");
+
+    if (sidebar.classList.contains("open")) {
+        toggle.innerHTML = "◀";
+    } else {
+        toggle.innerHTML = "▶";
+    }
+}
+
+
 window.loadDashboard = async function () {
     const container = document.getElementById('reports-container');
     container.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary"></div></div>';
@@ -956,6 +973,28 @@ window.loadDashboard = async function () {
         container.innerHTML = '<p class="text-danger text-center">Error loading data.</p>';
     }
 }
+
+// window.suggestion = async function(){
+//     document.getElementById('admin-section').style.display ="none";
+//     document.getElementById('suggestion').style.display ="block";
+
+// }
+
+window.officialMenu = async function(page){
+
+    // Hide every admin page
+    document.querySelectorAll(".official-page").forEach(item=>{
+        item.classList.remove("active");
+    });
+
+    // Show selected page
+    document.getElementById(page).classList.add("active");
+
+}
+
+
+
+
 
 window.updateStatus = async function (docId, newStatus) {
     try {
