@@ -49,20 +49,17 @@ window.saveLanguageAndReload = function() {
     const selectedLang = document.getElementById('appLanguageSelect').value;
     localStorage.setItem('appLanguage', selectedLang);
     
-    if (selectedLang !== 'en') {
-        // Set Google Translate cookie
-        document.cookie = `googtrans=/en/${selectedLang}; path=/`;
-        document.cookie = `googtrans=/en/${selectedLang}; domain=.${window.location.hostname}; path=/`;
-        document.cookie = `googtrans=/en/${selectedLang}; domain=${window.location.hostname}; path=/`;
-    } else {
-        // Clear cookie if English (default)
-        document.cookie = 'googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-        document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=.${window.location.hostname}; path=/;`;
-        document.cookie = `googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; domain=${window.location.hostname}; path=/;`;
+    // Use the native i18n changeLanguage function
+    if (typeof changeLanguage === 'function') {
+        changeLanguage(selectedLang);
     }
     
-    // Reload page to apply translation immediately
-    window.location.reload();
+    // Hide the modal
+    const modalEl = document.getElementById('languageModal');
+    if (modalEl) {
+        const langModal = bootstrap.Modal.getInstance(modalEl);
+        if (langModal) langModal.hide();
+    }
 }
 
 // Variables

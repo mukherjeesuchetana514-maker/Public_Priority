@@ -214,19 +214,18 @@
                             <i class="bi bi-translate"></i> Language
                         </button>
                     </li>
-                    <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('home-section')">Home</a>
+                    <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('home-section')" data-i18n="nav-home">Home</a>
                     </li>
                     <li class="nav-item"><a class="nav-link" href="#"
-                            onclick="checkAuthAndShow('report-section')">Suggest Development</a></li>
+                            onclick="checkAuthAndShow('report-section')" data-i18n="nav-suggest">Suggest Development</a></li>
                     <li class="nav-item"><a class="nav-link" href="#"
-                            onclick="checkAuthAndShow('user-dashboard-section')">My Reports</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('about-section')">About
-                            Us</a></li>
+                            onclick="checkAuthAndShow('user-dashboard-section')" data-i18n="nav-my-reports">My Reports</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('about-section')" data-i18n="nav-about">About Us</a></li>
                     <li class="nav-item ms-lg-3">
                         <button id="loginBtn" class="btn btn-outline-success rounded-pill px-4" data-bs-toggle="modal"
-                            data-bs-target="#loginModal">Login</button>
+                            data-bs-target="#loginModal" data-i18n="nav-login">Login</button>
                         <button id="logoutBtn" class="btn btn-danger rounded-pill px-4" onclick="handleLogout()"
-                            style="display:none;">Logout</button>
+                            style="display:none;" data-i18n="nav-logout">Logout</button>
                     </li>
                 </ul>
 
@@ -237,25 +236,24 @@
                         </button>
                     </li>
 
-                    <li class="nav-item"><a class="nav-link" href="#" onclick="checkAuthAndShow('admin-section')">🏛️
-                            Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" onclick="checkAuthAndShow('admin-section')" data-i18n="nav-dashboard">🏛️ Dashboard</a></li>
 
                     <li class="nav-item">
                         <a class="nav-link text-danger fw-bold" href="#"
                             onclick="checkAuthAndShow('map-section'); initMap();">
-                            <i class="bi bi-broadcast"></i> Live Map
+                            <i class="bi bi-broadcast"></i> <span data-i18n="nav-live-map">Live Map</span>
                         </a>
                     </li>
 
                     <li class="nav-item"><a class="nav-link" href="#"
-                            onclick="checkAuthAndShow('leaderboard-section')">🏆 Top Contributors</a></li>
+                            onclick="checkAuthAndShow('leaderboard-section')" data-i18n="nav-top-contributors">🏆 <span data-i18n="lead-title">Top Contributors</span></a></li>
 
                     <li class="nav-item d-none d-lg-block border-end mx-2" style="height: 24px;"></li>
 
                     <li class="nav-item d-flex align-items-center gap-3">
                         <span class="nav-link fw-bold text-primary mb-0" id="org-name-display"></span>
                         <button class="btn btn-outline-danger rounded-pill px-4"
-                            onclick="handleLogout()">Logout</button>
+                            onclick="handleLogout()" data-i18n="nav-logout">Logout</button>
                     </li>
                 </ul>
             </div>
@@ -267,16 +265,15 @@
             <div class="container text-center hero-content py-5">
                 <h1 class="mb-3 display-3 fw-bold text-white"
                     style="animation: fadeIn 1s ease-out; text-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-                    Build A Better City, <br><span class="text-warning">Together</span>
+                    <span data-i18n="home-title1">Build A Better City,</span> <br><span class="text-warning" data-i18n="home-title2">Together</span>
                 </h1>
                 <p class="lead text-white opacity-75 mb-4 px-lg-5 mx-lg-5 fs-4"
                     style="text-shadow: 0 2px 10px rgba(0,0,0,0.2);">
-                    Public Priority connects you directly with local authorities to build, repair, and grow your
-                    community.
+                    <span data-i18n="home-desc">Public Priority connects you directly with local authorities to build, repair, and grow your community.</span>
                 </p>
                 <button class="btn btn-enchanting btn-lg rounded-pill px-5 py-3 shadow border-0 mt-3"
                     onclick="checkAuthAndShow('report-section')" style="font-size: 1.1rem;">
-                    Suggest Development <i class="bi bi-arrow-right ms-2"></i>
+                    <span data-i18n="home-btn">Suggest Development</span> <i class="bi bi-arrow-right ms-2"></i>
                 </button>
             </div>
         </div>
@@ -287,16 +284,19 @@
             <div class="col-lg-4 mb-4">
                 <div class="glass-card p-4 rounded-4 shadow-sm h-100 d-flex flex-column justify-content-center"
                     style="background: linear-gradient(135deg, #0f4c75 0%, #3282b8 100%); color: white; border: none;">
-                    <h3 class="fw-bold mb-3"><i class="bi bi-lightbulb-fill text-warning"></i> Your Voice Matters</h3>
-                    <p class="opacity-75 mb-4">Public Priority connects citizens with local authorities. By suggesting
-                        development projects, you actively participate in building a smarter, safer, and cleaner city.
-                    </p>
+                    <h3 class="fw-bold mb-3">
+                        <i class="bi bi-lightbulb-fill text-warning"></i> <span data-i18n="report-card-title">Your Voice Matters</span>
+                    </h3>
+                    <p class="opacity-75 mb-4" data-i18n="report-card-desc">Public Priority connects citizens with local authorities. By suggesting development projects, you actively participate in building a smarter, safer, and cleaner city.</p>
                     <ul class="list-unstyled">
-                        <li class="mb-3"><i class="bi bi-check-circle-fill me-2 text-success"></i> Official Government
-                            Routing</li>
-                        <li class="mb-3"><i class="bi bi-check-circle-fill me-2 text-success"></i> Direct Impact
-                            Tracking</li>
-                        <li class="mb-3"><i class="bi bi-check-circle-fill me-2 text-success"></i> Civic Points Rewards
+                        <li class="mb-3">
+                            <i class="bi bi-check-circle-fill me-2 text-success"></i> <span data-i18n="report-card-li1">Official Government Routing</span>
+                        </li>
+                        <li class="mb-3">
+                            <i class="bi bi-check-circle-fill me-2 text-success"></i> <span data-i18n="report-card-li2">Direct Impact Tracking</span>
+                        </li>
+                        <li class="mb-3">
+                            <i class="bi bi-check-circle-fill me-2 text-success"></i> <span data-i18n="report-card-li3">Civic Points Rewards</span>
                         </li>
                     </ul>
                 </div>
@@ -305,28 +305,29 @@
             <!-- Form Panel -->
             <div class="col-lg-8 mb-4">
                 <div class="glass-card p-5 rounded-4 shadow-sm">
-                    <h2 class="mb-2 text-dark fw-bold">Suggest Development</h2>
-                    <p class="text-muted mb-3">Share your ideas, record a voice note, or upload photos of the area.</p>
+                    <h2 class="mb-2 text-dark fw-bold" data-i18n="nav-suggest">Suggest Development</h2>
+                    <p class="text-muted mb-3" data-i18n="report-form-desc">Share your ideas, record a voice note, or upload photos of the area.</p>
                     <div class="alert alert-info rounded-4 border-0 shadow-sm mb-4">
-                        <i class="bi bi-magic text-primary"></i> <strong>Pro Tip:</strong> Upload an image or record a voice note, and our AI will automatically fill out this form and detect the location for you!
+                        <i class="bi bi-magic text-primary"></i>
+                        <i class="bi bi-magic text-primary"></i> <span data-i18n="report-pro-tip">Pro Tip: Upload an image or record a voice note, and our AI will automatically fill out this form and detect the location for you!</span>
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 mb-3 text-start">
-                            <label class="form-label fw-bold small text-muted">Title</label>
+                            <label class="form-label fw-bold small text-muted" data-i18n="label-title">Title</label>
                             <input type="text" id="devTitle"
                                 class="form-control rounded-pill bg-light border-0 px-4 py-2"
-                                placeholder="Short title for your suggestion">
+                                placeholder="Short title for your suggestion" data-i18n="placeholder-title">
                         </div>
                         <div class="col-md-6 mb-3 text-start">
-                            <label class="form-label fw-bold small text-muted">Category</label>
+                            <label class="form-label fw-bold small text-muted" data-i18n="label-category">Category</label>
                             <div class="position-relative">
                                 <select id="devCategory" class="form-select rounded-pill bg-light border-0 px-4 py-2" style="appearance: none; -webkit-appearance: none;">
-                                    <option value="Infrastructure">Infrastructure</option>
-                                    <option value="Environment">Environment</option>
-                                    <option value="Education">Education</option>
-                                    <option value="Health">Health</option>
-                                    <option value="Other">Other</option>
+                                    <option value="Infrastructure" data-i18n="cat-infra">Infrastructure</option>
+                                    <option value="Environment" data-i18n="cat-env">Environment</option>
+                                    <option value="Education" data-i18n="cat-edu">Education</option>
+                                    <option value="Health" data-i18n="cat-health">Health</option>
+                                    <option value="Other" data-i18n="cat-other">Other</option>
                                 </select>
                                 <i class="bi bi-chevron-down position-absolute top-50 end-0 translate-middle-y me-3 text-muted" style="pointer-events: none;"></i>
                             </div>
@@ -334,44 +335,43 @@
                     </div>
 
                     <div class="mb-3 text-start">
-                        <label class="form-label fw-bold small text-muted">Description</label>
+                        <label class="form-label fw-bold small text-muted" data-i18n="label-desc">Description</label>
                         <textarea id="devDescription" class="form-control rounded-4 bg-light border-0 p-3" rows="3"
-                            placeholder="Type your text and suggestions here..."></textarea>
+                            placeholder="Type your text and suggestions here..." data-i18n="placeholder-desc"></textarea>
                     </div>
 
                     <div class="mb-3 text-start">
-                        <label class="form-label fw-bold small text-muted">Location</label>
+                        <label class="form-label fw-bold small text-muted" data-i18n="label-location">Location</label>
                         <div class="d-flex gap-2">
                             <input type="text" id="devLocation"
                                 class="form-control rounded-pill bg-light border-0 px-4 py-2"
-                                placeholder="Enter location manually or use GPS">
+                                placeholder="Enter location manually or use GPS" data-i18n="placeholder-location">
                             <button class="btn btn-dark rounded-pill px-4 fw-bold" type="button"
                                 onclick="detectDevLocation()">
-                                <i class="bi bi-geo-alt"></i> Detect
+                                <i class="bi bi-geo-alt"></i> <span data-i18n="btn-detect">Detect</span>
                             </button>
                         </div>
                     </div>
 
                     <div class="row mt-4">
                         <div class="col-md-6 mb-4 text-start position-relative">
-                            <label class="form-label fw-bold small text-muted"><i class="bi bi-camera"></i> Image
-                                Upload</label>
+                            <label class="form-label fw-bold small text-muted"><i class="bi bi-camera"></i> <span data-i18n="label-image">Image Upload</span></label>
                             <input type="file" id="cameraInput" accept="image/*" capture="environment"
                                 class="form-control rounded-pill mb-3 bg-light border-0">
                             <img id="preview" src="" alt="Issue Preview" class="img-fluid rounded-4 shadow-sm mb-3"
                                 style="display:none; max-height: 150px;">
                             <button type="button" id="aiAnalyzeBtn" class="btn btn-outline-primary rounded-pill w-100 mb-2" style="display:none;">
-                                <i class="bi bi-robot"></i> Auto-fill Details with AI
+                                <i class="bi bi-robot"></i> <span data-i18n="btn-ai-autofill">Auto-fill Details with AI</span>
                             </button>
                             <div id="aiLoading" class="mt-2 text-center" style="display:none;">
                                 <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
-                                <span class="text-muted small ms-2">AI is analyzing image...</span>
+                                <span class="text-muted small ms-2" data-i18n="ai-analyzing">AI is analyzing image...</span>
                             </div>
                         </div>
 
                         <div class="col-md-6 mb-4 text-start">
                             <label class="form-label fw-bold small text-muted">
-                                <i class="bi bi-mic"></i> Voice Message
+                                <i class="bi bi-mic"></i> <span data-i18n="label-voice">Voice Message</span>
                             </label>
                             <div class="bg-light rounded-4 p-3">
                                 <div class="d-flex align-items-center gap-2 mb-2">
@@ -381,7 +381,7 @@
                                             style="width:45px;height:45px;">
                                         <i class="bi bi-mic-fill" id="micIcon"></i>
                                     </button>
-                                    <span id="recordStatus" class="small text-muted">
+                                    <span id="recordStatus" class="small text-muted" data-i18n="record-status">
                                         Tap to record
                                     </span>
                                     <span id="recordDuration" class="small fw-bold text-danger ms-1" style="display:none;">
@@ -395,27 +395,26 @@
                                 <button id="deleteAudioBtn"
                                         class="btn btn-outline-danger btn-sm mt-2"
                                         style="display:none;">
-                                    🗑 Delete Recording
+                                    🗑 <span data-i18n="btn-delete-audio">Delete Recording</span>
                                 </button>
                             </div>
                         </div>
                     </div>
 
                     <button id="reportBtn" class="btn btn-enchanting w-100 rounded-pill py-3 fw-bold mt-2">
-                        🚀 Submit Suggestion
+                        🚀 <span data-i18n="btn-submit">Submit Suggestion</span>
                     </button>
 
                     <div id="loading" class="mt-4 text-center" style="display:none;">
                         <div class="spinner-grow text-primary" role="status"></div>
                         <div class="spinner-grow text-primary mx-2" role="status"></div>
                         <div class="spinner-grow text-primary" role="status"></div>
-                        <p class="mt-2 text-muted fw-bold">Connecting to Government Database...</p>
+                        <p class="mt-2 text-muted fw-bold"><span data-i18n="loading-msg">Connecting to Government Database...</span></p>
                     </div>
 
                     <div id="result" class="mt-4" style="display:none;">
                         <div class="alert alert-success rounded-4 text-start shadow-sm border-0">
-                            <h5 class="fw-bold text-success"><i class="bi bi-check-circle-fill"></i> Submission
-                                Successful</h5>
+                            <h5 class="fw-bold text-success"><i class="bi bi-check-circle-fill"></i> <span data-i18n="success-msg">Submission Successful</span></h5>
                             <p id="aiText" class="mb-2 text-dark"></p>
                         </div>
                     </div>
@@ -428,21 +427,21 @@
         <div class="section-banner"
             style="background-image: url('https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1920&q=80');">
             <div class="section-banner-content text-center text-white">
-                <h2 class="fw-bold display-5" style="text-shadow: 0 2px 10px rgba(0,0,0,0.5);">My Report Status 📋</h2>
-                <p class="fs-5 opacity-75">Track the impact of your civic contributions</p>
+                <h2 class="fw-bold display-5" style="text-shadow: 0 2px 10px rgba(0,0,0,0.5);"><span data-i18n="dash-title">My Report Status</span> 📋</h2>
+                <p class="fs-5 opacity-75"><span data-i18n="dash-desc">Track the impact of your civic contributions</span></p>
             </div>
         </div>
         <div class="container position-relative" style="z-index: 10;">
             <div class="glass-card p-4 rounded-4 shadow-sm" style="max-width: 900px;">
                 <div class="text-center mb-4">
                     <span class="badge bg-warning text-dark rounded-pill px-4 py-2 fs-5 shadow-sm">
-                        🏆 Civic Points: <span id="civic-points">0</span>
+                        🏆 <span data-i18n="civic-points-lbl">Civic Points:</span> <span id="civic-points">0</span>
                     </span>
                 </div>
 
                 <div class="text-end mb-3">
                     <button onclick="loadUserDashboard()" class="btn btn-outline-primary rounded-pill px-4"><i
-                            class="bi bi-arrow-clockwise"></i> Refresh Status</button>
+                            class="bi bi-arrow-clockwise"></i> <span data-i18n="btn-refresh">Refresh Status</span></button>
                 </div>
                 <div id="user-reports-container" class="row">
                     <div class="text-center text-muted py-5">Loading your history...</div>
@@ -452,17 +451,17 @@
     </div>
 
     <div id="admin-section" class="section-view container mt-5 pt-5">
-        <h2 class="text-center mb-4">🏛️ Official Dashboard</h2>
+        <h2 class="text-center mb-4">🏛️ <span data-i18n="admin-title">Official Dashboard</span></h2>
         <div class="row mb-4">
             <div class="col-md-4">
                 <div class="card p-3 border-0 shadow-sm text-center rounded-4">
                     <h1 id="total-reports" class="display-4 fw-bold text-danger">0</h1>
-                    <small class="text-muted">Active Complaints</small>
+                    <small class="text-muted"><span data-i18n="admin-active">Active Complaints</span></small>
                 </div>
             </div>
             <div class="col-md-8 d-flex align-items-center justify-content-end">
                 <button onclick="loadDashboard()" class="btn btn-outline-primary rounded-pill px-4 me-2"><i
-                        class="bi bi-arrow-clockwise"></i> Refresh</button>
+                        class="bi bi-arrow-clockwise"></i> <span data-i18n="btn-refresh">Refresh</span></button>
             </div>
         </div>
         <div id="reports-container" class="row">
@@ -471,7 +470,7 @@
     </div>
 
     <div id="map-section" class="section-view container mt-5 pt-5">
-        <h2 class="text-center mb-4 text-danger fw-bold">📍 Live Issue Tracker</h2>
+        <h2 class="text-center mb-4 text-danger fw-bold">📍 <span data-i18n="map-title">Live Issue Tracker</span></h2>
         <div class="card border-0 shadow-lg rounded-4 overflow-hidden">
             <div id="civicMap" style="height: 600px; width: 100%;"></div>
         </div>
@@ -481,9 +480,8 @@
         <div class="section-banner"
             style="background-image: url('https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1920&q=80');">
             <div class="section-banner-content text-center text-white">
-                <h2 class="fw-bold display-5 text-warning" style="text-shadow: 0 2px 10px rgba(0,0,0,0.5);">🏆 Top
-                    Contributors</h2>
-                <p class="fs-5 opacity-75">The heroes making our society better</p>
+                <h2 class="fw-bold display-5 text-warning" style="text-shadow: 0 2px 10px rgba(0,0,0,0.5);">🏆 <span data-i18n="lead-title">Top Contributors</span></h2>
+                <p class="fs-5 opacity-75"><span data-i18n="lead-desc">The heroes making our society better</span></p>
             </div>
         </div>
         <div class="container position-relative" style="z-index: 10;">
@@ -494,10 +492,10 @@
                             <table class="table table-hover align-middle mb-0" style="background:white;">
                                 <thead class="bg-light">
                                     <tr>
-                                        <th class="p-3 text-primary">Rank</th>
-                                        <th class="p-3 text-primary">Name</th>
-                                        <th class="p-3 text-primary">Civic Points</th>
-                                        <th class="p-3 text-primary">Contact Info</th>
+                                        <th class="p-3 text-primary" data-i18n="lead-col-rank">Rank</th>
+                                        <th class="p-3 text-primary" data-i18n="lead-col-name">Name</th>
+                                        <th class="p-3 text-primary" data-i18n="lead-col-points">Civic Points</th>
+                                        <th class="p-3 text-primary" data-i18n="lead-col-contact">Contact Info</th>
                                     </tr>
                                 </thead>
                                 <tbody id="leaderboard-body">
@@ -522,18 +520,15 @@
                         class="about-image" alt="Community Teamwork">
                 </div>
                 <div class="col-md-6 p-5 d-flex flex-column justify-content-center text-start">
-                    <h2 class="fw-bold text-primary mb-4">About Public Priority</h2>
-                    <p class="text-muted mb-4 fs-5">We are a team of students from MCKV Institute of Engineering
-                        dedicated to solving civic issues using modern technology. Our goal is to connect citizens
-                        directly with local authorities.</p>
+                    <h2 class="fw-bold text-primary mb-4" data-i18n="about-title">About Public Priority</h2>
+                    <p class="text-muted mb-4 fs-5"><span data-i18n="about-desc">We are a team of students from MCKV Institute of Engineering dedicated to solving civic issues using modern technology. Our goal is to connect citizens directly with local authorities.</span></p>
                     <hr class="mb-4">
-                    <h5 class="fw-bold">Contact Support</h5>
+                    <h5 class="fw-bold" data-i18n="about-contact">Contact Support</h5>
                     <p class="mb-4"><i class="bi bi-envelope-at text-primary me-2"></i> <a
                             href="mailto:support@publicpriority.com"
                             class="text-decoration-none">support@publicpriority.com</a></p>
                     <div class="mt-auto p-3 bg-light rounded-3 text-center border border-primary border-opacity-25">
-                        <p class="text-primary mb-0 fw-bold"><i class="bi bi-tree-fill me-2"></i> Dedicated to the
-                            Sustainable Development of Our Society</p>
+                        <p class="text-primary mb-0 fw-bold"><i class="bi bi-tree-fill me-2"></i> <span data-i18n="about-footer">Dedicated to the Sustainable Development of Our Society</span></p>
                     </div>
                 </div>
             </div>
@@ -544,48 +539,45 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-2">
                 <div class="modal-header border-0 pb-0">
-                    <h4 class="modal-title fw-bold ms-2 mt-2">Welcome Back! 👋</h4>
+                    <h4 class="modal-title fw-bold ms-2 mt-2"><span data-i18n="login-title">Welcome Back!</span> 👋</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
 
                 <div class="modal-body p-4">
                     <div class="nav nav-pills nav-fill mb-4">
-                        <button class="nav-link active" id="tab-citizen" onclick="setLoginType('citizen')">👤
-                            Citizen</button>
-                        <button class="nav-link" id="tab-official" onclick="setLoginType('official')">🏛️
-                            Official</button>
+                        <button class="nav-link active" id="tab-citizen" onclick="setLoginType('citizen')">👤 <span data-i18n="login-tab-citizen">Citizen</span></button>
+                        <button class="nav-link" id="tab-official" onclick="setLoginType('official')">🏛️ <span data-i18n="login-tab-official">Official</span></button>
                     </div>
 
                     <form onsubmit="event.preventDefault(); handleLogin();">
 
                         <div class="mb-3" id="orgInputGroup" style="display:none;">
-                            <label class="fw-bold small text-muted ms-3 mb-1">Municipality / Org Name</label>
+                            <label class="fw-bold small text-muted ms-3 mb-1"><span data-i18n="login-lbl-org">Municipality / Org Name</span></label>
                             <input type="text" id="loginOrg" class="form-control rounded-pill"
-                                placeholder="e.g. Howrah Municipal Corp">
+                                placeholder="e.g. Howrah Municipal Corp" data-i18n="login-ph-org">
                         </div>
 
                         <div class="mb-3">
-                            <label class="fw-bold small text-muted ms-3 mb-1">Email Address</label>
+                            <label class="fw-bold small text-muted ms-3 mb-1"><span data-i18n="login-lbl-email">Email Address</span></label>
                             <input type="email" id="loginEmail" class="form-control rounded-pill"
                                 placeholder="name@example.com" required>
                         </div>
 
                         <div class="mb-3">
-                            <label class="fw-bold small text-muted ms-3 mb-1">Password</label>
+                            <label class="fw-bold small text-muted ms-3 mb-1"><span data-i18n="login-lbl-pass">Password</span></label>
                             <input type="password" id="loginPass" class="form-control rounded-pill"
                                 placeholder="••••••••" required>
                         </div>
 
                         <div class="d-flex justify-content-between align-items-center mb-4 px-2">
-                            <a href="#" onclick="forgotPassPopup()" class="text-decoration-none small text-muted">Forgot
-                                Password?</a>
+                            <a href="#" onclick="forgotPassPopup()" class="text-decoration-none small text-muted" data-i18n="login-forgot">Forgot Password?</a>
                             <a href="#" onclick="prepareSignupModal()" data-bs-toggle="modal"
                                 data-bs-target="#signupModal" class="text-decoration-none small fw-bold text-success"
-                                id="createAccountLink">Create Account</a>
+                                id="createAccountLink" data-i18n="login-create">Create Account</a>
                         </div>
 
                         <button type="submit" class="btn btn-enchanting w-100 rounded-pill py-3 fw-bold shadow-sm"
-                            id="loginSubmitBtn">Login as Citizen</button>
+                            id="loginSubmitBtn" data-i18n="btn-login">Login as Citizen</button>
                     </form>
                 </div>
             </div>
@@ -596,55 +588,55 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-2 rounded-4">
                 <div class="modal-header border-0">
-                    <h4 class="modal-title fw-bold ms-2" id="signupTitle">Join the Movement 🌍</h4>
+                    <h4 class="modal-title fw-bold ms-2" id="signupTitle"><span data-i18n="signup-title">Join the Movement</span> 🌍</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body p-4">
                     <form onsubmit="event.preventDefault(); handleSignup();">
 
                         <div class="mb-3">
-                            <input type="text" id="signupName" class="form-control rounded-pill" placeholder="Full Name"
+                            <input type="text" id="signupName" class="form-control rounded-pill" placeholder="Full Name" data-i18n="signup-ph-name"
                                 required>
                         </div>
 
                         <div class="mb-3" id="zonename" style="display: none;">
-                            <label class="ms-3 mb-1 small text-muted fw-bold">Where are you located?</label>
+                            <label class="ms-3 mb-1 small text-muted fw-bold"><span data-i18n="signup-lbl-loc">Where are you located?</span></label>
                             <div class="d-flex align-items-center gap-2">
                                 <div class="position-relative" style="width: 35%;">
                                     <select id="signupZoneType" class="form-select rounded-pill pe-5" style="appearance: none; -webkit-appearance: none;">
-                                        <option value="Municipality">Municipality</option>
-                                        <option value="Panchayat">Panchayat</option>
+                                        <option value="Municipality" data-i18n="signup-zone-muni">Municipality</option>
+                                        <option value="Panchayat" data-i18n="signup-zone-panch">Panchayat</option>
                                     </select>
                                     <i class="bi bi-chevron-down position-absolute top-50 end-0 translate-middle-y me-3 text-muted" style="pointer-events: none;"></i>
                                 </div>
                                 <input type="text" id="signupZoneName" class="form-control rounded-pill"
-                                    placeholder="Name (e.g. Howrah)" required style="width: 40%;">
+                                    placeholder="Name (e.g. Howrah)" data-i18n="signup-ph-zone" required style="width: 40%;">
                                 <button class="btn btn-outline-primary rounded-pill px-3" type="button"
                                     onclick="detectSignupLocation()" style="width: 25%;">
-                                    <i class="bi bi-geo-alt"></i> Detect
+                                    <i class="bi bi-geo-alt"></i> <span data-i18n="btn-detect">Detect</span>
                                 </button>
                             </div>
                             <div class="form-text ms-3 small">
-                                For Citizens: Ensures reports reach the right office.
+                                <span data-i18n="signup-help-loc">For Citizens: Ensures reports reach the right office.</span>
                             </div>
                         </div>
 
                         <div class="mb-3">
                             <input type="email" id="signupEmail" class="form-control rounded-pill"
-                                placeholder="Email Address" required>
+                                placeholder="<span data-i18n="login-lbl-email">Email Address</span>" required>
                         </div>
 
                         <div class="mb-3">
                             <input type="password" id="signupPass" class="form-control rounded-pill"
-                                placeholder="Password (Min 8 chars, 1 Upper, 1 Sym)" required>
+                                placeholder="Password (Min 8 chars, 1 Upper, 1 Sym)" data-i18n="signup-ph-pass" required>
                         </div>
 
                         <button type="submit" id="signupSubmitBtn"
-                            class="btn btn-enchanting w-100 rounded-pill py-3 fw-bold">Create Account</button>
+                            class="btn btn-enchanting w-100 rounded-pill py-3 fw-bold" data-i18n="login-create">Create Account</button>
                     </form>
                     <div class="text-center mt-3">
-                        <small>Already have an account? <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
-                                class="fw-bold text-success">Login</a></small>
+                        <small><span data-i18n="signup-already">Already have an account?</span> <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
+                                class="fw-bold text-success" data-i18n="nav-login">Login</a></small>
                     </div>
                 </div>
             </div>
@@ -656,10 +648,10 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content bg-white rounded-4 border-0 shadow-lg">
                 <div class="modal-header border-0">
-                    <h5 class="modal-title fw-bold text-dark" id="languageModalLabel"><i class="bi bi-globe"></i> Select Your Language</h5>
+                    <h5 class="modal-title fw-bold text-dark" id="languageModalLabel"><i class="bi bi-globe"></i> <span data-i18n="lang-title">Select Your Language</span></h5>
                 </div>
                 <div class="modal-body">
-                    <p class="text-secondary small mb-3">Choose the language you are most comfortable with. The entire application will be translated instantly.</p>
+                    <p class="text-secondary small mb-3"><span data-i18n="lang-desc">Choose the language you are most comfortable with. The entire application will be translated instantly.</span></p>
                     <div class="position-relative mb-3">
                         <select id="appLanguageSelect" class="form-select rounded-pill bg-light border-0 px-4 py-2" style="appearance: none; -webkit-appearance: none;">
                             <option value="en" selected>English</option>
@@ -672,24 +664,18 @@
                         </select>
                         <i class="bi bi-chevron-down position-absolute top-50 end-0 translate-middle-y me-4 text-muted" style="pointer-events: none;"></i>
                     </div>
-                    <button class="btn btn-enchanting w-100 rounded-pill py-2 fw-bold" onclick="saveLanguageAndReload()">Continue</button>
+                    <button class="btn btn-enchanting w-100 rounded-pill py-2 fw-bold" onclick="saveLanguageAndReload()" data-i18n="btn-continue">Continue</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Hidden Google Translate Element -->
-    <div id="google_translate_element" style="display:none;"></div>
-    <script type="text/javascript">
-        function googleTranslateElementInit() {
-            new google.translate.TranslateElement({pageLanguage: 'en', autoDisplay: false}, 'google_translate_element');
-        }
-    </script>
-    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script src="static/js/config.js"></script>
+    <script src="static/js/i18n.js"></script>
     <script type="module" src="static/js/logic.js"></script>
 
 
