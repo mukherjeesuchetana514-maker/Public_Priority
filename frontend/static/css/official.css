@@ -1,0 +1,182 @@
+/* ===========================
+   OFFICIAL DASHBOARD
+=========================== */
+
+:root{
+    --sidebar:#0f172a;
+    --sidebar-hover:#1e293b;
+    --primary:#2563eb;
+    --success:#16a34a;
+    --warning:#f59e0b;
+    --danger:#dc2626;
+    --card:#ffffff;
+    --bg:#f4f7fb;
+}
+
+.official-wrapper{
+    display:flex;
+    min-height:100vh;
+    background:var(--bg);
+}
+
+.official-sidebar{
+    width:260px;
+    background:var(--sidebar);
+    color:white;
+    padding:25px 15px;
+}
+
+.official-logo{
+    font-size:28px;
+    font-weight:bold;
+    margin-bottom:35px;
+    text-align:center;
+}
+
+.official-logo span{
+    color:#38bdf8;
+}
+
+.official-menu{
+    list-style:none;
+    padding:0;
+}
+
+.official-menu li{
+    margin-bottom:10px;
+}
+
+.official-menu a{
+    color:white;
+    text-decoration:none;
+    display:block;
+    padding:14px;
+    border-radius:12px;
+    transition:.3s;
+}
+
+.official-menu a:hover{
+    background:var(--sidebar-hover);
+}
+
+.official-content{
+    flex:1;
+    padding:30px;
+}
+
+.top-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:25px;
+}
+
+.welcome-card{
+    background:white;
+    padding:25px;
+    border-radius:18px;
+    box-shadow:0 10px 30px rgba(0,0,0,.08);
+    margin-bottom:25px;
+}
+
+.stats-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;
+}
+
+.stat-card{
+    background:white;
+    border-radius:18px;
+    padding:25px;
+    box-shadow:0 8px 25px rgba(0,0,0,.08);
+}
+
+.stat-card h5{
+    color:#666;
+}
+
+.stat-number{
+    font-size:40px;
+    font-weight:bold;
+    margin-top:15px;
+}
+
+.blue{
+    border-left:6px solid #2563eb;
+}
+
+.green{
+    border-left:6px solid #16a34a;
+}
+
+.orange{
+    border-left:6px solid #f59e0b;
+}
+
+.red{
+    border-left:6px solid #dc2626;
+}
+
+@media(max-width:900px){
+
+.official-wrapper{
+flex-direction:column;
+}
+
+.official-sidebar{
+width:100%;
+}
+
+}
+.dashboard-panel{
+    background:#fff;
+    padding:25px;
+    border-radius:15px;
+    margin-top:25px;
+    box-shadow:0 10px 30px rgba(0,0,0,.08);
+}
+
+.panel-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.dashboard-row{
+    display:grid;
+    grid-template-columns:2fr 1fr;
+    gap:25px;
+    margin-top:25px;
+}
+
+.recommendation-panel,
+.quick-panel{
+    background:white;
+    border-radius:15px;
+    padding:25px;
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+}
+
+.recommend-card{
+    border-left:5px solid #0d6efd;
+    background:#f8f9fa;
+    padding:15px;
+    border-radius:10px;
+    margin-top:20px;
+}
+
+.quick-panel button{
+    font-weight:600;
+}
+
+@media(max-width:992px){
+
+.dashboard-row{
+
+grid-template-columns:1fr;
+
+}
+
+}
