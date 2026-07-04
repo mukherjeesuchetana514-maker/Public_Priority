@@ -957,7 +957,7 @@
 
         <li><a href="#" onclick="officialMenu('analytics')">📈 Analytics</a></li>
 
-        <li><a href="#" onclick="officialMenu('assistant')">💬 AI Assistant</a></li>
+        <li><a href="#" onclick="showSection('assistant-section')">💬 AI Assistant</a></li>
 
         <li><a href="#" onclick="officialMenu('settings')">⚙ Settings</a></li>
 
@@ -1239,6 +1239,57 @@
         </div>
 
         </div>
+    </div>
+    <div id="assistant-section" class="section-view">
+
+    <div class="container mt-4">
+
+    <h2 class="mb-4">
+
+    🤖 Official AI Assistant
+
+    </h2>
+
+    <div class="card shadow-lg">
+
+    <div class="card-body">
+
+    <div id="chatBox" style="height:450px;overflow-y:auto;">
+
+    <div class="alert alert-primary">
+
+    Hello Official 👋
+
+    I can help you analyze reports, projects and citizen suggestions.
+
+    </div>
+
+    </div>
+
+    <div class="input-group mt-3">
+
+    <input
+    id="chatInput"
+    type="text"
+    class="form-control"
+    placeholder="Ask something...">
+
+    <button
+    class="btn btn-primary"
+    onclick="sendMessage()">
+
+    Send
+
+    </button>
+
+    </div>
+
+    </div>
+
+    </div>
+
+    </div>
+
     </div>
 
     <div id="map-section" class="section-view container mt-5 pt-5">
