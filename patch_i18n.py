@@ -1,0 +1,260 @@
+import json
+import re
+
+# Load the file content
+with open("frontend/static/js/i18n.js", "r", encoding="utf-8") as f:
+    content = f.read()
+
+# Define the additions for each language
+additions = {
+    "en": {
+        "community-title": "Community Suggestions",
+        "community-desc": "Support the ideas you care about most",
+        "btn-support": "Support",
+        "status-voted": "You supported this",
+        "status-not-voted": "Not voted yet",
+        "cat-infra-badge": "Infrastructure",
+        "cat-env-badge": "Environment",
+        "time-2days": "2 days ago",
+        "time-5days": "5 days ago",
+        "comm-card1-title": "Streetlight repair on MG Road",
+        "comm-card1-desc": "Several streetlights near the market have been non-functional for weeks, creating a safety hazard at night.",
+        "comm-card1-loc": "MG Road, Ward 12",
+        "comm-card2-title": "Plant trees along river bank",
+        "comm-card2-desc": "Proposal to plant native trees along the eroding river bank to prevent soil loss and improve air quality.",
+        "comm-card2-loc": "Riverside Colony",
+        "reco-title": "Recommended For You",
+        "reco-desc": "Suggestions picked by AI based on your location and activity",
+        "reco-how-title": "How this works",
+        "reco-how-desc": "Our AI looks at your location, your past reports, and trending issues nearby to surface development projects you're most likely to care about.",
+        "reco-empty": "Personalized recommendations will appear here.",
+        "heatmap-title": "Live Issue Heat Map",
+        "heatmap-desc": "Explore active and resolved community issues in your area.",
+        "heatmap-chart1-title": "Issues Arising (Over Time)",
+        "heatmap-chart2-title": "Resolution Status",
+        "chatbot-title": "Civic Assistant",
+        "chatbot-greeting": "Hello! I am your AI assistant. How can I help you today?",
+        "chatbot-q1": "How do I report a pothole?",
+        "chatbot-q2": "Who reviews my suggestions?",
+        "chatbot-q3": "How are Civic Points calculated?",
+        "chatbot-ph": "Type a message..."
+    },
+    "hi": {
+        "community-title": "सामुदायिक सुझाव",
+        "community-desc": "उन विचारों का समर्थन करें जिनकी आप परवाह करते हैं",
+        "btn-support": "समर्थन",
+        "status-voted": "आपने इसका समर्थन किया",
+        "status-not-voted": "अभी तक वोट नहीं दिया",
+        "cat-infra-badge": "बुनियादी ढांचा",
+        "cat-env-badge": "पर्यावरण",
+        "time-2days": "2 दिन पहले",
+        "time-5days": "5 दिन पहले",
+        "comm-card1-title": "एमजी रोड पर स्ट्रीटलाइट की मरम्मत",
+        "comm-card1-desc": "बाजार के पास कई स्ट्रीटलाइट हफ्तों से खराब हैं, जिससे रात में सुरक्षा का खतरा पैदा हो रहा है।",
+        "comm-card1-loc": "एमजी रोड, वार्ड 12",
+        "comm-card2-title": "नदी के किनारे पेड़ लगाएं",
+        "comm-card2-desc": "मिट्टी के नुकसान को रोकने और वायु गुणवत्ता में सुधार के लिए नदी के किनारे पेड़ लगाने का प्रस्ताव।",
+        "comm-card2-loc": "रिवरसाइड कॉलोनी",
+        "reco-title": "आपके लिए अनुशंसित",
+        "reco-desc": "आपके स्थान और गतिविधि के आधार पर एआई द्वारा चुने गए सुझाव",
+        "reco-how-title": "यह कैसे काम करता है",
+        "reco-how-desc": "हमारा AI आपके स्थान और पिछली रिपोर्ट को देखता है ताकि आपको सबसे प्रासंगिक विकास परियोजनाएं मिल सकें।",
+        "reco-empty": "वैयक्तिकृत सिफारिशें यहाँ दिखाई देंगी।",
+        "heatmap-title": "लाइव इश्यू हीट मैप",
+        "heatmap-desc": "अपने क्षेत्र में सक्रिय और हल किए गए सामुदायिक मुद्दों का अन्वेषण करें।",
+        "heatmap-chart1-title": "मुद्दे उत्पन्न (समय के साथ)",
+        "heatmap-chart2-title": "संकल्प स्थिति",
+        "chatbot-title": "नागरिक सहायक",
+        "chatbot-greeting": "नमस्ते! मैं आपका एआई सहायक हूं। आज मैं आपकी कैसे मदद कर सकता हूं?",
+        "chatbot-q1": "मैं गड्ढे की रिपोर्ट कैसे करूं?",
+        "chatbot-q2": "मेरे सुझावों की समीक्षा कौन करता है?",
+        "chatbot-q3": "नागरिक अंकों की गणना कैसे की जाती है?",
+        "chatbot-ph": "संदेश टाइप करें..."
+    },
+    "bn": {
+        "community-title": "সাম্প্রদায়িক পরামর্শ",
+        "community-desc": "আপনার পছন্দের ধারণাগুলিকে সমর্থন করুন",
+        "btn-support": "সমর্থন করুন",
+        "status-voted": "আপনি এটি সমর্থন করেছেন",
+        "status-not-voted": "এখনও ভোট দেওয়া হয়নি",
+        "cat-infra-badge": "অবকাঠামো",
+        "cat-env-badge": "পরিবেশ",
+        "time-2days": "২ দিন আগে",
+        "time-5days": "৫ দিন আগে",
+        "comm-card1-title": "এমজি রোডে স্ট্রিটলাইট মেরামত",
+        "comm-card1-desc": "বাজারের কাছে বেশ কয়েকটি স্ট্রিটলাইট সপ্তাহের পর সপ্তাহ অকেজো হয়ে আছে।",
+        "comm-card1-loc": "এমজি রোড, ওয়ার্ড ১২",
+        "comm-card2-title": "নদীর তীরে গাছ লাগান",
+        "comm-card2-desc": "মাটি ক্ষয় রোধ এবং বায়ুর মান উন্নত করতে নদীর তীরে স্থানীয় গাছ লাগানোর প্রস্তাব।",
+        "comm-card2-loc": "রিভারসাইড কলোনি",
+        "reco-title": "আপনার জন্য প্রস্তাবিত",
+        "reco-desc": "আপনার অবস্থান এবং কার্যকলাপের উপর ভিত্তি করে এআই দ্বারা বাছাই করা পরামর্শ",
+        "reco-how-title": "এটি কিভাবে কাজ করে",
+        "reco-how-desc": "আপনার অবস্থান এবং অতীতের রিপোর্টের উপর ভিত্তি করে এআই আপনাকে প্রাসঙ্গিক উন্নয়ন প্রকল্পগুলো দেখায়।",
+        "reco-empty": "ব্যক্তিগতকৃত সুপারিশ এখানে প্রদর্শিত হবে।",
+        "heatmap-title": "লাইভ ইস্যু হিট ম্যাপ",
+        "heatmap-desc": "আপনার এলাকায় সক্রিয় এবং সমাধান করা সমস্যাগুলো অন্বেষণ করুন।",
+        "heatmap-chart1-title": "উত্থিত সমস্যা (সময়ের সাথে)",
+        "heatmap-chart2-title": "সমাধানের অবস্থা",
+        "chatbot-title": "নাগরিক সহকারী",
+        "chatbot-greeting": "নমস্কার! আমি আপনার এআই সহকারী। আজ আমি আপনাকে কীভাবে সাহায্য করতে পারি?",
+        "chatbot-q1": "আমি গর্তের রিপোর্ট কিভাবে করব?",
+        "chatbot-q2": "কে আমার পরামর্শ পর্যালোচনা করে?",
+        "chatbot-q3": "নাগরিক পয়েন্ট কীভাবে গণনা করা হয়?",
+        "chatbot-ph": "একটি বার্তা টাইপ করুন..."
+    },
+    "te": {
+        "community-title": "కమ్యూనిటీ సూచనలు",
+        "community-desc": "మీకు అత్యంత ఆసక్తి ఉన్న ఆలోచనలకు మద్దతు ఇవ్వండి",
+        "btn-support": "మద్దతు",
+        "status-voted": "మీరు దీనికి మద్దతు ఇచ్చారు",
+        "status-not-voted": "ఇంకా ఓటు వేయలేదు",
+        "cat-infra-badge": "మౌలిక సదుపాయాలు",
+        "cat-env-badge": "పర్యావరణం",
+        "time-2days": "2 రోజుల క్రితం",
+        "time-5days": "5 రోజుల క్రితం",
+        "comm-card1-title": "MG రోడ్‌లో వీధి దీపాల మరమ్మత్తు",
+        "comm-card1-desc": "మార్కెట్ దగ్గర ఉన్న పలు వీధి దీపాలు వారాల తరబడి పనిచేయడం లేదు.",
+        "comm-card1-loc": "MG రోడ్, వార్డ్ 12",
+        "comm-card2-title": "నది ఒడ్డున చెట్లు నాటడం",
+        "comm-card2-desc": "నేల కోతను నివారించడానికి మరియు గాలి నాణ్యతను పెంచడానికి నది ఒడ్డున చెట్లను నాటాలని ప్రతిపాదన.",
+        "comm-card2-loc": "రివర్‌సైడ్ కాలనీ",
+        "reco-title": "మీ కోసం సిఫార్సు చేయబడింది",
+        "reco-desc": "మీ స్థానం మరియు కార్యకలాపాల ఆధారంగా AI సూచనలు",
+        "reco-how-title": "ఇది ఎలా పనిచేస్తుంది",
+        "reco-how-desc": "మీకు సంబంధించిన అభివృద్ధి ప్రాజెక్టులను చూపించడానికి మా AI మీ స్థానం మరియు గత నివేదికలను పరిగణనలోకి తీసుకుంటుంది.",
+        "reco-empty": "వ్యక్తిగతీకరించిన సిఫార్సులు ఇక్కడ కనిపిస్తాయి.",
+        "heatmap-title": "లైవ్ ఇష్యూ హీట్ మ్యాప్",
+        "heatmap-desc": "మీ ప్రాంతంలోని క్రియాశీల మరియు పరిష్కరించబడిన సమస్యలను అన్వేషించండి.",
+        "heatmap-chart1-title": "తలెత్తుతున్న సమస్యలు (కాలక్రమేణా)",
+        "heatmap-chart2-title": "పరిష్కారం స్థితి",
+        "chatbot-title": "సివిక్ అసిస్టెంట్",
+        "chatbot-greeting": "హలో! నేను మీ AI అసిస్టెంట్‌ని. ఈ రోజు నేను మీకు ఎలా సహాయపడగలను?",
+        "chatbot-q1": "రోడ్డుపై గుంతను ఎలా నివేదించాలి?",
+        "chatbot-q2": "నా సూచనలను ఎవరు సమీక్షిస్తారు?",
+        "chatbot-q3": "సివిక్ పాయింట్లు ఎలా లెక్కిస్తారు?",
+        "chatbot-ph": "సందేశాన్ని టైప్ చేయండి..."
+    },
+    "ta": {
+        "community-title": "சமூகப் பரிந்துரைகள்",
+        "community-desc": "நீங்கள் விரும்பும் திட்டங்களை ஆதரிக்கவும்",
+        "btn-support": "ஆதரி",
+        "status-voted": "நீங்கள் இதை ஆதரித்துள்ளீர்கள்",
+        "status-not-voted": "இன்னும் வாக்களிக்கவில்லை",
+        "cat-infra-badge": "உள்கட்டமைப்பு",
+        "cat-env-badge": "சுற்றுச்சூழல்",
+        "time-2days": "2 நாட்களுக்கு முன்",
+        "time-5days": "5 நாட்களுக்கு முன்",
+        "comm-card1-title": "எம்ஜி சாலையில் தெருவிளக்கு சீரமைப்பு",
+        "comm-card1-desc": "சந்தைக்கு அருகில் உள்ள பல தெருவிளக்குகள் வாரக்கணக்கில் செயல்படவில்லை.",
+        "comm-card1-loc": "எம்ஜி சாலை, வார்டு 12",
+        "comm-card2-title": "ஆற்றங்கரையில் மரம் நடும் திட்டம்",
+        "comm-card2-desc": "மண் அரிப்பைத் தடுக்கவும் காற்றின் தரத்தை மேம்படுத்தவும் ஆற்றங்கரையில் மரங்களை நடுதல்.",
+        "comm-card2-loc": "ரிவர்சைடு காலனி",
+        "reco-title": "பரிந்துரைகள்",
+        "reco-desc": "உங்கள் இருப்பிடம் மற்றும் செயல்பாட்டின் அடிப்படையில் AI ஆல் தேர்ந்தெடுக்கப்பட்ட பரிந்துரைகள்",
+        "reco-how-title": "இது எவ்வாறு செயல்படுகிறது",
+        "reco-how-desc": "உங்கள் இருப்பிடம் மற்றும் கடந்த கால அறிக்கைகளின் அடிப்படையில் உங்களுக்குத் தேவையான வளர்ச்சித் திட்டங்களை எங்கள் AI காட்டுகிறது.",
+        "reco-empty": "உங்களுக்கான தனிப்பயனாக்கப்பட்ட பரிந்துரைகள் இங்கே தோன்றும்.",
+        "heatmap-title": "நேரடி சிக்கல் வெப்ப வரைபடம்",
+        "heatmap-desc": "உங்கள் பகுதியில் செயல்படும் மற்றும் தீர்க்கப்பட்ட சமூக சிக்கல்களை ஆராயுங்கள்.",
+        "heatmap-chart1-title": "எழும் சிக்கல்கள் (காலப்போக்கில்)",
+        "heatmap-chart2-title": "தீர்வு நிலை",
+        "chatbot-title": "குடிமை உதவியாளர்",
+        "chatbot-greeting": "வணக்கம்! நான் உங்கள் AI உதவியாளர். நான் உங்களுக்கு எவ்வாறு உதவ முடியும்?",
+        "chatbot-q1": "பள்ளத்தை எப்படி புகாரளிப்பது?",
+        "chatbot-q2": "எனது பரிந்துரைகளை யார் மதிப்பாய்வு செய்கிறார்கள்?",
+        "chatbot-q3": "குடிமக்கள் புள்ளிகள் எவ்வாறு கணக்கிடப்படுகின்றன?",
+        "chatbot-ph": "செய்தியை உள்ளிடவும்..."
+    },
+    "es": {
+        "community-title": "Sugerencias de la Comunidad",
+        "community-desc": "Apoya las ideas que más te importan",
+        "btn-support": "Apoyar",
+        "status-voted": "Has apoyado esto",
+        "status-not-voted": "Aún no has votado",
+        "cat-infra-badge": "Infraestructura",
+        "cat-env-badge": "Medio Ambiente",
+        "time-2days": "Hace 2 días",
+        "time-5days": "Hace 5 días",
+        "comm-card1-title": "Reparación de farolas en MG Road",
+        "comm-card1-desc": "Varias farolas cerca del mercado llevan semanas sin funcionar, creando un riesgo por la noche.",
+        "comm-card1-loc": "MG Road, Barrio 12",
+        "comm-card2-title": "Plantar árboles junto al río",
+        "comm-card2-desc": "Propuesta para plantar árboles nativos a lo largo de la ribera para prevenir la pérdida de suelo y mejorar la calidad del aire.",
+        "comm-card2-loc": "Riverside Colony",
+        "reco-title": "Recomendado Para Ti",
+        "reco-desc": "Sugerencias elegidas por IA según tu ubicación y actividad",
+        "reco-how-title": "Cómo funciona esto",
+        "reco-how-desc": "Nuestra IA analiza tu ubicación y reportes pasados para mostrarte proyectos de desarrollo que te importan.",
+        "reco-empty": "Tus recomendaciones personalizadas aparecerán aquí.",
+        "heatmap-title": "Mapa de Calor de Problemas",
+        "heatmap-desc": "Explora los problemas de la comunidad activos y resueltos en tu área.",
+        "heatmap-chart1-title": "Problemas Surgidos (Con el tiempo)",
+        "heatmap-chart2-title": "Estado de Resolución",
+        "chatbot-title": "Asistente Cívico",
+        "chatbot-greeting": "¡Hola! Soy tu asistente de IA. ¿En qué te puedo ayudar hoy?",
+        "chatbot-q1": "¿Cómo reporto un bache?",
+        "chatbot-q2": "¿Quién revisa mis sugerencias?",
+        "chatbot-q3": "¿Cómo se calculan los puntos cívicos?",
+        "chatbot-ph": "Escribe un mensaje..."
+    },
+    "fr": {
+        "community-title": "Suggestions de la Communauté",
+        "community-desc": "Soutenez les idées qui vous tiennent à cœur",
+        "btn-support": "Soutenir",
+        "status-voted": "Vous avez soutenu cela",
+        "status-not-voted": "Pas encore voté",
+        "cat-infra-badge": "Infrastructure",
+        "cat-env-badge": "Environnement",
+        "time-2days": "Il y a 2 jours",
+        "time-5days": "Il y a 5 jours",
+        "comm-card1-title": "Réparation des lampadaires sur MG Road",
+        "comm-card1-desc": "Plusieurs lampadaires près du marché ne fonctionnent plus depuis des semaines, créant un risque la nuit.",
+        "comm-card1-loc": "MG Road, Quartier 12",
+        "comm-card2-title": "Planter des arbres au bord de la rivière",
+        "comm-card2-desc": "Proposition de planter des arbres indigènes le long de la berge pour prévenir l'érosion et améliorer la qualité de l'air.",
+        "comm-card2-loc": "Riverside Colony",
+        "reco-title": "Recommandé Pour Vous",
+        "reco-desc": "Suggestions choisies par l'IA selon votre emplacement et activité",
+        "reco-how-title": "Comment ça marche",
+        "reco-how-desc": "Notre IA analyse votre emplacement et vos anciens signalements pour vous montrer des projets de développement pertinents.",
+        "reco-empty": "Vos recommandations personnalisées apparaîtront ici.",
+        "heatmap-title": "Carte Thermique des Problèmes",
+        "heatmap-desc": "Explorez les problèmes communautaires actifs et résolus dans votre région.",
+        "heatmap-chart1-title": "Problèmes Survenus (Dans le temps)",
+        "heatmap-chart2-title": "État de Résolution",
+        "chatbot-title": "Assistant Civique",
+        "chatbot-greeting": "Bonjour ! Je suis votre assistant IA. Comment puis-je vous aider aujourd'hui ?",
+        "chatbot-q1": "Comment signaler un nid-de-poule ?",
+        "chatbot-q2": "Qui examine mes suggestions ?",
+        "chatbot-q3": "Comment sont calculés les points civiques ?",
+        "chatbot-ph": "Tapez un message..."
+    }
+}
+
+for lang, extra_keys in additions.items():
+    # Find the end of the language block
+    # We look for a line that starts with `  "lang": {` or similar
+    pattern = r'(\s*"' + lang + r'": \{)(.*?)(\n\s*\})'
+    
+    def replacer(match):
+        inner_content = match.group(2)
+        # Check if the keys are already there
+        if "community-desc" in inner_content:
+            return match.group(0) # Already added
+        
+        # Format the extra keys
+        new_items = ""
+        for k, v in extra_keys.items():
+            # escape double quotes if needed, though none exist here
+            new_items += f',\n    "{k}": "{v}"'
+        
+        return match.group(1) + inner_content + new_items + match.group(3)
+        
+    content = re.sub(pattern, replacer, content, flags=re.DOTALL)
+
+with open("frontend/static/js/i18n.js", "w", encoding="utf-8") as f:
+    f.write(content)
+
+print("All extra translations injected successfully!")

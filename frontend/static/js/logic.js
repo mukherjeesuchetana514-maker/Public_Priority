@@ -272,6 +272,10 @@ window.showSection = function (sectionId) {
     const navbarToggler = document.querySelector('.navbar-toggler');
     const navbarCollapse = document.querySelector('.navbar-collapse');
     if (navbarCollapse.classList.contains('show')) navbarToggler.click();
+
+    if (sectionId === 'citizen-heatmap-section' && typeof window.initCitizenHeatmap === 'function') {
+        window.initCitizenHeatmap();
+    }
 }
 
 
@@ -1185,4 +1189,210 @@ window.detectDevLocation = function () {
         locInput.value = "";
         showPopup("Error", "Geolocation not supported.", "error");
     }
+}
+
+// ============================================
+// 🔥 CITIZEN HEAT MAP INTEGRATION (FIREBASE)
+// ============================================
+let citizenMap = null;
+let categoryChartInstance = null;
+let resolutionChartInstance = null;
+
+window.initCitizenHeatmap = async function () {
+    // Small delay to ensure DOM #citizenHeatmap is visible for Leaflet size calculations
+    setTimeout(async () => {
+        try {
+            // 1. Initialize Map
+            if (!citizenMap && typeof L !== 'undefined') {
+                citizenMap = L.map('citizenHeatmap').setView([22.5958, 88.3110], 11);
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                    attribution: '&copy; OpenStreetMap',
+                    maxZoom: 19
+                }).addTo(citizenMap);
+            } else if (citizenMap) {
+                citizenMap.invalidateSize();
+            }
+
+            // 2. Fetch Firebase Data
+            const querySnapshot = await getDocs(collection(db, "reports"));
+            const heatPoints = [];
+            
+            const lang = document.documentElement.lang || 'en';
+            
+            // Generate month keys dynamically based on the current language
+            const monthCounts = {};
+            for (let i = 0; i < 12; i++) {
+                const tempDate = new Date(2000, i, 1);
+                const localMonth = tempDate.toLocaleString(lang, { month: 'short' });
+                monthCounts[localMonth] = 0;
+            }
+            
+            let pendingCount = 0;
+            let inProgressCount = 0;
+            let resolvedCount = 0;
+
+            querySnapshot.forEach((docSnap) => {
+                const data = docSnap.data();
+
+                // Extract GPS Coordinates for Heat Map
+                if (data.location && data.location.lat && data.location.lng) {
+                    // Heat intensity (0.5 to 1.0)
+                    heatPoints.push([data.location.lat, data.location.lng, 0.8]);
+                }
+
+                // Extract Timestamp for "Issues Arising" Graph
+                if (data.timestamp) {
+                    const date = data.timestamp.toDate();
+                    const month = date.toLocaleString(lang, { month: 'short' });
+                    if (monthCounts[month] !== undefined) {
+                        monthCounts[month]++;
+                    } else {
+                        monthCounts[month] = 1;
+                    }
+                }
+
+                // Extract Status for "Resolution Status" Graph
+                if (data.status) {
+                    if (data.status.toLowerCase().includes("pending")) pendingCount++;
+                    else if (data.status.toLowerCase().includes("progress")) inProgressCount++;
+                    else if (data.status.toLowerCase().includes("resolv")) resolvedCount++;
+                }
+            });
+
+            // 3. Render Heat Map Layer
+            if (typeof L !== 'undefined') {
+                // Clear existing layers if re-rendering
+                citizenMap.eachLayer((layer) => {
+                    if (layer instanceof L.Circle || (layer.options && layer.options.blur)) {
+                        citizenMap.removeLayer(layer);
+                    }
+                });
+
+                if (typeof L.heatLayer !== 'undefined') {
+                    L.heatLayer(heatPoints, { radius: 25, blur: 15, maxZoom: 14, gradient: { 0.4: 'blue', 0.6: 'cyan', 0.7: 'lime', 0.8: 'yellow', 1.0: 'red' } }).addTo(citizenMap);
+                } else {
+                    heatPoints.forEach(p => L.circle([p[0], p[1]], { color: 'red', fillColor: '#f03', fillOpacity: 0.5, radius: 200 * p[2] }).addTo(citizenMap));
+                }
+            }
+
+            // 4. Render Chart.js Graphs
+            if (typeof Chart !== 'undefined') {
+                Chart.defaults.font.family = "'Poppins', sans-serif";
+                Chart.defaults.color = '#6c757d';
+                
+                // Get localized Status Labels
+                const getTrans = (key, defaultStr) => (typeof translations !== 'undefined' && translations[lang] && translations[lang][key]) ? translations[lang][key] : defaultStr;
+                const labelPending = getTrans('status-pending', 'Pending');
+                const labelInProgress = getTrans('status-progress', 'In Progress');
+                const labelResolved = getTrans('status-resolved', 'Resolved');
+
+                const catCtx = document.getElementById('categoryChart');
+                if (catCtx) {
+                    if (categoryChartInstance) categoryChartInstance.destroy();
+                    categoryChartInstance = new Chart(catCtx, {
+                        type: 'line',
+                        data: {
+                            labels: Object.keys(monthCounts),
+                            datasets: [{ label: getTrans('heatmap-chart1-title', 'New Reports'), data: Object.values(monthCounts), borderColor: 'rgba(220, 53, 69, 1)', backgroundColor: 'rgba(220, 53, 69, 0.2)', fill: true, tension: 0.4, borderWidth: 3 }]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true }, x: { grid: { display: false } } } }
+                    });
+                }
+
+                const resCtx = document.getElementById('resolutionChart');
+                if (resCtx) {
+                    if (resolutionChartInstance) resolutionChartInstance.destroy();
+                    resolutionChartInstance = new Chart(resCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: [labelPending, labelInProgress, labelResolved],
+                            datasets: [{ label: getTrans('heatmap-chart2-title', 'Status Count'), data: [pendingCount, inProgressCount, resolvedCount], backgroundColor: ['rgba(255, 193, 7, 0.8)', 'rgba(13, 110, 253, 0.8)', 'rgba(25, 135, 84, 0.8)'], borderRadius: 8 }]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true }, x: { grid: { display: false } } } }
+                    });
+                }
+            }
+        } catch (err) {
+            console.error("Error fetching Firebase Heat Map data:", err);
+        }
+    }, 300);
+}
+
+// ============================================
+// 🤖 GLOBAL AI CHATBOT WIDGET
+// ============================================
+
+window.toggleChatbot = function() {
+    const chatWindow = document.getElementById('chatbot-window');
+    chatWindow.classList.toggle('d-none');
+}
+
+window.sendChatbotQuestion = function(questionText) {
+    const inputField = document.getElementById('chatbot-input-field');
+    inputField.value = questionText;
+    processChatbotInput();
+}
+
+window.processChatbotInput = async function() {
+    const inputField = document.getElementById('chatbot-input-field');
+    const messagesContainer = document.getElementById('chatbot-messages');
+    const userText = inputField.value.trim();
+    
+    if (!userText) return;
+    
+    // Add user message to UI
+    const userMsgHtml = `
+        <div class="d-flex flex-column align-items-end mt-2">
+            <div class="bg-primary text-white p-2 rounded-3 small shadow-sm" style="max-width: 85%;">
+                <span>${userText}</span>
+            </div>
+        </div>
+    `;
+    messagesContainer.insertAdjacentHTML('beforeend', userMsgHtml);
+    inputField.value = '';
+    
+    // Auto-scroll
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    
+    // Show typing indicator
+    const typingId = 'typing-' + Date.now();
+    const lang = document.documentElement.lang || 'en';
+    const typingText = (translations && translations[lang] && translations[lang]['chatbot-typing']) ? translations[lang]['chatbot-typing'] : 'Typing...';
+
+    const typingHtml = `
+        <div id="${typingId}" class="d-flex flex-column align-items-start mt-2">
+            <div class="bg-light text-dark p-2 rounded-3 small shadow-sm text-muted" style="max-width: 85%;">
+                <em>${typingText}</em>
+            </div>
+        </div>
+    `;
+    messagesContainer.insertAdjacentHTML('beforeend', typingHtml);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    
+    // Simulate API delay or hook up to Gemini
+    setTimeout(() => {
+        document.getElementById(typingId).remove();
+        
+        let reply = (translations && translations[lang] && translations[lang]['chatbot-reply-default']) ? translations[lang]['chatbot-reply-default'] : "I am a helpful civic AI. I've noted your question and can guide you through the platform!";
+        
+        // Match against common keywords from the hardcoded English buttons
+        if (userText.toLowerCase().includes("report") || userText.toLowerCase().includes("pothole")) {
+            reply = (translations && translations[lang] && translations[lang]['chatbot-reply-report']) ? translations[lang]['chatbot-reply-report'] : "To report an issue, click on 'Suggest Development' in the top navigation bar. You can upload a photo and our AI will automatically fill in the details for you!";
+        } else if (userText.toLowerCase().includes("points")) {
+            reply = (translations && translations[lang] && translations[lang]['chatbot-reply-points']) ? translations[lang]['chatbot-reply-points'] : "You earn Civic Points every time you submit a valid report or upvote community suggestions. Officials can see your points on the leaderboard!";
+        } else if (userText.toLowerCase().includes("review") || userText.toLowerCase().includes("who")) {
+            reply = (translations && translations[lang] && translations[lang]['chatbot-reply-review']) ? translations[lang]['chatbot-reply-review'] : "Your suggestions are sent directly to the verified official dashboard for your respective zone or ward. They review and update the status in real time.";
+        }
+        
+        const aiMsgHtml = `
+            <div class="d-flex flex-column align-items-start mt-2">
+                <div class="bg-light text-dark p-2 rounded-3 small shadow-sm" style="max-width: 85%;">
+                    <span>${reply}</span>
+                </div>
+            </div>
+        `;
+        messagesContainer.insertAdjacentHTML('beforeend', aiMsgHtml);
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        
+    }, 1200);
 }

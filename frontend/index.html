@@ -32,6 +32,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+    <!-- Chart.js and Leaflet Heat -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
 
     <style>
         /* 🎨 Custom Styles */
@@ -243,38 +246,35 @@
 
             <div class="collapse navbar-collapse" id="navbarNav">
 
-                <ul class="navbar-nav ms-auto align-items-center" id="nav-citizen">
-                    <li class="nav-item me-lg-2">
-                        <button class="btn btn-outline-info rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#languageModal" title="Change Language">
+                <ul class="navbar-nav nav-links" id="nav-citizen">
+                    <li class="nav-item">
+                        <button class="lang-btn bg-white" data-bs-toggle="modal" data-bs-target="#languageModal" title="Change Language">
                             <i class="bi bi-translate"></i> <span data-i18n="nav-lang">Language</span>
                         </button>
                     </li>
-                    <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('home-section')" data-i18n="nav-home">Home</a>
-                    </li>
-                    <li class="nav-item"><a class="nav-link" href="#"
-                            onclick="checkAuthAndShow('report-section')" data-i18n="nav-suggest">Suggest Development</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#"
-                            onclick="checkAuthAndShow('user-dashboard-section')" data-i18n="nav-my-reports">My Reports</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#"
-                            onclick="checkAuthAndShow('community-section')"
-                            data-i18n="nav-community">
-                            Community Suggestions</a>
-                    </li>
+                    <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('home-section')" data-i18n="nav-home">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" onclick="checkAuthAndShow('report-section')" data-i18n="nav-suggest">Suggest Development</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" onclick="checkAuthAndShow('user-dashboard-section')" data-i18n="nav-my-reports">My Reports</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" onclick="checkAuthAndShow('community-section')" data-i18n="nav-community">Community Suggestions</a></li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#"
-                        onclick="checkAuthAndShow('recommendations-section')"
-                        data-i18n="nav-recommended">
-                        ✨ Recommended
+                        <a class="nav-link" href="#" onclick="checkAuthAndShow('recommendations-section')" data-i18n="nav-recommended">
+                        Recommendations
                         </a>
                     </li>
-                    <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('about-section')" data-i18n="nav-about">About Us</a></li>
-                    <li class="nav-item ms-lg-3">
-                        <button id="loginBtn" class="btn btn-outline-success rounded-pill px-4" data-bs-toggle="modal"
-                            data-bs-target="#loginModal" data-i18n="nav-login">Login</button>
-                        <button id="logoutBtn" class="btn btn-danger rounded-pill px-4" onclick="handleLogout()"
-                            style="display:none;" data-i18n="nav-logout">Logout</button>
+                    <li class="nav-item"><a class="nav-link fw-bold text-danger" href="#"
+                            onclick="checkAuthAndShow('citizen-heatmap-section')"
+                            data-i18n="nav-citizen-heatmap">
+                            Heat Map</a>
                     </li>
+                    <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('about-section')" data-i18n="nav-about">About Us</a></li>
                 </ul>
+
+                <div class="d-flex ms-auto citizen-auth-btns">
+                    <button id="loginBtn" class="auth-btn btn-outline-success bg-white" data-bs-toggle="modal"
+                        data-bs-target="#loginModal" data-i18n="nav-login">Login</button>
+                    <button id="logoutBtn" class="auth-btn logout-btn btn-danger text-white border-danger" onclick="handleLogout()"
+                        style="display:none;" data-i18n="nav-logout">Logout</button>
+                </div>
 
                 <ul class="navbar-nav ms-auto align-items-center gap-2" id="nav-official" style="display:none;">
                     <li class="nav-item me-lg-2">
@@ -283,7 +283,11 @@
                         </button>
                     </li>
 
-                    <li class="nav-item"><a class="nav-link" href="#" onclick="checkAuthAndShow('admin-section'); officialMenu('dash')" data-i18n="nav-dashboard">🏛️ Dashboard</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="checkAuthAndShow('admin-section'); officialMenu('dash')">
+                            🏛️ <span data-i18n="nav-dashboard">Dashboard</span>
+                        </a>
+                    </li>
 
                     <li class="nav-item">
                         <a class="nav-link text-danger fw-bold" href="#"
@@ -292,14 +296,17 @@
                         </a>
                     </li>
 
-                    <li class="nav-item"><a class="nav-link" href="#"
-                            onclick="checkAuthAndShow('leaderboard-section')" data-i18n="nav-top-contributors">🏆 <span data-i18n="lead-title">Top Contributors</span></a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="checkAuthAndShow('leaderboard-section')">
+                            🏆 <span data-i18n="nav-top-contributors">Top Contributors</span>
+                        </a>
+                    </li>
 
                     <li class="nav-item d-none d-lg-block border-end mx-2" style="height: 24px;"></li>
 
                     <li class="nav-item d-flex align-items-center gap-3">
                         <span class="nav-link fw-bold text-primary mb-0" id="org-name-display"></span>
-                        <button class="btn btn-outline-danger rounded-pill px-4"
+                        <button class="auth-btn logout-btn btn-outline-danger rounded-pill px-4"
                             onclick="handleLogout()" data-i18n="nav-logout">Logout</button>
                     </li>
                 </ul>
@@ -327,254 +334,7 @@
 
         <!--RECOMMENDED FOR WIDGET -->
 
-    <div class="container mt-5 mb-5">
-        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
 
-        <div>
-            <h3 class="fw-bold text-dark mb-1">
-                <i class="bi bi-stars text-warning"></i>
-                <span data-i18n="reco-home-title">
-                    Recommended For You
-                </span>
-            </h3>
-
-            <p class="text-muted mb-0 small"
-               data-i18n="reco-home-desc">
-                Based on your area and past reports,
-                our AI thinks you'd care about these
-            </p>
-        </div>
-
-        <a href="#"
-           class="btn btn-outline-primary rounded-pill px-4"
-           onclick="checkAuthAndShow('recommendations-section')"
-           data-i18n="reco-see-all">
-            See All
-        </a>
-
-    </div>
-
-
-    <!-- Recommendation Cards Container -->
-
-    <div class="row g-4" id="home-recommendations-container">
-
-        <!-- Recommendation Card 1 -->
-
-        <div class="col-md-6 col-lg-4">
-
-            <div class="glass-card p-4 rounded-4 shadow-sm h-100 d-flex flex-column reco-card"
-                 style="background: white;">
-
-                <div class="d-flex justify-content-between align-items-start mb-2">
-
-                    <span class="badge rounded-pill bg-primary-subtle text-primary fw-bold px-3 py-2">
-                        Infrastructure
-                    </span>
-
-                    <span class="badge rounded-pill reco-match-badge">
-                        <i class="bi bi-stars"></i>
-                        92% match
-                    </span>
-
-                </div>
-
-                <h5 class="fw-bold text-dark mb-2">
-                    Pothole repairs on Station Road
-                </h5>
-
-                <p class="text-muted small mb-3 flex-grow-1">
-                    Multiple citizens near your locality have reported
-                    similar road damage issues this month.
-                </p>
-
-                <div class="d-flex align-items-center text-muted small mb-3">
-                    <i class="bi bi-geo-alt-fill me-1 text-danger"></i>
-
-                    <span>
-                        Station Road, 1.2 km away
-                    </span>
-                </div>
-
-                <div class="reco-reason mb-3">
-                    <i class="bi bi-robot text-primary me-1"></i>
-
-                    <span data-i18n="reco-reason-1">
-                        Recommended because it's near your reported issues
-                    </span>
-                </div>
-
-                <hr class="my-2">
-
-                <div class="d-flex justify-content-between align-items-center">
-
-                    <button type="button"
-                            class="btn btn-outline-success rounded-pill px-3 fw-bold vote-btn">
-
-                        <i class="bi bi-hand-thumbs-up-fill me-1"></i>
-
-                        <span data-i18n="btn-support">
-                            Support
-                        </span>
-
-                        <span class="badge bg-success rounded-pill ms-2">
-                            54
-                        </span>
-
-                    </button>
-
-                    <button type="button"
-                            class="btn btn-light rounded-pill px-3 text-muted"
-                            title="Not interested">
-
-                        <i class="bi bi-x-lg"></i>
-
-                    </button>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- Recommendation Card 2 -->
-
-        <div class="col-md-6 col-lg-4">
-
-            <div class="glass-card p-4 rounded-4 shadow-sm h-100 d-flex flex-column reco-card"
-                 style="background: white;">
-
-                <div class="d-flex justify-content-between align-items-start mb-2">
-
-                    <span class="badge rounded-pill bg-primary-subtle text-primary fw-bold px-3 py-2">
-                        Environment
-                    </span>
-
-                    <span class="badge rounded-pill reco-match-badge">
-                        <i class="bi bi-stars"></i>
-                        87% match
-                    </span>
-
-                </div>
-
-                <h5 class="fw-bold text-dark mb-2">
-                    Community park cleanup drive
-                </h5>
-
-                <p class="text-muted small mb-3 flex-grow-1">
-                    Trending in your ward — a growing number
-                    of neighbours are supporting this proposal.
-                </p>
-
-                <div class="d-flex align-items-center text-muted small mb-3">
-
-                    <i class="bi bi-geo-alt-fill me-1 text-danger"></i>
-
-                    <span>
-                        Central Park, Ward 12
-                    </span>
-
-                </div>
-
-                <div class="reco-reason mb-3">
-
-                    <i class="bi bi-robot text-primary me-1"></i>
-
-                    <span data-i18n="reco-reason-2">
-                        Trending among citizens in your ward
-                    </span>
-
-                </div>
-
-                <hr class="my-2">
-
-                <div class="d-flex justify-content-between align-items-center">
-
-                    <button type="button"
-                            class="btn btn-outline-success rounded-pill px-3 fw-bold vote-btn">
-
-                        <i class="bi bi-hand-thumbs-up-fill me-1"></i>
-
-                        <span data-i18n="btn-support">
-                            Support
-                        </span>
-
-                        <span class="badge bg-success rounded-pill ms-2">
-                            41
-                        </span>
-
-                    </button>
-
-                    <button type="button"
-                            class="btn btn-light rounded-pill px-3 text-muted"
-                            title="Not interested">
-
-                        <i class="bi bi-x-lg"></i>
-
-                    </button>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- Recommendation Card 3 -->
-        <div class="col-md-6 col-lg-4">
-            <div class="glass-card p-4 rounded-4 shadow-sm h-100 d-flex flex-column reco-card"
-                 style="background: white;">
-                <div class="d-flex justify-content-between align-items-start mb-2">
-                    <span class="badge rounded-pill bg-primary-subtle text-primary fw-bold px-3 py-2">
-                        Health
-                    </span>
-                    <span class="badge rounded-pill reco-match-badge">
-                        <i class="bi bi-stars"></i>
-                        81% match
-                    </span>
-                </div>
-                <h5 class="fw-bold text-dark mb-2">
-                    New health camp near Bus Stand
-                </h5>
-                <p class="text-muted small mb-3 flex-grow-1">
-                    Matches your past interest in healthcare-related
-                    civic suggestions.
-                </p>
-                <div class="d-flex align-items-center text-muted small mb-3">
-                    <i class="bi bi-geo-alt-fill me-1 text-danger"></i>
-                    <span>
-                        Bus Stand Area
-                    </span>
-                </div>
-                <div class="reco-reason mb-3">
-                    <i class="bi bi-robot text-primary me-1"></i>
-                    <span data-i18n="reco-reason-3">
-                        Matches categories you've engaged with before
-                    </span>
-                </div>
-                <hr class="my-2">
-                <div class="d-flex justify-content-between align-items-center">
-                    <button type="button"
-                            class="btn btn-outline-success rounded-pill px-3 fw-bold vote-btn">
-                        <i class="bi bi-hand-thumbs-up-fill me-1"></i>
-                        <span data-i18n="btn-support">
-                            Support
-                        </span>
-                        <span class="badge bg-success rounded-pill ms-2">
-                            23
-                        </span>
-                    </button>
-                    <button type="button"
-                            class="btn btn-light rounded-pill px-3 text-muted"
-                            title="Not interested">
-                        <i class="bi bi-x-lg"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
     </div>
     <div id="report-section" class="section-view container mt-5 pt-5">
@@ -780,24 +540,24 @@
                 <div class="glass-card p-4 rounded-4 shadow-sm h-100 d-flex flex-column"
                     style="background: white;">
                     <div class="d-flex justify-content-between align-items-start mb-2">
-                        <span class="badge rounded-pill bg-primary-subtle text-primary fw-bold px-3 py-2">
+                        <span class="badge rounded-pill bg-primary-subtle text-primary fw-bold px-3 py-2" data-i18n="cat-infra-badge">
                             Infrastructure
                         </span>
-                        <span class="badge rounded-pill bg-light text-muted small">
+                        <span class="badge rounded-pill bg-light text-muted small" data-i18n="time-2days">
                             2 days ago
                         </span>
                     </div>
-                    <h5 class="fw-bold text-dark mb-2">
+                    <h5 class="fw-bold text-dark mb-2" data-i18n="comm-card1-title">
                         Streetlight repair on MG Road
                     </h5>
-                    <p class="text-muted small mb-3 flex-grow-1">
+                    <p class="text-muted small mb-3 flex-grow-1" data-i18n="comm-card1-desc">
                         Several streetlights near the market have been
                         non-functional for weeks, creating a safety
                         hazard at night.
                     </p>
                     <div class="d-flex align-items-center text-muted small mb-3">
                         <i class="bi bi-geo-alt-fill me-1 text-danger"></i>
-                        <span>
+                        <span data-i18n="comm-card1-loc">
                             MG Road, Ward 12
                         </span>
                     </div>
@@ -828,24 +588,24 @@
                 <div class="glass-card p-4 rounded-4 shadow-sm h-100 d-flex flex-column"
                     style="background: white;">
                     <div class="d-flex justify-content-between align-items-start mb-2">
-                        <span class="badge rounded-pill bg-primary-subtle text-primary fw-bold px-3 py-2">
+                        <span class="badge rounded-pill bg-primary-subtle text-primary fw-bold px-3 py-2" data-i18n="cat-env-badge">
                             Environment
                         </span>
-                        <span class="badge rounded-pill bg-light text-muted small">
+                        <span class="badge rounded-pill bg-light text-muted small" data-i18n="time-5days">
                             5 days ago
                         </span>
                     </div>
-                    <h5 class="fw-bold text-dark mb-2">
+                    <h5 class="fw-bold text-dark mb-2" data-i18n="comm-card2-title">
                         Plant trees along river bank
                     </h5>
-                    <p class="text-muted small mb-3 flex-grow-1">
+                    <p class="text-muted small mb-3 flex-grow-1" data-i18n="comm-card2-desc">
                         Proposal to plant native trees along the eroding
                         river bank to prevent soil loss and improve
                         air quality.
                     </p>
                     <div class="d-flex align-items-center text-muted small mb-3">
                         <i class="bi bi-geo-alt-fill me-1 text-danger"></i>
-                        <span>
+                        <span data-i18n="comm-card2-loc">
                             Riverside Colony
                         </span>
                     </div>
@@ -923,8 +683,7 @@
 
             <div class="text-center text-muted py-5">
                 <i class="bi bi-stars fs-1 d-block mb-2"></i>
-                Personalized recommendations
-                will appear here.
+                <span data-i18n="reco-empty">Personalized recommendations will appear here.</span>
             </div>
         </div>
     </div>
@@ -1356,6 +1115,39 @@
         </div>
     </div>
 
+    <!-- Citizen Heat Map Section -->
+    <div id="citizen-heatmap-section" class="section-view container-fluid mt-5 pt-5 px-4">
+        <div class="heatmap-header-container">
+            <h2><span data-i18n="heatmap-title">Live Issue Heat Map</span></h2>
+            <p data-i18n="heatmap-desc">Explore active and resolved community issues in your area.</p>
+        </div>
+
+        <div class="row g-4 mb-5">
+            <!-- Map on the Left -->
+            <div class="col-lg-8">
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden h-100">
+                    <div id="citizenHeatmap" style="height: 650px; width: 100%;"></div>
+                </div>
+            </div>
+
+            <!-- Charts on the Right -->
+            <div class="col-lg-4 d-flex flex-column gap-4">
+                <div class="card border-0 shadow-sm rounded-4 p-4 flex-grow-1">
+                    <h5 class="fw-bold text-dark mb-3 text-center" data-i18n="heatmap-chart1-title">Issues Arising (Over Time)</h5>
+                    <div style="height: 250px; position: relative;">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+                <div class="card border-0 shadow-sm rounded-4 p-4 flex-grow-1">
+                    <h5 class="fw-bold text-dark mb-3 text-center" data-i18n="heatmap-chart2-title">Resolution Status</h5>
+                    <div style="height: 250px; position: relative;">
+                        <canvas id="resolutionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="signupModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-2 rounded-4">
@@ -1443,6 +1235,45 @@
     </div>
 
     
+    <!-- AI Chatbot Widget -->
+    <div id="ai-chatbot-widget">
+        <button id="chatbot-toggle-btn" class="btn btn-primary rounded-circle shadow-lg" onclick="toggleChatbot()">
+            <i class="bi bi-chat-dots-fill fs-3"></i>
+        </button>
+
+        <div id="chatbot-window" class="glass-card shadow-lg rounded-4 d-none">
+            <div class="chatbot-header d-flex justify-content-between align-items-center p-3 border-bottom">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-robot text-primary fs-4"></i>
+                    <h5 class="mb-0 fw-bold text-dark" data-i18n="chatbot-title">Civic Assistant</h5>
+                </div>
+                <button class="btn btn-sm btn-light rounded-circle text-muted" onclick="toggleChatbot()">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            
+            <div id="chatbot-messages" class="p-3 overflow-auto" style="height: 300px; display: flex; flex-direction: column; gap: 10px;">
+                <div class="d-flex flex-column align-items-start">
+                    <div class="bg-light text-dark p-2 rounded-3 small shadow-sm" style="max-width: 85%;">
+                        <span data-i18n="chatbot-greeting">Hello! I am your AI assistant. How can I help you today?</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chatbot-suggestions p-2 d-flex flex-wrap gap-2 border-top bg-light">
+                <button class="btn btn-sm btn-outline-primary rounded-pill small" onclick="sendChatbotQuestion('How do I report a pothole?')" data-i18n="chatbot-q1">How do I report a pothole?</button>
+                <button class="btn btn-sm btn-outline-primary rounded-pill small" onclick="sendChatbotQuestion('Who reviews my suggestions?')" data-i18n="chatbot-q2">Who reviews my suggestions?</button>
+                <button class="btn btn-sm btn-outline-primary rounded-pill small" onclick="sendChatbotQuestion('How are Civic Points calculated?')" data-i18n="chatbot-q3">How are Civic Points calculated?</button>
+            </div>
+
+            <div class="chatbot-input p-2 border-top d-flex gap-2">
+                <input type="text" id="chatbot-input-field" class="form-control rounded-pill border-0 bg-light" placeholder="Type a message..." data-i18n="chatbot-ph">
+                <button class="btn btn-primary rounded-circle" onclick="processChatbotInput()">
+                    <i class="bi bi-send-fill"></i>
+                </button>
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
