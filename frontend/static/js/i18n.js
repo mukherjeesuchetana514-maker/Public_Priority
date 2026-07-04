@@ -126,7 +126,14 @@ const translations = {
     "chatbot-reply-review": "Your suggestions are sent directly to the verified official dashboard for your respective zone or ward. They review and update the status in real time.",
     "status-pending": "Pending",
     "status-progress": "In Progress",
-    "status-resolved": "Resolved"
+    "status-resolved": "Resolved",
+    "cat-water": "Water",
+    "cat-roads": "Roads",
+    "cat-infrastructure": "Infrastructure",
+    "cat-environment": "Environment",
+    "cat-education": "Education",
+    "cat-health": "Health",
+    "cat-other": "Other"
   },
   "hi": {
     "nav-lang": "भाषा",
@@ -255,7 +262,14 @@ const translations = {
     "chatbot-reply-review": "आपके सुझाव सीधे आपके संबंधित ज़ोन या वार्ड के लिए सत्यापित आधिकारिक डैशबोर्ड पर भेजे जाते हैं। वे वास्तविक समय में स्थिति की समीक्षा करते हैं और उसे अपडेट करते हैं।",
     "status-pending": "लंबित",
     "status-progress": "प्रगति पर",
-    "status-resolved": "हल किया गया"
+    "status-resolved": "हल किया गया",
+    "cat-water": "पानी",
+    "cat-roads": "सड़कें",
+    "cat-infrastructure": "बुनियादी ढांचा",
+    "cat-environment": "पर्यावरण",
+    "cat-education": "शिक्षा",
+    "cat-health": "स्वास्थ्य",
+    "cat-other": "अन्य"
   },
   "bn": {
     "nav-lang": "ভাষা",
@@ -384,7 +398,14 @@ const translations = {
     "chatbot-reply-review": "আপনার পরামর্শগুলো সরাসরি আপনার নিজ নিজ জোন বা ওয়ার্ডের যাচাইকৃত অফিসিয়াল ড্যাশবোর্ডে পাঠানো হয়। তারা রিয়েল-টাইমে স্থিতি পর্যালোচনা ও আপডেট করে।",
     "status-pending": "অমীমাংসিত",
     "status-progress": "চলমান",
-    "status-resolved": "সমাধান হয়েছে"
+    "status-resolved": "সমাধান হয়েছে",
+    "cat-water": "জল",
+    "cat-roads": "রাস্তা",
+    "cat-infrastructure": "অবকাঠামো",
+    "cat-environment": "পরিবেশ",
+    "cat-education": "শিক্ষা",
+    "cat-health": "স্বাস্থ্য",
+    "cat-other": "অন্যান্য"
   },
   "te": {
     "nav-lang": "భాష",
@@ -513,7 +534,14 @@ const translations = {
     "chatbot-reply-review": "మీ సూచనలు మీ సంబంధిత జోన్ లేదా వార్డుకు సంబంధించిన ధృవీకరించబడిన అధికారిక డాష్‌బోర్డ్‌కు నేరుగా పంపబడతాయి. వారు నిజ సమయంలో స్థితిని సమీక్షించి, నవీకరిస్తారు.",
     "status-pending": "పెండింగ్‌లో ఉంది",
     "status-progress": "ప్రగతిలో ఉంది",
-    "status-resolved": "పరిష్కరించబడింది"
+    "status-resolved": "పరిష్కరించబడింది",
+    "cat-water": "నీరు",
+    "cat-roads": "రోడ్లు",
+    "cat-infrastructure": "మౌలిక సదుపాయాలు",
+    "cat-environment": "పర్యావరణం",
+    "cat-education": "విద్య",
+    "cat-health": "ఆరోగ్యం",
+    "cat-other": "ఇతర"
   },
   "ta": {
     "nav-lang": "மொழி",
@@ -642,7 +670,14 @@ const translations = {
     "chatbot-reply-review": "உங்கள் பரிந்துரைகள் நேரடியாக உங்கள் மண்டலம் அல்லது வார்டுக்கான சரிபார்க்கப்பட்ட அதிகாரப்பூர்வ கட்டுப்பாட்டு அறைக்கு அனுப்பப்படும். அவர்கள் நிகழ்நேரத்தில் நிலையை மதிப்பாய்வு செய்து புதுப்பிக்கிறார்கள்.",
     "status-pending": "நிலுவையில் உள்ளது",
     "status-progress": "செயலில் உள்ளது",
-    "status-resolved": "தீர்க்கப்பட்டது"
+    "status-resolved": "தீர்க்கப்பட்டது",
+    "cat-water": "நீர்",
+    "cat-roads": "சாலைகள்",
+    "cat-infrastructure": "உள்கட்டமைப்பு",
+    "cat-environment": "சுற்றுச்சூழல்",
+    "cat-education": "கல்வி",
+    "cat-health": "சுகாதாரம்",
+    "cat-other": "மற்றவை"
   },
   "es": {
     "nav-lang": "Idioma",
@@ -771,7 +806,14 @@ const translations = {
     "chatbot-reply-review": "Tus sugerencias se envían directamente al panel oficial verificado de tu zona o barrio respectivo. Ellos revisan y actualizan el estado en tiempo real.",
     "status-pending": "Pendiente",
     "status-progress": "En Progreso",
-    "status-resolved": "Resuelto"
+    "status-resolved": "Resuelto",
+    "cat-water": "Agua",
+    "cat-roads": "Caminos",
+    "cat-infrastructure": "Infraestructura",
+    "cat-environment": "Medio Ambiente",
+    "cat-education": "Educación",
+    "cat-health": "Salud",
+    "cat-other": "Otro"
   },
   "fr": {
     "nav-lang": "Langue",
@@ -900,7 +942,14 @@ const translations = {
     "chatbot-reply-review": "Vos suggestions sont envoyées directement au tableau de bord officiel vérifié de votre zone ou quartier. Ils examinent et mettent à jour le statut en temps réel.",
     "status-pending": "En attente",
     "status-progress": "En cours",
-    "status-resolved": "Résolu"
+    "status-resolved": "Résolu",
+    "cat-water": "Eau",
+    "cat-roads": "Routes",
+    "cat-infrastructure": "Infrastructure",
+    "cat-environment": "Environnement",
+    "cat-education": "Éducation",
+    "cat-health": "Santé",
+    "cat-other": "Autre"
   }
 };
 

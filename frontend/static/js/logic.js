@@ -1220,12 +1220,14 @@ window.initCitizenHeatmap = async function () {
             const lang = document.documentElement.lang || 'en';
             
             // Generate month keys dynamically based on the current language
-            const monthCounts = {};
+            const monthKeys = [];
             for (let i = 0; i < 12; i++) {
                 const tempDate = new Date(2000, i, 1);
                 const localMonth = tempDate.toLocaleString(lang, { month: 'short' });
-                monthCounts[localMonth] = 0;
+                monthKeys.push(localMonth);
             }
+            
+            const categoryStats = {};
             
             let pendingCount = 0;
             let inProgressCount = 0;
@@ -1239,15 +1241,19 @@ window.initCitizenHeatmap = async function () {
                     // Heat intensity (0.5 to 1.0)
                     heatPoints.push([data.location.lat, data.location.lng, 0.8]);
                 }
+                
+                const category = data.category || 'Other';
+                if (!categoryStats[category]) {
+                    categoryStats[category] = {};
+                    monthKeys.forEach(m => categoryStats[category][m] = 0);
+                }
 
                 // Extract Timestamp for "Issues Arising" Graph
                 if (data.timestamp) {
                     const date = data.timestamp.toDate();
                     const month = date.toLocaleString(lang, { month: 'short' });
-                    if (monthCounts[month] !== undefined) {
-                        monthCounts[month]++;
-                    } else {
-                        monthCounts[month] = 1;
+                    if (categoryStats[category][month] !== undefined) {
+                        categoryStats[category][month]++;
                     }
                 }
 
@@ -1285,6 +1291,35 @@ window.initCitizenHeatmap = async function () {
                 const labelPending = getTrans('status-pending', 'Pending');
                 const labelInProgress = getTrans('status-progress', 'In Progress');
                 const labelResolved = getTrans('status-resolved', 'Resolved');
+                
+                // Predefined colors for categories
+                const catColors = {
+                    'Water': { border: 'rgba(54, 162, 235, 1)', bg: 'rgba(54, 162, 235, 0.1)' }, // Blue
+                    'Roads': { border: 'rgba(108, 117, 125, 1)', bg: 'rgba(108, 117, 125, 0.1)' }, // Grey
+                    'Infrastructure': { border: 'rgba(255, 159, 64, 1)', bg: 'rgba(255, 159, 64, 0.1)' }, // Orange
+                    'Environment': { border: 'rgba(75, 192, 192, 1)', bg: 'rgba(75, 192, 192, 0.1)' }, // Teal
+                    'Education': { border: 'rgba(153, 102, 255, 1)', bg: 'rgba(153, 102, 255, 0.1)' }, // Purple
+                    'Health': { border: 'rgba(255, 99, 132, 1)', bg: 'rgba(255, 99, 132, 0.1)' } // Pink
+                };
+                
+                const getCatColor = (cat, idx) => {
+                    if (catColors[cat]) return catColors[cat];
+                    const hue = (idx * 137.5) % 360;
+                    return { border: `hsl(${hue}, 70%, 50%)`, bg: `hsl(${hue}, 70%, 50%, 0.1)` };
+                };
+                
+                const lineDatasets = Object.keys(categoryStats).map((cat, idx) => {
+                    const color = getCatColor(cat, idx);
+                    return {
+                        label: getTrans('cat-' + cat.toLowerCase().replace(/ /g, '-'), cat), 
+                        data: monthKeys.map(m => categoryStats[cat][m]),
+                        borderColor: color.border,
+                        backgroundColor: color.bg,
+                        fill: true,
+                        tension: 0.4,
+                        borderWidth: 2
+                    };
+                });
 
                 const catCtx = document.getElementById('categoryChart');
                 if (catCtx) {
@@ -1292,10 +1327,10 @@ window.initCitizenHeatmap = async function () {
                     categoryChartInstance = new Chart(catCtx, {
                         type: 'line',
                         data: {
-                            labels: Object.keys(monthCounts),
-                            datasets: [{ label: getTrans('heatmap-chart1-title', 'New Reports'), data: Object.values(monthCounts), borderColor: 'rgba(220, 53, 69, 1)', backgroundColor: 'rgba(220, 53, 69, 0.2)', fill: true, tension: 0.4, borderWidth: 3 }]
+                            labels: monthKeys,
+                            datasets: lineDatasets
                         },
-                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true }, x: { grid: { display: false } } } }
+                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'bottom', labels: { boxWidth: 12, font: { size: 10 } } } }, scales: { y: { beginAtZero: true, suggestedMax: 5 }, x: { grid: { display: false } } } }
                     });
                 }
 
@@ -1306,9 +1341,9 @@ window.initCitizenHeatmap = async function () {
                         type: 'bar',
                         data: {
                             labels: [labelPending, labelInProgress, labelResolved],
-                            datasets: [{ label: getTrans('heatmap-chart2-title', 'Status Count'), data: [pendingCount, inProgressCount, resolvedCount], backgroundColor: ['rgba(255, 193, 7, 0.8)', 'rgba(13, 110, 253, 0.8)', 'rgba(25, 135, 84, 0.8)'], borderRadius: 8 }]
+                            datasets: [{ label: getTrans('heatmap-chart2-title', 'Status Count'), data: [pendingCount, inProgressCount, resolvedCount], backgroundColor: ['rgba(220, 53, 69, 0.8)', 'rgba(255, 193, 7, 0.8)', 'rgba(25, 135, 84, 0.8)'], borderRadius: 8 }]
                         },
-                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true }, x: { grid: { display: false } } } }
+                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, suggestedMax: 5 }, x: { grid: { display: false } } } }
                     });
                 }
             }
