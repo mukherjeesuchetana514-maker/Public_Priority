@@ -732,7 +732,7 @@
 
         <li><a href="#" onclick="officialMenu('dash')">📊 Dashboard</a></li>
 
-        <li><a href="#" onclick="officialMenu('suggestion')">🏗 Development Suggestions</a></li>
+        <li><a href="#" onclick="officialMenu('suggestion');loadDashboard();">🏗 Development Suggestions</a></li>
 
         <li><a href="#" onclick="officialMenu('analysis')">🤖 AI Analysis</a></li>
 
@@ -882,68 +882,23 @@
                 <button class="btn btn-sm btn-primary">View All</button>
             </div>
 
-            <table class="table table-hover align-middle">
-
-                <thead>
-
-                    <tr>
-
-                        <th>Project</th>
-
-                        <th>Category</th>
-
-                        <th>Status</th>
-
-                        <th>Priority</th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    <tr>
-
-                        <td>Repair Main Road</td>
-
-                        <td>Roads</td>
-
-                        <td><span class="badge bg-warning">Pending</span></td>
-
-                        <td><span class="badge bg-danger">High</span></td>
-
-                    </tr>
-
-                    <tr>
-
-                        <td>Village Water Supply</td>
-
-                        <td>Water</td>
-
-                        <td><span class="badge bg-success">Approved</span></td>
-
-                        <td><span class="badge bg-primary">Medium</span></td>
-
-                    </tr>
-
-                    <tr>
-
-                        <td>Primary School Renovation</td>
-
-                        <td>Education</td>
-
-                        <td><span class="badge bg-secondary">Review</span></td>
-
-                        <td><span class="badge bg-success">Low</span></td>
-
-                    </tr>
-
-                </tbody>
-
-            </table>
-
+            <div class="row mb-4">
+            <div class="col-md-4">
+                <div class="card p-3 border-0 shadow-sm text-center rounded-4">
+                    <h1 id="total-reports" class="display-4 fw-bold text-danger">0</h1>
+                    <small class="text-muted">Active Complaints</small>
+                </div>
+            </div>
+            <div class="col-md-8 d-flex align-items-center justify-content-end">
+                <button onclick="loadDashboard()" class="btn btn-outline-primary rounded-pill px-4 me-2"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
+            </div>
         </div>
-        <div id="analysis" class="dashboard-row official-page">
+        <div id="reports-container" class="row">
+            <div class="text-center text-muted">Loading reports...</div>
+        </div>
+    </div>
+
+    <div id="analysis" class="dashboard-row official-page">
 
         <div class="recommendation-panel">
 
@@ -990,7 +945,6 @@
         </div>
 
         </div>
-
         <div class="quick-panel">
 
         <h4>⚡ Quick Actions</h4>
@@ -1023,6 +977,10 @@
 
         </div>
 
+
+        </div>
+        
+        
         </div>
 
         </div>

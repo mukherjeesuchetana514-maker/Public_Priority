@@ -725,6 +725,7 @@ window.handleLogin = async function () {
                 document.getElementById('org-name-display').innerText = `🏛️ ${currentUser.zone_name}`;
                 showSection('admin-section');
                 loadDashboard();
+                officialMenu('dash');
             } else {
                 document.getElementById('nav-citizen').style.display = 'flex';
                 document.getElementById('nav-official').style.display = 'none';
@@ -950,7 +951,7 @@ window.loadDashboard = async function () {
                             <h5 class="card-title text-capitalize">${(data.issue || "Issue").substring(0, 40)}...</h5>
                             <div class="d-flex gap-2 mb-3">
                                 <a href="${data.googleMapsLink}" target="_blank" class="btn btn-sm btn-outline-primary w-50 rounded-pill">View Map</a>
-                                <button onclick="openImage('${data.imageUrl}')" class="btn btn-sm btn-outline-secondary w-50 rounded-pill">Photo</button>
+                                <button onclick="details('${doc.id}')" class="btn btn-sm btn-outline-secondary w-50 rounded-pill">Details</button>
                             </div>
                             <div class="bg-light p-3 rounded-4">
                                 <select class="form-select form-select-sm mb-2 rounded-pill" onchange="updateStatus('${doc.id}', this.value)">
@@ -977,6 +978,117 @@ window.loadDashboard = async function () {
         container.innerHTML = '<p class="text-danger text-center">Error loading data.</p>';
     }
 }
+
+
+window.details = async function(id) {
+    const container = document.getElementById('reports-container');
+    const sync = await getDoc(doc(db, "reports", id));
+
+    if (!sync.exists()) return;
+
+    const data = sync.data();
+            const reportZone = (data.zone_name || "").toLowerCase().trim();
+
+            
+                const date = data.timestamp ? new Date(data.timestamp.seconds * 1000).toLocaleDateString() : "Just now";
+                let statusColor = data.status === "In Progress" ? "bg-primary" : (data.status === "Resolved" ? "bg-success" : "bg-warning");
+                let bgImage = data.imageUrl || 'https://via.placeholder.com/600x400';
+                let html ="";
+                html += `
+<div class="container py-4">
+
+    <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+
+        <!-- Image -->
+        <img src="${bgImage}"
+             class="card-img-top"
+             style="height:350px;object-fit:cover;">
+
+        <span class="badge ${statusColor} position-absolute top-0 end-0 m-3 px-3 py-2 fs-6">
+            ${data.status}
+        </span>
+
+        <div class="card-body p-4">
+
+            <!-- Title -->
+            <h2 class="fw-bold mb-3">
+                ${data.issue || "Issue"}
+            </h2>
+
+            <!-- Info -->
+            <div class="row g-3 mb-4">
+
+                <div class="col-md-6">
+                    <div class="bg-light rounded-3 p-3">
+                        <small class="text-muted">📅 Report Date</small>
+                        <div class="fw-semibold">${date}</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="bg-light rounded-3 p-3">
+                        <small class="text-muted">📍 Zone</small>
+                        <div class="fw-semibold">${data.zone_name}</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="bg-light rounded-3 p-3">
+                        <small class="text-muted">📂 Category</small>
+                        <div class="fw-semibold">${data.category || "-"}</div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="bg-light rounded-3 p-3">
+                        <small class="text-muted">🚦 Status</small>
+                        <div class="fw-semibold">${data.status}</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Description -->
+            <div class="mb-4">
+                <h4 class="fw-bold">Description</h4>
+                <div class="bg-light rounded-3 p-3">
+                    ${data.description || "No description provided."}
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="d-flex flex-wrap gap-3">
+
+                <a href="${data.googleMapsLink}"
+                   target="_blank"
+                   class="btn btn-primary rounded-pill px-4">
+                    📍 View Location
+                </a>
+
+                <button
+                    class="btn btn-outline-secondary rounded-pill px-4"
+                    onclick="openImage('${data.imageUrl}')">
+                    🖼 View Photo
+                </button>
+
+                <button
+                    class="btn btn-outline-dark rounded-pill px-4"
+                    onclick="loadDashboard()">
+                    ← Back
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+`;
+            container.innerHTML = html || '<div class="text-center py-5"><h3>No reports found for this zone.</h3></div>';
+            }
+
+
 
 // window.suggestion = async function(){
 //     document.getElementById('admin-section').style.display ="none";
