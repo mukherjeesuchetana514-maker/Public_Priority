@@ -118,8 +118,8 @@
 
         /* Parallax Hero */
         .parallax-hero {
-            background-image: url('https://images.unsplash.com/photo-1587474260584-136574528ed5?auto=format&fit=crop&w=1920&q=80');
-            height: 85vh;
+            background-image: url('static/images/Homepage.jpeg');
+            height: 100vh;
             background-attachment: fixed;
             background-position: center;
             background-repeat: no-repeat;
@@ -191,6 +191,12 @@
                 padding-right: 15px !important;
             }
         }
+
+            .vote-btn {
+                transition: all 0.2s ease;
+                border-width: 2px;
+            }
+
     </style>
 </head>
 
@@ -221,6 +227,11 @@
                             onclick="checkAuthAndShow('report-section')" data-i18n="nav-suggest">Suggest Development</a></li>
                     <li class="nav-item"><a class="nav-link" href="#"
                             onclick="checkAuthAndShow('user-dashboard-section')" data-i18n="nav-my-reports">My Reports</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#"
+                            onclick="checkAuthAndShow('community-section')"
+                            data-i18n="nav-community">
+                            Community Suggestions</a>
+                    </li>
                     <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('about-section')" data-i18n="nav-about">About Us</a></li>
                     <li class="nav-item ms-lg-3">
                         <button id="loginBtn" class="btn btn-outline-success rounded-pill px-4" data-bs-toggle="modal"
@@ -450,6 +461,132 @@
             </div>
         </div>
     </div>
+
+    <!--COMMUNITY SUGGESTIONS SECTION-->
+<div id="community-section" class="section-view">
+
+    <div class="section-banner"
+        style="background-image: url('https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1920&q=80');">
+
+        <div class="section-banner-content text-center text-white">
+
+            <h2 class="fw-bold display-5"
+                style="text-shadow: 0 2px 10px rgba(0,0,0,0.5);">
+                🗳️
+                <span data-i18n="community-title">
+                    Community Suggestions
+                </span>
+            </h2>
+
+            <p class="fs-5 opacity-75">
+                <span data-i18n="community-desc">
+                    Support the ideas you care about most
+                </span>
+            </p>
+        </div>
+    </div>
+    <div class="container position-relative" style="z-index: 10;">
+        <div id="community-reports-container" class="row g-4">
+            <!--EXAMPLE CARD #--->
+            <div class="col-md-6 col-lg-4">
+
+                <div class="glass-card p-4 rounded-4 shadow-sm h-100 d-flex flex-column"
+                    style="background: white;">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="badge rounded-pill bg-primary-subtle text-primary fw-bold px-3 py-2">
+                            Infrastructure
+                        </span>
+                        <span class="badge rounded-pill bg-light text-muted small">
+                            2 days ago
+                        </span>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2">
+                        Streetlight repair on MG Road
+                    </h5>
+                    <p class="text-muted small mb-3 flex-grow-1">
+                        Several streetlights near the market have been
+                        non-functional for weeks, creating a safety
+                        hazard at night.
+                    </p>
+                    <div class="d-flex align-items-center text-muted small mb-3">
+                        <i class="bi bi-geo-alt-fill me-1 text-danger"></i>
+                        <span>
+                            MG Road, Ward 12
+                        </span>
+                    </div>
+                    <hr class="my-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <button type="button"
+                            class="btn btn-outline-success rounded-pill px-3 fw-bold vote-btn voted">
+                            <i class="bi bi-hand-thumbs-up-fill me-1"></i>
+                            <span data-i18n="btn-support">
+                                Support
+                            </span>
+                            <span class="badge bg-success rounded-pill ms-2 vote-count">
+                                128
+                            </span>
+                        </button>
+                        <span class="small fw-bold voting-status voted">
+                            <i class="bi bi-check-circle-fill me-1"></i>
+                            <span data-i18n="status-voted">
+                                You supported this
+                            </span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EXAMPLE CARD #2 -->
+            <div class="col-md-6 col-lg-4">
+                <div class="glass-card p-4 rounded-4 shadow-sm h-100 d-flex flex-column"
+                    style="background: white;">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="badge rounded-pill bg-primary-subtle text-primary fw-bold px-3 py-2">
+                            Environment
+                        </span>
+                        <span class="badge rounded-pill bg-light text-muted small">
+                            5 days ago
+                        </span>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-2">
+                        Plant trees along river bank
+                    </h5>
+                    <p class="text-muted small mb-3 flex-grow-1">
+                        Proposal to plant native trees along the eroding
+                        river bank to prevent soil loss and improve
+                        air quality.
+                    </p>
+                    <div class="d-flex align-items-center text-muted small mb-3">
+                        <i class="bi bi-geo-alt-fill me-1 text-danger"></i>
+                        <span>
+                            Riverside Colony
+                        </span>
+                    </div>
+                    <hr class="my-2">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <button type="button"
+                            class="btn btn-outline-success rounded-pill px-3 fw-bold vote-btn">
+                            <i class="bi bi-hand-thumbs-up-fill me-1"></i>
+                            <span data-i18n="btn-support">
+                                Support
+                            </span>
+                            <span class="badge bg-success rounded-pill ms-2 vote-count">
+                                76
+                            </span>
+                        </button>
+                        <span class="small fw-bold voting-status text-muted">
+                            <i class="bi bi-circle me-1"></i>
+                            <span data-i18n="status-not-voted">
+                                Not voted yet
+                            </span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
     <div id="admin-section" class="section-view">
         <div class="official-wrapper">
