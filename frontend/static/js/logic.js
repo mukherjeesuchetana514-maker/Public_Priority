@@ -1108,6 +1108,11 @@ window.officialMenu = async function(page){
     // Show selected page
     document.getElementById(page).classList.add("active");
 
+    if (page === 'heatmap') {
+        if (typeof window.initOfficialHeatmap === 'function') {
+            window.initOfficialHeatmap();
+        }
+    }
 }
 
 
@@ -1725,4 +1730,130 @@ window.processChatbotInput = async function() {
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
         
     }, 1200);
+}
+
+// ============================================
+// 🗺️ OFFICIAL HEAT MAP
+// ============================================
+let officialMap = null;
+let officialCategoryChartInstance = null;
+let officialZoneChartInstance = null;
+
+window.initOfficialHeatmap = async function () {
+    setTimeout(async () => {
+        try {
+            if (!officialMap && typeof L !== 'undefined') {
+                officialMap = L.map('officialHeatmap').setView([22.5958, 88.3110], 11);
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                    attribution: '&copy; OpenStreetMap',
+                    maxZoom: 19
+                }).addTo(officialMap);
+            } else if (officialMap) {
+                officialMap.invalidateSize();
+            }
+
+            const querySnapshot = await getDocs(collection(db, "reports"));
+            const heatPoints = [];
+            const categoryStats = {};
+            const zoneStats = {};
+
+            // Clear existing layers
+            officialMap.eachLayer((layer) => {
+                if (layer instanceof L.Circle || layer instanceof L.CircleMarker || (layer.options && layer.options.blur)) {
+                    officialMap.removeLayer(layer);
+                }
+            });
+
+            // Predefined colors for categories
+            const catColors = {
+                'Water': 'blue', 
+                'Roads': 'gray', 
+                'Infrastructure': 'orange', 
+                'Environment': 'teal', 
+                'Education': 'purple', 
+                'Health': 'pink',
+                'Other': 'red'
+            };
+
+            const bgColors = {
+                'Water': 'rgba(54, 162, 235, 0.6)',
+                'Roads': 'rgba(108, 117, 125, 0.6)',
+                'Infrastructure': 'rgba(255, 159, 64, 0.6)',
+                'Environment': 'rgba(75, 192, 192, 0.6)',
+                'Education': 'rgba(153, 102, 255, 0.6)',
+                'Health': 'rgba(255, 99, 132, 0.6)',
+                'Other': 'rgba(220, 53, 69, 0.6)'
+            };
+
+            querySnapshot.forEach((docSnap) => {
+                const data = docSnap.data();
+                const category = data.category || 'Other';
+                const zone = data.zone_name || 'Unknown';
+
+                if (data.location && data.location.lat && data.location.lng) {
+                    heatPoints.push([data.location.lat, data.location.lng, 0.8]);
+
+                    // Visual indicator to distinguish problem type
+                    const markerColor = catColors[category] || 'red';
+                    if (typeof L !== 'undefined') {
+                        L.circleMarker([data.location.lat, data.location.lng], {
+                            radius: 8,
+                            fillColor: markerColor,
+                            color: '#fff',
+                            weight: 1,
+                            opacity: 1,
+                            fillOpacity: 0.8
+                        }).addTo(officialMap).bindPopup(`<b>${data.issue}</b><br>${category}`);
+                    }
+                }
+                
+                categoryStats[category] = (categoryStats[category] || 0) + 1;
+                zoneStats[zone] = (zoneStats[zone] || 0) + 1;
+            });
+
+            // Add Heat Layer to highlight heavily affected zones
+            if (typeof L !== 'undefined' && typeof L.heatLayer !== 'undefined') {
+                L.heatLayer(heatPoints, { radius: 30, blur: 20, maxZoom: 12, gradient: { 0.4: 'cyan', 0.6: 'lime', 0.8: 'yellow', 1.0: 'red' } }).addTo(officialMap);
+            }
+
+            if (typeof Chart !== 'undefined') {
+                Chart.defaults.font.family = "'Poppins', sans-serif";
+
+                const catCtx = document.getElementById('officialCategoryChart');
+                if (catCtx) {
+                    if (officialCategoryChartInstance) officialCategoryChartInstance.destroy();
+                    officialCategoryChartInstance = new Chart(catCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: Object.keys(categoryStats),
+                            datasets: [{
+                                data: Object.values(categoryStats),
+                                backgroundColor: Object.keys(categoryStats).map(c => bgColors[c] || 'rgba(220, 53, 69, 0.6)')
+                            }]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false }
+                    });
+                }
+
+                const zoneCtx = document.getElementById('officialZoneChart');
+                if (zoneCtx) {
+                    if (officialZoneChartInstance) officialZoneChartInstance.destroy();
+                    officialZoneChartInstance = new Chart(zoneCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: Object.keys(zoneStats),
+                            datasets: [{
+                                label: 'Issue Count',
+                                data: Object.values(zoneStats),
+                                backgroundColor: 'rgba(25, 135, 84, 0.8)'
+                            }]
+                        },
+                        options: { responsive: true, maintainAspectRatio: false }
+                    });
+                }
+            }
+        } catch (err) {
+            console.error("Error fetching Official Heat Map data:", err);
+        }
+    }, 300);
 }
