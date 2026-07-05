@@ -728,6 +728,7 @@ window.handleLogin = async function () {
                 showSection('admin-section');
                 loadDashboard();
                 officialMenu('dash');
+                dashbord();
             } else {
                 document.getElementById('nav-citizen').style.display = 'flex';
                 document.getElementById('nav-official').style.display = 'none';
@@ -953,7 +954,7 @@ window.loadDashboard = async function () {
                             <h5 class="card-title text-capitalize">${(data.issue || "Issue").substring(0, 40)}...</h5>
                             <div class="d-flex gap-2 mb-3">
                                 <a href="${data.googleMapsLink}" target="_blank" class="btn btn-sm btn-outline-primary w-50 rounded-pill">View Map</a>
-                                <button onclick="details('${doc.id}')" class="btn btn-sm btn-outline-secondary w-50 rounded-pill">Details</button>
+                                <button onclick="details('${doc.id}','loadDashboard','reports-container')" class="btn btn-sm btn-outline-secondary w-50 rounded-pill">Details</button>
                             </div>
                             <div class="bg-light p-3 rounded-4">
                                 <select class="form-select form-select-sm mb-2 rounded-pill" onchange="updateStatus('${doc.id}', this.value)">
@@ -982,8 +983,8 @@ window.loadDashboard = async function () {
 }
 
 
-window.details = async function(id) {
-    const container = document.getElementById('reports-container');
+window.details = async function(id,p,container_name) {
+    const container = document.getElementById(container_name);
     const sync = await getDoc(doc(db, "reports", id));
 
     if (!sync.exists()) return;
@@ -1075,7 +1076,7 @@ window.details = async function(id) {
 
                 <button
                     class="btn btn-outline-dark rounded-pill px-4"
-                    onclick="loadDashboard()">
+                    onclick="detail_back('${p}')">
                     ← Back
                 </button>
 
@@ -1092,6 +1093,14 @@ window.details = async function(id) {
 
 
 
+
+window.detail_back= function(p){
+    if(p==='loadDashboard'){
+        loadDashboard();
+    }else if(p==='recomended'){
+        recomended();
+    }
+}
 // window.suggestion = async function(){
 //     document.getElementById('admin-section').style.display ="none";
 //     document.getElementById('suggestion').style.display ="block";
@@ -1297,6 +1306,247 @@ function timeAgo(timestamp) {
     const years = Math.floor(days / 365);
     return `${years} year${years !== 1 ? "s" : ""} ago`;
 }
+
+
+
+// AI analysis of Suggestion at official
+window.analysis = async function() {
+    
+    try{
+        const genAI_2 = new GoogleGenerativeAI("AIzaSyD9WHy18zmxZ9vm7MekG5CCMQbF7eA3hDo");
+
+        const model_Official = genAI_2.getGenerativeModel({
+            model: "gemini-2.5-flash"
+        });
+
+
+        const reports = [];
+
+        const q = query(collection(db, "reports"));
+        const snapshot = await getDocs(q);
+
+
+        snapshot.forEach(doc => {
+            const data = doc.data();
+
+            if (data.analyzed !== true && data.description) {
+
+                reports.push({
+                    id: doc.id,
+                    description: doc.data().description
+                });
+
+            }
+        });
+
+        if (reports.length === 0) {
+            alert("All reports have already been analyzed.");
+            return;
+        }
+
+        const prompt = `
+            You are an AI assistant for a municipal corporation.
+
+            Analyze ALL the following civic reports.
+
+            For each report determine:
+
+            - severity (1-10)
+            - priorityScore (1-100)
+            - department
+            - summary
+
+            Return ONLY this JSON array:
+
+            [
+            {
+                "id": "",
+                "severity": 0,
+                "priorityScore": 0,
+                "department": "",
+                "summary": ""
+            }
+            ]
+
+            Reports:
+
+            ${reports.map(r => `
+            ID: ${r.id}
+            Description: ${r.description}
+            `).join("\n")}
+
+            IMPORTANT:
+            - Respond ONLY with valid JSON.
+            - Do NOT use markdown.
+            - Do NOT wrap the JSON in ````json.
+            - Do NOT include explanations.
+            `;
+
+
+        const result = await model_Official.generateContent(prompt);
+        const response = result.response;
+        const text = response.text();
+        const cleanText = text
+            .replace(/```json/g, "")
+            .replace(/```/g, "")
+            .trim();
+        
+        if (!cleanText) {
+            console.error("Gemini returned an empty response.");
+            return;
+        }
+        let aiReports;
+
+        try {
+            aiReports = JSON.parse(cleanText);
+        } catch (e) {
+            console.error("Invalid JSON from Gemini");
+            console.log(cleanText);
+            return;
+        }
+
+        for (const report of aiReports) {
+            if (
+                !report.id ||
+                report.severity === undefined ||
+                report.priorityScore === undefined
+            ) {
+                continue;
+            }
+
+            await updateDoc(doc(db, "reports", report.id), {
+
+                severity: report.severity,
+
+                priorityScore: report.priorityScore,
+
+                department: report.department,
+
+                summary: report.summary,
+
+                analyzed: true,
+
+                analyzedAt: serverTimestamp()
+
+            });
+
+            recomended();
+
+        }       
+
+    }catch(err) {
+
+        console.error(err);
+    
+
+
+}
+
+}
+
+window.recomended = async function () {
+    const container = document.getElementById('recommend-container');
+    container.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary"></div></div>';
+
+
+    
+    try {
+
+        const q = query(collection(db, "reports"), orderBy("priorityScore", "desc"));
+
+
+        const querySnapshot = await getDocs(q);
+        let html = "";
+        let count = 0;
+        const myZone = (currentUser.zone_name || "").toLowerCase().trim();
+
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            const reportZone = (data.zone_name || "").toLowerCase().trim();
+            const hasVoted = data.votedBy?.includes(currentUser.uid);
+            const time = timeAgo(data.timestamp);
+            if (reportZone && (myZone.includes(reportZone) || reportZone.includes(myZone))) {
+                count++;
+                const date = data.timestamp ? new Date(data.timestamp.seconds * 1000).toLocaleDateString() : "Just now";
+                const priorityColor = data.priorityScore >= 80 ? 'danger' : data.priorityScore >= 50 ? 'warning' : 'success';
+const severityColor = data.severity >= 8 ? 'danger' : data.severity >= 5 ? 'warning' : 'secondary';
+
+html += `
+<div class="card shadow-sm border-0 mb-3 official-recommend-card position-relative overflow-hidden">
+
+    <div class="position-absolute top-0 start-0 h-100 bg-${priorityColor}" style="width: 5px;"></div>
+
+    <div class="card-body ps-4">
+
+        <div class="d-flex justify-content-between align-items-start mb-2">
+
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <span class="badge bg-${priorityColor}-subtle text-${priorityColor}-emphasis px-3 py-2 fw-semibold">
+                    <i class="bi bi-lightning-charge-fill me-1"></i>Priority ${data.priorityScore}
+                </span>
+
+                <span class="badge bg-light text-dark border">
+                    <i class="bi bi-building me-1"></i>${data.department}
+                </span>
+            </div>
+
+            <span class="badge bg-secondary-subtle text-secondary-emphasis">
+                <i class="bi bi-robot me-1"></i>AI Recommended
+            </span>
+
+        </div>
+
+        <h5 class="fw-bold mb-3">
+            ${data.summary}
+        </h5>
+
+        <div class="row g-2 text-center mb-1">
+
+            <div class="col-6">
+                <div class="p-2 rounded bg-light">
+                    <small class="text-muted d-block mb-1">Severity</small>
+                    <span class="badge bg-${severityColor} fs-6">${data.severity}/10</span>
+                </div>
+            </div>
+
+            <div class="col-6">
+                <div class="p-2 rounded bg-light">
+                    <small class="text-muted d-block mb-1">Priority Score</small>
+                    <span class="badge bg-${priorityColor} fs-6">${data.priorityScore}/100</span>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="d-flex justify-content-end mt-3">
+            <button
+                onclick="details('${doc.id}','recomended','recommend-container')"
+                class="btn btn-primary rounded-pill px-4">
+                <i class="bi bi-eye"></i> View Details
+            </button>
+        </div>
+
+    </div>
+
+</div>
+`;
+            }
+        });
+        container.innerHTML = html || '<div class="text-center py-5"><h3>No reports found for this zone.</h3></div>';
+        const totalCounter = document.getElementById('total-reports');
+        if (totalCounter) totalCounter.innerText = count;
+    } catch (e) {
+        console.error(e);
+        container.innerHTML = '<p class="text-danger text-center">Error loading data.</p>';
+    }
+}
+
+
+
+
+
+
+
 
 
 

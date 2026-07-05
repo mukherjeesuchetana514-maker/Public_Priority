@@ -639,7 +639,7 @@
 
         <li><a href="#" onclick="officialMenu('suggestion');loadDashboard();">🏗 Development Suggestions</a></li>
 
-        <li><a href="#" onclick="officialMenu('analysis')">🤖 AI Analysis</a></li>
+        <li><a href="#" onclick="officialMenu('analysis'); recomended();">🤖 AI Analysis</a></li>
 
         <li><a href="#" onclick="officialMenu('heatmap')">🗺 Heatmap</a></li>
 
@@ -804,49 +804,18 @@
     </div>
 
     <div id="analysis" class="dashboard-row official-page">
-
+        
         <div class="recommendation-panel">
 
         <h4>🤖 AI Recommended Projects</h4>
+            <button class="btn btn-success w-100 mb-3" onclick="analysis()">
 
-        <div class="recommend-card">
+        Analysis
 
-        <h5>Repair NH-12 Road</h5>
-
-        <p>
-
-        Confidence :
-        <b>96%</b>
-
-        </p>
-
-        <p>
-
-        Estimated Beneficiaries :
-        <b>12,500</b>
-
-        </p>
-
-        </div>
-
-        <div class="recommend-card">
-
-        <h5>Drainage Improvement</h5>
-
-        <p>
-
-        Confidence :
-        <b>93%</b>
-
-        </p>
-
-        <p>
-
-        Estimated Beneficiaries :
-        <b>8,100</b>
-
-        </p>
-
+        </button>
+        
+        <div id="recommend-container" class="recommend-container">
+            
         </div>
 
         </div>
