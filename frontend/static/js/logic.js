@@ -1313,7 +1313,7 @@ function timeAgo(timestamp) {
 window.analysis = async function() {
     
     try{
-        const genAI_2 = new GoogleGenerativeAI("AIzaSyD9WHy18zmxZ9vm7MekG5CCMQbF7eA3hDo");
+        const genAI_2 = new GoogleGenerativeAI("GEMINI_API_kET");
 
         const model_Official = genAI_2.getGenerativeModel({
             model: "gemini-2.5-flash"
