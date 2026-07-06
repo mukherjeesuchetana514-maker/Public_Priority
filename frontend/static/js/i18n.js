@@ -3,7 +3,7 @@ const translations = {
     "nav-lang": "Language",
     "nav-home": "Home",
     "nav-suggest": "Suggest Development",
-    "nav-my-reports": "My Reports",
+    "nav-my-reports": "Reports",
     "nav-about": "About Us",
     "nav-community": "Community Suggestions",
     "nav-recommended": "Recommendations",

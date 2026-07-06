@@ -301,8 +301,7 @@
                     <li class="nav-item"><a class="nav-link" href="#" onclick="checkAuthAndShow('report-section')"
                             data-i18n="nav-suggest">Suggest Development</a></li>
                     <li class="nav-item"><a class="nav-link" href="#"
-                            onclick="checkAuthAndShow('user-dashboard-section')" data-i18n="nav-my-reports">My
-                            Reports</a></li>
+                            onclick="checkAuthAndShow('user-dashboard-section')" data-i18n="nav-my-reports">Reports</a></li>
                     <li class="nav-item"><a class="nav-link" href="#"
                             onclick="checkAuthAndShow('community-section'); community();"
                             data-i18n="nav-community">Community Suggestions</a></li>
@@ -557,7 +556,7 @@
             style="background-image: url('https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1920&q=80');">
             <div class="section-banner-content text-center text-white">
                 <h2 class="fw-bold display-5" style="text-shadow: 0 2px 10px rgba(0,0,0,0.5);"><span
-                        data-i18n="dash-title">My Report Status</span> 📋</h2>
+                        data-i18n="dash-title">Reports</span> 📋</h2>
                 <p class="fs-5 opacity-75"><span data-i18n="dash-desc">Track the impact of your civic
                         contributions</span></p>
             </div>
@@ -570,13 +569,39 @@
                     </span>
                 </div>
 
-                <div class="text-end mb-3">
-                    <button onclick="loadUserDashboard()" class="btn btn-outline-primary rounded-pill px-4"><i
-                            class="bi bi-arrow-clockwise"></i> <span data-i18n="btn-refresh">Refresh
-                            Status</span></button>
-                </div>
-                <div id="user-reports-container" class="row">
-                    <div class="text-center text-muted py-5">Loading your history...</div>
+                <!-- Tabs -->
+                <ul class="nav nav-pills nav-fill mb-4" id="reportsTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="my-reports-tab" data-bs-toggle="pill" data-bs-target="#my-reports-content" type="button" role="tab" aria-controls="my-reports-content" aria-selected="true" onclick="loadUserDashboard()" data-i18n="tab-my-reports">My Reports</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="all-reports-tab" data-bs-toggle="pill" data-bs-target="#all-reports-content" type="button" role="tab" aria-controls="all-reports-content" aria-selected="false" onclick="loadAllZoneReports()" data-i18n="tab-all-reports">All Reports</button>
+                    </li>
+                </ul>
+
+                <!-- Tab Content -->
+                <div class="tab-content" id="reportsTabsContent">
+                    <div class="tab-pane fade show active" id="my-reports-content" role="tabpanel" aria-labelledby="my-reports-tab">
+                        <div class="text-end mb-3">
+                            <button onclick="loadUserDashboard()" class="btn btn-outline-primary rounded-pill px-4"><i
+                                    class="bi bi-arrow-clockwise"></i> <span data-i18n="btn-refresh">Refresh
+                                    Status</span></button>
+                        </div>
+                        <div id="user-reports-container" class="row">
+                            <div class="text-center text-muted py-5">Loading your history...</div>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-pane fade" id="all-reports-content" role="tabpanel" aria-labelledby="all-reports-tab">
+                        <div class="text-end mb-3">
+                            <button onclick="loadAllZoneReports()" class="btn btn-outline-primary rounded-pill px-4"><i
+                                    class="bi bi-arrow-clockwise"></i> <span data-i18n="btn-refresh">Refresh
+                                    Status</span></button>
+                        </div>
+                        <div id="all-zone-reports-container" class="row g-4">
+                            <div class="text-center text-muted py-5">Loading community reports...</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

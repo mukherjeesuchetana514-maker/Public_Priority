@@ -859,6 +859,10 @@ window.handleReset = async function (email) {
 
 window.loadUserDashboard = async function () {
     if (!currentUser) return;
+    
+    // Also load the all zone reports when opening the dashboard
+    if(window.loadAllZoneReports) window.loadAllZoneReports();
+    
     const container = document.getElementById('user-reports-container');
     container.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-success"></div></div>';
 
@@ -996,9 +1000,9 @@ window.loadDashboard = async function () {
 }
 
 
-window.details = async function (id, p, container_name) {
+window.details = async function (report_id, params, container_name) {
     const container = document.getElementById(container_name);
-    const sync = await getDoc(doc(db, "reports", id));
+    const sync = await getDoc(doc(db, "reports", report_id));
 
     if (!sync.exists()) return;
 
@@ -1089,7 +1093,7 @@ window.details = async function (id, p, container_name) {
 
                 <button
                     class="btn btn-outline-dark rounded-pill px-4"
-                    onclick="detail_back('${p}')">
+                    onclick="detail_back('${params}')">
                     ← Back
                 </button>
 
@@ -1107,10 +1111,10 @@ window.details = async function (id, p, container_name) {
 
 
 
-window.detail_back = function (p) {
-    if (p === 'loadDashboard') {
+window.detail_back = function (params) {
+    if (params === 'loadDashboard') {
         loadDashboard();
-    } else if (p === 'recomended') {
+    } else if (params === 'recomended') {
         recomended();
     }
 }
@@ -2669,3 +2673,135 @@ window.showSatisfactionGraph = function() {
     modal.show();
 };
 
+// ==========================================
+// ALL REPORTS IN ZONE (FOR CITIZEN REPORTS SECTION)
+// ==========================================
+
+window.loadAllZoneReports = async function () {
+    const container = document.getElementById('all-zone-reports-container');
+    if (!container) return;
+    container.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary"></div></div>';
+
+    try {
+        const q = query(collection(db, "reports"), orderBy("timestamp", "desc"));
+        const querySnapshot = await getDocs(q);
+        let html = "";
+        let count = 0;
+        const myZone = (currentUser && currentUser.zone_name) ? currentUser.zone_name.toLowerCase().trim() : "";
+
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            const reportZone = (data.zone_name || "").toLowerCase().trim();
+            const hasVoted = data.votedBy?.includes(currentUser ? currentUser.uid : "");
+            
+            // Reusing timeAgo from community if available
+            const time = (typeof timeAgo === 'function') ? timeAgo(data.timestamp) : "Recently";
+
+            if (myZone === reportZone) {
+                count++;
+                
+                let imageUrl = "";
+                if (data.imageUrl) {
+                    imageUrl = data.imageUrl.startsWith('http') ? data.imageUrl : `static/uploads/${data.imageUrl}`;
+                }
+
+                html += `
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="glass-card h-100 rounded-4 shadow-sm position-relative overflow-hidden" style="border: none; background: #fff;">
+                        ${imageUrl ? `<img src="${imageUrl}" class="card-img-top" style="height:200px; object-fit:cover; border-bottom: 3px solid #0d6efd;" onerror="this.style.display='none'">` : ''}
+                        
+                        <div class="p-4 d-flex flex-column h-100">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="badge bg-primary rounded-pill px-3 py-2">${data.category || 'Other'}</span>
+                                <small class="text-muted fw-bold"><i class="bi bi-clock-history"></i> ${time}</small>
+                            </div>
+                            
+                            <h5 class="fw-bold mt-2 text-dark">${data.title || data.issue || data.description || 'Civic Issue'}</h5>
+                            <p class="text-muted small flex-grow-1">${data.description || data.issue || 'No details provided.'}</p>
+                            
+                            <div class="d-flex align-items-center mb-3 text-muted small">
+                                <i class="bi bi-geo-alt-fill text-danger me-2"></i>
+                                <span class="text-truncate">${data.location || data.zone_name || 'Unknown Location'}</span>
+                            </div>
+                            
+                            <div class="d-flex align-items-center justify-content-between pt-3 border-top">
+                                <div class="d-flex align-items-center gap-2">
+                                    <button class="btn btn-sm ${hasVoted ? 'btn-success' : 'btn-outline-success'} rounded-circle vote-btn" 
+                                            onclick="upvoteAllZoneReport('${doc.id}')" 
+                                            title="${hasVoted ? 'You supported this' : 'Support this issue'}"
+                                            style="width: 35px; height: 35px; padding: 0; display: flex; align-items: center; justify-content: center;">
+                                        <i class="bi ${hasVoted ? 'bi-hand-thumbs-up-fill' : 'bi-hand-thumbs-up'}"></i>
+                                    </button>
+                                    <span class="fw-bold text-success" style="font-size: 1.1rem;">${data.vote || 0}</span>
+                                </div>
+                                <span class="badge ${data.status === 'Resolved' ? 'bg-success' : (data.status === 'In Progress' ? 'bg-warning text-dark' : 'bg-secondary')}">${data.status || 'Pending'}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+            }
+        });
+
+        if (count === 0) {
+            html = '<div class="col-12 text-center text-muted py-5"><i class="bi bi-inbox fs-1 d-block mb-3"></i>No reports found in your locality.</div>';
+        }
+
+        container.innerHTML = html;
+    } catch (e) {
+        console.error("Error loading all zone reports:", e);
+        container.innerHTML = '<div class="text-center text-danger py-5">Error loading reports.</div>';
+    }
+};
+
+window.upvoteAllZoneReport = async function (reportId) {
+    if (!currentUser) {
+        showPopup("Access Restricted", "Please Login to vote.", "warning");
+        return;
+    }
+
+    try {
+        const reportRef = doc(db, "reports", reportId);
+        const reportSnap = await getDoc(reportRef);
+        
+        if (reportSnap.exists()) {
+            const data = reportSnap.data();
+            const votedBy = data.votedBy || [];
+            
+            if (votedBy.includes(currentUser.uid)) {
+                // Remove vote
+                await updateDoc(reportRef, {
+                    vote: increment(-1),
+                    votedBy: arrayRemove(currentUser.uid)
+                });
+                
+                // Deduct points
+                const userRef = doc(db, "users", currentUser.uid);
+                await updateDoc(userRef, { civicPoints: increment(-2) });
+            } else {
+                // Add vote
+                await updateDoc(reportRef, {
+                    vote: increment(1),
+                    votedBy: arrayUnion(currentUser.uid)
+                });
+                
+                // Reward points
+                const userRef = doc(db, "users", currentUser.uid);
+                await updateDoc(userRef, { civicPoints: increment(2) });
+            }
+            
+            // Refresh ONLY the all zone reports view
+            window.loadAllZoneReports();
+            
+            // Also optionally refresh the points display if it's visible
+            try {
+                const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+                const pointsEl = document.getElementById("civic-points");
+                if (pointsEl && userDoc.exists()) pointsEl.innerText = userDoc.data().civicPoints || 0;
+            } catch(e){}
+            
+        }
+    } catch (e) {
+        console.error("Error voting:", e);
+        showPopup("Error", "Could not process your vote.", "error");
+    }
+};
