@@ -894,11 +894,31 @@ window.loadUserDashboard = async function () {
                         <span class="badge ${statusColor} position-absolute top-0 end-0 m-3 px-3 py-2 shadow-sm">${data.status || "Pending"}</span>
                     </div>
                     <div class="card-body">
-                        <small class="text-muted d-block mb-2">📅 ${date} • 📍 ${data.zone_name || "Unknown"}</small>
-                        <h5 class="card-title text-capitalize fw-bold">${(data.issue || "Issue").substring(0, 40)}...</h5>
-                        <p class="text-muted small">${data.issue}</p>
-                        ${replyHtml}
+
+                    <small class="text-muted d-block mb-2">
+                        📅 ${date} • 📍 ${data.zone_name || "Unknown"}
+                    </small>
+
+                    <h5 class="card-title text-capitalize fw-bold">
+                        ${(data.issue || "Issue").substring(0, 40)}.
+                    </h5>
+
+                    <p class="text-muted small">
+                        ${data.issue}
+                    </p>
+
+                    <!-- DELETE BUTTON -->
+                    <div class="d-flex justify-content-end mb-3">
+                        <button
+                            class="btn btn-outline-danger btn-sm rounded-pill px-3"
+                            onclick="deleteReport('${doc.id}')">
+                            <i class="bi bi-trash"></i> Delete
+                        </button>
                     </div>
+
+                    ${replyHtml}
+
+            </div>
                 </div>
             </div>`;
         });
