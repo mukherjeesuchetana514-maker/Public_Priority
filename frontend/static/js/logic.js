@@ -1733,6 +1733,29 @@ window.processChatbotInput = async function() {
 }
 
 // ============================================
+// ⌨️ CHATBOT ENTER KEY SUPPORT
+// ============================================
+
+document.addEventListener('DOMContentLoaded', () => {
+
+    const chatbotInput =
+        document.getElementById('chatbot-input-field');
+
+    if (chatbotInput) {
+
+        chatbotInput.addEventListener('keypress', (e) => {
+
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                processChatbotInput();
+            }
+
+        });
+
+    }
+});
+
+// ============================================
 // 🗺️ OFFICIAL HEAT MAP
 // ============================================
 let officialMap = null;
