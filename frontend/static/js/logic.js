@@ -677,7 +677,12 @@ if (reportBtn) {
 
             loading.style.display = 'none';
             resultDiv.style.display = 'block';
-            showPopup("Report Filed! ✅", `Your report has been sent to the ${detectedZone} Corporation/Official. (+10 Points)`, "success");
+            
+            // Show Feedback Modal instead of SweetAlert popup
+            const modalElement = document.getElementById('feedbackModal');
+            const feedbackModal = new bootstrap.Modal(modalElement);
+            feedbackModal.show();
+            
             reportBtn.innerText = "Report Issue";
             reportBtn.disabled = false;
 
@@ -1369,7 +1374,7 @@ window.analysis = async function () {
             - summary (short 3-5 word title)
             - projectName (A formal title for the proposed project)
             - targetIssue (Detailed explanation of how this project resolves the issue and helps society)
-            - targetBeneficiaries (Who exactly will benefit from this)
+            - targetBeneficiaries (Who exactly will benefit from this? DO NOT just say "Community". Specify exactly who: e.g. school students, office goers, housewives, farmers, elderly, animals, local businesses, etc.)
 
             Return ONLY this JSON array:
 
@@ -1515,6 +1520,8 @@ window.loadAssignedProjects = async function () {
     }
 }
 
+let officialSatisfactionChartInstance = null;
+
 window.loadOfficialAnalytics = async function () {
     const container = document.getElementById('official-assigned-container');
     const totalBudgetSpan = document.getElementById('total-allocated-budget');
@@ -1540,7 +1547,7 @@ window.loadOfficialAnalytics = async function () {
             const priorityColor = data.priorityScore >= 80 ? 'danger' : data.priorityScore >= 50 ? 'warning' : 'success';
 
             html += `
-<div class="col-md-6 mb-3">
+<div class="col-12 mb-3">
     <div class="card shadow-sm border-0 h-100 official-recommend-card position-relative overflow-hidden">
         <div class="position-absolute top-0 start-0 h-100 bg-${priorityColor}" style="width: 5px;"></div>
         <div class="card-body ps-4">
@@ -1574,6 +1581,65 @@ window.loadOfficialAnalytics = async function () {
         container.innerHTML = html || '<div class="text-center py-5 w-100"><h3>No projects have been assigned yet.</h3></div>';
         totalBudgetSpan.innerText = "₹" + totalBudget.toLocaleString();
         
+        // ----------------------------------------
+        // FEEDBACK CHART GENERATION
+        // ----------------------------------------
+        try {
+            const feedbackQ = query(collection(db, "feedback"));
+            const feedbackSnap = await getDocs(feedbackQ);
+            
+            // Initialize rating counts: 1 to 5 stars
+            const ratingCounts = { "1": 0, "2": 0, "3": 0, "4": 0, "5": 0 };
+            
+            feedbackSnap.forEach(doc => {
+                const fData = doc.data();
+                if (fData.rating && ratingCounts[fData.rating.toString()] !== undefined) {
+                    ratingCounts[fData.rating.toString()]++;
+                }
+            });
+            
+            const chartCtx = document.getElementById('satisfactionChart');
+            if (chartCtx) {
+                if (officialSatisfactionChartInstance) officialSatisfactionChartInstance.destroy();
+                officialSatisfactionChartInstance = new Chart(chartCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['1 Star', '2 Stars', '3 Stars', '4 Stars', '5 Stars'],
+                        datasets: [{
+                            label: 'Number of Citizens',
+                            data: [ratingCounts["1"], ratingCounts["2"], ratingCounts["3"], ratingCounts["4"], ratingCounts["5"]],
+                            backgroundColor: [
+                                'rgba(220, 53, 69, 0.7)',
+                                'rgba(253, 126, 20, 0.7)',
+                                'rgba(255, 193, 7, 0.7)',
+                                'rgba(25, 135, 84, 0.7)',
+                                'rgba(13, 110, 253, 0.7)'
+                            ],
+                            borderColor: [
+                                'rgba(220, 53, 69, 1)',
+                                'rgba(253, 126, 20, 1)',
+                                'rgba(255, 193, 7, 1)',
+                                'rgba(25, 135, 84, 1)',
+                                'rgba(13, 110, 253, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: { stepSize: 1 }
+                            }
+                        }
+                    }
+                });
+            }
+        } catch (chartErr) {
+            console.error("Error drawing feedback chart:", chartErr);
+        }
     } catch (err) {
         console.error(err);
         container.innerHTML = '<div class="text-center py-5 w-100 text-danger"><h3>Error loading analytics.</h3></div>';
@@ -2315,7 +2381,7 @@ window.generateBudgetAllocation = async function() {
                 "projectName": "Name of proposed project",
                 "targetIssue": "Summary of the issue being fixed",
                 "allocatedAmount": 0,
-                "targetBeneficiaries": "Who will benefit from this project",
+                "targetBeneficiaries": "Who exactly will benefit from this? DO NOT just say 'Community'. Specify exactly who: e.g. school students, office goers, housewives, farmers, elderly, animals, local businesses, etc.",
                 "notes": "Explanation of allocation or shortfall"
               }
             ]
@@ -2537,3 +2603,69 @@ window.viewProjectDetails = async function(docId) {
         Swal.fire("Error", err.message, "error");
     }
 };
+
+// ==========================================
+// CITIZEN FEEDBACK SYSTEM
+// ==========================================
+
+window.setFeedbackRating = function(rating) {
+    document.getElementById("feedbackRatingValue").value = rating;
+    const stars = document.getElementById("starRatingContainer").querySelectorAll("i");
+    stars.forEach((star, index) => {
+        if (index < rating) {
+            star.classList.remove("text-secondary", "bi-star");
+            star.classList.add("text-warning", "bi-star-fill");
+        } else {
+            star.classList.remove("text-warning", "bi-star-fill");
+            star.classList.add("text-secondary", "bi-star");
+        }
+    });
+};
+
+window.submitFeedback = async function() {
+    const rating = document.getElementById("feedbackRatingValue").value;
+    const comment = document.getElementById("feedbackCommentValue").value;
+    
+    if (rating === "0") {
+        Swal.fire("Wait!", "Please select a star rating before submitting.", "warning");
+        return;
+    }
+    
+    try {
+        await addDoc(collection(db, "feedback"), {
+            rating: Number(rating),
+            comment: comment || "",
+            timestamp: serverTimestamp(),
+            userEmail: currentUser ? currentUser.email : "Anonymous"
+        });
+        
+        const modalElement = document.getElementById("feedbackModal");
+        const feedbackModal = bootstrap.Modal.getInstance(modalElement);
+        if (feedbackModal) feedbackModal.hide();
+        
+        // Show the original success popup
+        showPopup("Thank You!", "Your feedback helps us improve the community development process.", "success");
+        
+    } catch (err) {
+        console.error("Error submitting feedback:", err);
+        Swal.fire("Error", "Could not submit feedback.", "error");
+    }
+};
+
+window.skipFeedback = function() {
+    const modalElement = document.getElementById("feedbackModal");
+    const feedbackModal = bootstrap.Modal.getInstance(modalElement);
+    if (feedbackModal) feedbackModal.hide();
+    
+    // Show the original success popup
+    const detectedZone = document.getElementById("devLocation") ? document.getElementById("devLocation").value : "Local";
+    showPopup("Report Filed! ?", `Your report has been sent to the Corporation/Official. (+10 Points)`, "success");
+};
+
+
+window.showSatisfactionGraph = function() {
+    const modalElement = document.getElementById("satisfactionGraphModal");
+    const modal = new bootstrap.Modal(modalElement);
+    modal.show();
+};
+

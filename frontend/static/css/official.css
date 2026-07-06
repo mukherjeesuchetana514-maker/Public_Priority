@@ -24,6 +24,7 @@
     background:var(--sidebar);
     color:white;
     padding:25px 15px;
+    flex-shrink: 0;
 }
 
 .official-logo{

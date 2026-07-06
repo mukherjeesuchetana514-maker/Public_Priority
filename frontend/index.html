@@ -966,17 +966,34 @@
             <!-- Analytics / Assigned Projects Section -->
             <div id="analytics" class="official-content official-page">
                 <div class="dashboard-container single-column">
-                    <div class="header-section mb-4">
-                        <h2 class="fw-bold">Assigned Projects Analytics</h2>
-                        <p class="text-muted">A comprehensive view of all locked projects and their allocated budgets.</p>
-                        <div class="alert alert-success d-inline-block px-4 py-2 mt-2 rounded-pill shadow-sm">
-                            <strong>Total Budget Allocated:</strong> <span id="total-allocated-budget" class="fs-5 ms-2">₹0</span>
+                    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+                        <div>
+                            <h2 class="fw-bold mb-1">Assigned Projects Analytics</h2>
+                            <p class="text-muted mb-0">A comprehensive view of all locked projects and their allocated budgets.</p>
+                        </div>
+                        <div class="card shadow-sm border-0 rounded-4 bg-success text-white px-4 py-2">
+                            <div class="card-body p-2 text-center">
+                                <h6 class="fw-bold mb-1 text-white opacity-75">Total Budget Allocated</h6>
+                                <h3 class="fw-bolder mb-0" id="total-allocated-budget">₹0</h3>
+                            </div>
                         </div>
                     </div>
-                    <div id="official-assigned-container" class="row g-4 mt-2">
-                        <div class="text-center text-muted py-5">
-                            <div class="spinner-border text-success"></div>
+
+                    <h4 class="fw-bold mb-3"><i class="bi bi-list-check me-2"></i>Assigned Projects List</h4>
+                    <div class="card shadow-sm border-0 rounded-4 mb-4">
+                        <div class="card-body p-4 bg-light rounded-4">
+                            <div id="official-assigned-container" class="row g-3" style="max-height: 500px; overflow-y: auto; overflow-x: hidden;">
+                                <div class="text-center text-muted py-5 w-100">
+                                    <div class="spinner-border text-success"></div>
+                                </div>
+                            </div>
                         </div>
+                    </div>
+
+                    <div class="text-center mt-4 mb-2">
+                        <button class="btn btn-primary btn-lg rounded-pill px-5 py-3 shadow-sm fw-bold" onclick="showSatisfactionGraph()">
+                            <i class="bi bi-bar-chart-fill me-2"></i>View Citizen Satisfaction Overview
+                        </button>
                     </div>
                 </div>
             </div>
@@ -1385,6 +1402,67 @@
         </div>
     </div>
 
+
+    <!-- Citizen Feedback Modal -->
+    <div class="modal fade" id="feedbackModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-4 rounded-4 border-0 shadow-lg text-center">
+                <div class="modal-header border-0 pb-0 justify-content-center">
+                    <h3 class="modal-title fw-bold text-success">Report Submitted!</h3>
+                </div>
+                <div class="modal-body pb-2">
+                    <p class="text-muted fs-5 mb-4">How satisfied are you with this digital process of community development?</p>
+                    
+                    <div class="d-flex justify-content-center gap-2 mb-4" id="starRatingContainer">
+                        <i class="bi bi-star fs-1 text-secondary cursor-pointer" data-rating="1" onclick="setFeedbackRating(1)"></i>
+                        <i class="bi bi-star fs-1 text-secondary cursor-pointer" data-rating="2" onclick="setFeedbackRating(2)"></i>
+                        <i class="bi bi-star fs-1 text-secondary cursor-pointer" data-rating="3" onclick="setFeedbackRating(3)"></i>
+                        <i class="bi bi-star fs-1 text-secondary cursor-pointer" data-rating="4" onclick="setFeedbackRating(4)"></i>
+                        <i class="bi bi-star fs-1 text-secondary cursor-pointer" data-rating="5" onclick="setFeedbackRating(5)"></i>
+                    </div>
+                    <input type="hidden" id="feedbackRatingValue" value="0">
+                    
+                    <div class="d-flex justify-content-center gap-2 mb-3 flex-wrap">
+                        <button type="button" class="btn btn-warning rounded-pill text-dark fw-bold px-3 py-1" onclick="document.getElementById('feedbackCommentValue').value += '😊 Happy '">
+                            😊 Happy
+                        </button>
+                        <button type="button" class="btn btn-info rounded-pill text-white fw-bold px-3 py-1" onclick="document.getElementById('feedbackCommentValue').value += '😐 Average '">
+                            😐 Average
+                        </button>
+                        <button type="button" class="btn btn-danger rounded-pill text-white fw-bold px-3 py-1" onclick="document.getElementById('feedbackCommentValue').value += '😢 Sad '">
+                            😢 Sad
+                        </button>
+                    </div>
+
+                    <div class="mb-3 text-start">
+                        <label class="form-label text-muted fw-bold small">Any comments?</label>
+                        <textarea id="feedbackCommentValue" class="form-control bg-light border-0 rounded-3" rows="3" placeholder="Tell us how you feel..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pt-0 d-flex gap-2 w-100">
+                    <button type="button" class="btn btn-light rounded-pill flex-grow-1" onclick="skipFeedback()">Skip</button>
+                    <button type="button" class="btn btn-success rounded-pill flex-grow-1 fw-bold" onclick="submitFeedback()">Submit Feedback</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Citizen Satisfaction Graph Modal -->
+    <div class="modal fade" id="satisfactionGraphModal" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+            <div class="modal-content rounded-4 border-0 shadow-lg">
+                <div class="modal-header border-0 pb-0">
+                    <h4 class="modal-title fw-bold">Citizen Satisfaction Overview</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div style="height: 500px; width: 100%;">
+                        <canvas id="satisfactionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </body>
 
