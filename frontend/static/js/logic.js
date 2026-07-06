@@ -45,15 +45,15 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-window.saveLanguageAndReload = function() {
+window.saveLanguageAndReload = function () {
     const selectedLang = document.getElementById('appLanguageSelect').value;
     localStorage.setItem('appLanguage', selectedLang);
-    
+
     // Use the native i18n changeLanguage function
     if (typeof changeLanguage === 'function') {
         changeLanguage(selectedLang);
     }
-    
+
     // Hide the modal
     const modalEl = document.getElementById('languageModal');
     if (modalEl) {
@@ -103,10 +103,12 @@ onAuthStateChanged(auth, async (user) => {
                 currentLoginType = 'official';
                 document.getElementById('nav-citizen').style.display = 'none';
                 document.getElementById('nav-official').style.display = 'flex';
+                document.getElementById('ai-chatbot-widget').style.display = 'none';
                 const orgDisplay = document.getElementById('org-name-display');
                 if (orgDisplay) orgDisplay.innerText = `🏛️ ${userData.org || userData.zone_name}`;
             } else {
                 currentLoginType = 'citizen';
+                document.getElementById('ai-chatbot-widget').style.display = 'block';
                 document.getElementById('loginBtn').style.display = 'none';
                 document.getElementById('logoutBtn').style.display = 'block';
 
@@ -413,6 +415,9 @@ window.checkAuthAndShow = function (sectionId) {
         showSection(sectionId);
         if (sectionId === 'user-dashboard-section') loadUserDashboard();
         if (sectionId === 'leaderboard-section') loadLeaderboard();
+        if (sectionId === 'recommendations-section') {
+            if (window.loadAssignedProjects) window.loadAssignedProjects();
+        }
     }
 }
 
@@ -432,7 +437,7 @@ async function reverseGeocodeAndSetLocation(lat, lng, source) {
         detectedZone = geoData.locality || geoData.city || geoData.principalSubdivision || geoData.countryName || "Unknown Zone";
         detectedZone = detectedZone.trim();
         if (locInput) locInput.value = detectedZone;
-        
+
         window.detectedGlobalLocation = { lat, lng };
         window.detectedGlobalSource = source;
         window.detectedGlobalZone = detectedZone;
@@ -490,7 +495,7 @@ if (cameraInput) {
             const aiAnalyzeBtn = document.getElementById('aiAnalyzeBtn');
             if (aiAnalyzeBtn) aiAnalyzeBtn.style.display = 'block';
             reportBtn.style.display = 'block';
-            
+
             // Auto detect location immediately
             autoDetectLocation(file);
         }
@@ -506,7 +511,7 @@ const devCategory = document.getElementById('devCategory');
 if (aiAnalyzeBtn) {
     aiAnalyzeBtn.addEventListener('click', async () => {
         if (!fileToAnalyze) return;
-        
+
         const API_KEY = (window.CONFIG && window.CONFIG.GEMINI_API_KEY) ? window.CONFIG.GEMINI_API_KEY : "KEY_NOT_FOUND";
         if (API_KEY === "KEY_NOT_FOUND" || API_KEY === "YOUR_GEMINI_API_KEY_HERE") {
             showPopup("Error", "Gemini API Key not found in config.js", "error");
@@ -521,16 +526,16 @@ if (aiAnalyzeBtn) {
             const genAI = new GoogleGenerativeAI(API_KEY);
             const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
             const base64Data = compressedImage.split(',')[1];
-            
+
             const prompt = "Analyze this image of a civic issue (e.g., garbage, pothole). Provide a short title, a detailed description, and the category it belongs to. Valid categories are: Infrastructure, Environment, Education, Health, Other. Return strictly in JSON format like this: {\"title\": \"Short Title Here\", \"description\": \"Detailed description here.\", \"category\": \"Environment\"}";
             const imagePart = { inlineData: { data: base64Data, mimeType: "image/jpeg" } };
-            
+
             const result = await model.generateContent([prompt, imagePart]);
             let textResult = (await result.response).text();
-            
+
             textResult = textResult.replace(/```json/g, '').replace(/```/g, '').trim();
             const aiData = JSON.parse(textResult);
-            
+
             if (devTitle) devTitle.value = aiData.title || "";
             if (devDescription) devDescription.value = aiData.description || "";
             if (devCategory && aiData.category) {
@@ -538,7 +543,7 @@ if (aiAnalyzeBtn) {
                 const matchedCategory = validCategories.find(c => c.toLowerCase() === aiData.category.toLowerCase());
                 if (matchedCategory) devCategory.value = matchedCategory;
             }
-            
+
             showPopup("AI Analysis Complete", "Details have been auto-filled.", "success");
         } catch (error) {
             console.error("AI Analysis Error:", error);
@@ -597,11 +602,11 @@ if (reportBtn) {
             const description = document.getElementById('devDescription').value || "";
             const transcript = window.transcript || "";
             const locationStr = document.getElementById('devLocation').value || "Unknown Location";
-            
+
             let lat = 0; let lng = 0;
             let detectedZone = locationStr;
             let locationSource = "Manual Entry";
-            
+
             if (window.detectedGlobalLocation) {
                 lat = window.detectedGlobalLocation.lat;
                 lng = window.detectedGlobalLocation.lng;
@@ -724,6 +729,7 @@ window.handleLogin = async function () {
             if (currentUser.role === 'official') {
                 document.getElementById('nav-citizen').style.display = 'none';
                 document.getElementById('nav-official').style.display = 'flex';
+                document.getElementById('ai-chatbot-widget').style.display = 'none';
                 document.getElementById('org-name-display').innerText = `🏛️ ${currentUser.zone_name}`;
                 showSection('admin-section');
                 loadDashboard();
@@ -732,6 +738,7 @@ window.handleLogin = async function () {
             } else {
                 document.getElementById('nav-citizen').style.display = 'flex';
                 document.getElementById('nav-official').style.display = 'none';
+                document.getElementById('ai-chatbot-widget').style.display = 'block';
                 document.getElementById('loginBtn').style.display = 'none';
                 document.getElementById('logoutBtn').style.display = 'block';
                 showSection('home-section');
@@ -899,7 +906,7 @@ window.loadUserDashboard = async function () {
 
 
 window.toggle_official_sidebar = async function () {
-    
+
     const sidebar = document.getElementById("official-sidebar");
     const toggle = document.getElementById("toggleSidebar");
 
@@ -952,9 +959,10 @@ window.loadDashboard = async function () {
                         <div class="card-body">
                             <div class="d-flex justify-content-between"><small>📅 ${date}</small><small class="text-primary fw-bold">📍 ${data.zone_name}</small></div>
                             <h5 class="card-title text-capitalize">${(data.issue || "Issue").substring(0, 40)}...</h5>
-                            <div class="d-flex gap-2 mb-3">
-                                <a href="${data.googleMapsLink}" target="_blank" class="btn btn-sm btn-outline-primary w-50 rounded-pill">View Map</a>
-                                <button onclick="details('${doc.id}','loadDashboard','reports-container')" class="btn btn-sm btn-outline-secondary w-50 rounded-pill">Details</button>
+                            <div class="d-flex gap-2 mb-3 flex-wrap">
+                                <a href="${data.googleMapsLink}" target="_blank" class="btn btn-sm btn-outline-primary flex-grow-1 rounded-pill">View Map</a>
+                                <button onclick="details('${doc.id}','loadDashboard','reports-container')" class="btn btn-sm btn-outline-secondary flex-grow-1 rounded-pill">Details</button>
+                                <button onclick="viewProjectDetails('${doc.id}')" class="btn btn-sm btn-primary w-100 rounded-pill mt-1">Elaborate</button>
                             </div>
                             <div class="bg-light p-3 rounded-4">
                                 <select class="form-select form-select-sm mb-2 rounded-pill" onchange="updateStatus('${doc.id}', this.value)">
@@ -966,7 +974,7 @@ window.loadDashboard = async function () {
                                     <input type="text" class="form-control rounded-start-pill" placeholder="Reply..." id="comment-${doc.id}" value="${data.adminComment || ''}">
                                     <button class="btn btn-secondary rounded-end-pill" onclick="saveComment('${doc.id}')">Save</button>
                                 </div>
-                                <button class="btn btn-outline-danger btn-sm mt-2 w-100 rounded-pill" onclick="deleteReport('${doc.id}')">Delete</button>
+                                ${currentUser.role === 'citizen' ? `<button class="btn btn-outline-danger btn-sm mt-2 w-100 rounded-pill" onclick="deleteReport('${doc.id}')">Delete</button>` : ''}
                             </div>
                         </div>
                     </div>
@@ -983,21 +991,21 @@ window.loadDashboard = async function () {
 }
 
 
-window.details = async function(id,p,container_name) {
+window.details = async function (id, p, container_name) {
     const container = document.getElementById(container_name);
     const sync = await getDoc(doc(db, "reports", id));
 
     if (!sync.exists()) return;
 
     const data = sync.data();
-            const reportZone = (data.zone_name || "").toLowerCase().trim();
+    const reportZone = (data.zone_name || "").toLowerCase().trim();
 
-            
-                const date = data.timestamp ? new Date(data.timestamp.seconds * 1000).toLocaleDateString() : "Just now";
-                let statusColor = data.status === "In Progress" ? "bg-primary" : (data.status === "Resolved" ? "bg-success" : "bg-warning");
-                let bgImage = data.imageUrl || 'https://via.placeholder.com/600x400';
-                let html ="";
-                html += `
+
+    const date = data.timestamp ? new Date(data.timestamp.seconds * 1000).toLocaleDateString() : "Just now";
+    let statusColor = data.status === "In Progress" ? "bg-primary" : (data.status === "Resolved" ? "bg-success" : "bg-warning");
+    let bgImage = data.imageUrl || 'https://via.placeholder.com/600x400';
+    let html = "";
+    html += `
 <div class="container py-4">
 
     <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
@@ -1088,16 +1096,16 @@ window.details = async function(id,p,container_name) {
 
 </div>
 `;
-            container.innerHTML = html || '<div class="text-center py-5"><h3>No reports found for this zone.</h3></div>';
-            }
+    container.innerHTML = html || '<div class="text-center py-5"><h3>No reports found for this zone.</h3></div>';
+}
 
 
 
 
-window.detail_back= function(p){
-    if(p==='loadDashboard'){
+window.detail_back = function (p) {
+    if (p === 'loadDashboard') {
         loadDashboard();
-    }else if(p==='recomended'){
+    } else if (p === 'recomended') {
         recomended();
     }
 }
@@ -1107,10 +1115,10 @@ window.detail_back= function(p){
 
 // }
 
-window.officialMenu = async function(page){
+window.officialMenu = async function (page) {
 
     // Hide every admin page
-    document.querySelectorAll(".official-page").forEach(item=>{
+    document.querySelectorAll(".official-page").forEach(item => {
         item.classList.remove("active");
     });
 
@@ -1121,11 +1129,15 @@ window.officialMenu = async function(page){
         if (typeof window.initOfficialHeatmap === 'function') {
             window.initOfficialHeatmap();
         }
+    } else if (page === 'analytics') {
+        if (typeof window.loadOfficialAnalytics === 'function') {
+            window.loadOfficialAnalytics();
+        }
     }
 }
 
 
-window.dashbord = async function() {
+window.dashbord = async function () {
     const total_reports = document.getElementById('development_suggstion');
     const approve = document.getElementById('approve_project');
     const pending_review = document.getElementById('pending_review');
@@ -1165,7 +1177,7 @@ window.community = async function () {
     container.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary"></div></div>';
 
 
-    
+
     try {
 
         const q = query(collection(db, "reports"), orderBy("timestamp", "desc"));
@@ -1254,7 +1266,7 @@ window.community = async function () {
 }
 
 
-window.voteSuggestion = async function(id) {
+window.voteSuggestion = async function (id) {
 
     const reportRef = doc(db, "reports", id);
 
@@ -1310,13 +1322,13 @@ function timeAgo(timestamp) {
 
 
 // AI analysis of Suggestion at official
-window.analysis = async function() {
-    
-    try{
+window.analysis = async function () {
+
+    try {
         const genAI_2 = new GoogleGenerativeAI("GEMINI_API_kET");
 
         const model_Official = genAI_2.getGenerativeModel({
-            model: "gemini-2.5-flash"
+            model: "gemini-flash-latest"
         });
 
 
@@ -1354,7 +1366,10 @@ window.analysis = async function() {
             - severity (1-10)
             - priorityScore (1-100)
             - department
-            - summary
+            - summary (short 3-5 word title)
+            - projectName (A formal title for the proposed project)
+            - targetIssue (Detailed explanation of how this project resolves the issue and helps society)
+            - targetBeneficiaries (Who exactly will benefit from this)
 
             Return ONLY this JSON array:
 
@@ -1364,7 +1379,10 @@ window.analysis = async function() {
                 "severity": 0,
                 "priorityScore": 0,
                 "department": "",
-                "summary": ""
+                "summary": "",
+                "projectName": "",
+                "targetIssue": "",
+                "targetBeneficiaries": ""
             }
             ]
 
@@ -1390,7 +1408,7 @@ window.analysis = async function() {
             .replace(/```json/g, "")
             .replace(/```/g, "")
             .trim();
-        
+
         if (!cleanText) {
             console.error("Gemini returned an empty response.");
             return;
@@ -1415,53 +1433,168 @@ window.analysis = async function() {
             }
 
             await updateDoc(doc(db, "reports", report.id), {
-
                 severity: report.severity,
-
                 priorityScore: report.priorityScore,
-
                 department: report.department,
-
                 summary: report.summary,
-
+                projectName: report.projectName || report.summary,
+                targetIssue: report.targetIssue || report.summary,
+                targetBeneficiaries: report.targetBeneficiaries || "Community",
                 analyzed: true,
-
                 analyzedAt: serverTimestamp()
-
             });
 
             recomended();
 
-        }       
+        }
 
-    }catch(err) {
+    } catch (err) {
 
         console.error(err);
-    
 
+
+
+    }
 
 }
 
+window.loadAssignedProjects = async function () {
+    const container = document.getElementById('full-recommendations-container');
+    if (!container) return;
+    container.innerHTML = '<div class="text-center py-5 w-100"><div class="spinner-border text-primary"></div></div>';
+
+    try {
+        const q = query(collection(db, "reports"), orderBy("priorityScore", "desc"));
+        const querySnapshot = await getDocs(q);
+        let html = "";
+        let count = 0;
+        const myZone = currentUser && currentUser.zone_name ? currentUser.zone_name.toLowerCase().trim() : "";
+
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            if (!data.isAssigned) return;
+            const reportZone = (data.zone_name || "").toLowerCase().trim();
+            if (reportZone && (myZone.includes(reportZone) || reportZone.includes(myZone) || myZone === "all zones")) {
+                count++;
+                const priorityColor = data.priorityScore >= 80 ? 'danger' : data.priorityScore >= 50 ? 'warning' : 'success';
+                const severityColor = data.severity >= 8 ? 'danger' : data.severity >= 5 ? 'warning' : 'secondary';
+
+                html += `
+<div class="col-md-6 mb-3">
+    <div class="card shadow-sm border-0 h-100 official-recommend-card position-relative overflow-hidden">
+        <div class="position-absolute top-0 start-0 h-100 bg-${priorityColor}" style="width: 5px;"></div>
+        <div class="card-body ps-4">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <span class="badge bg-${priorityColor}-subtle text-${priorityColor}-emphasis px-3 py-2 fw-semibold">
+                        <i class="bi bi-lightning-charge-fill me-1"></i>Priority ${data.priorityScore || 'N/A'}
+                    </span>
+                    <span class="badge bg-light text-dark border">
+                        <i class="bi bi-building me-1"></i>${data.department || 'N/A'}
+                    </span>
+                </div>
+            </div>
+            <h5 class="fw-bold mb-3">${data.projectName || data.summary}</h5>
+            <div class="d-flex justify-content-end mt-3 gap-2">
+                <button onclick="details('${doc.id}','recomended','full-recommendations-container')" class="btn btn-outline-primary rounded-pill px-4">
+                    <i class="bi bi-file-text"></i> Original Report
+                </button>
+                <button onclick="viewProjectDetails('${doc.id}')" class="btn btn-primary rounded-pill px-4">
+                    <i class="bi bi-info-circle"></i> Project Details
+                </button>
+            </div>
+        </div>
+    </div>
+</div>`;
+            }
+        });
+        container.innerHTML = html || '<div class="text-center py-5 w-100"><h3>No assigned projects found for your zone.</h3></div>';
+    } catch (err) {
+        console.error(err);
+        container.innerHTML = '<div class="text-center py-5 w-100 text-danger"><h3>Error loading projects.</h3></div>';
+    }
+}
+
+window.loadOfficialAnalytics = async function () {
+    const container = document.getElementById('official-assigned-container');
+    const totalBudgetSpan = document.getElementById('total-allocated-budget');
+    if (!container || !totalBudgetSpan) return;
+    
+    container.innerHTML = '<div class="text-center py-5 w-100"><div class="spinner-border text-success"></div></div>';
+
+    try {
+        const q = query(collection(db, "reports"), orderBy("priorityScore", "desc"));
+        const querySnapshot = await getDocs(q);
+        let html = "";
+        let totalBudget = 0;
+
+        querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            if (!data.isAssigned) return;
+            
+            // Add to total budget
+            if (data.allocatedAmount) {
+                totalBudget += Number(data.allocatedAmount);
+            }
+
+            const priorityColor = data.priorityScore >= 80 ? 'danger' : data.priorityScore >= 50 ? 'warning' : 'success';
+
+            html += `
+<div class="col-md-6 mb-3">
+    <div class="card shadow-sm border-0 h-100 official-recommend-card position-relative overflow-hidden">
+        <div class="position-absolute top-0 start-0 h-100 bg-${priorityColor}" style="width: 5px;"></div>
+        <div class="card-body ps-4">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <span class="badge bg-${priorityColor}-subtle text-${priorityColor}-emphasis px-3 py-2 fw-semibold">
+                        <i class="bi bi-lightning-charge-fill me-1"></i>Priority ${data.priorityScore || 'N/A'}
+                    </span>
+                    <span class="badge bg-light text-dark border">
+                        <i class="bi bi-building me-1"></i>${data.department || 'N/A'}
+                    </span>
+                    <span class="badge bg-success text-white px-3 py-2 fw-bold">
+                        <i class="bi bi-cash me-1"></i>₹${data.allocatedAmount ? Number(data.allocatedAmount).toLocaleString() : '0'}
+                    </span>
+                </div>
+            </div>
+            <h5 class="fw-bold mb-3">${data.projectName || data.summary}</h5>
+            <div class="d-flex justify-content-end mt-3 gap-2">
+                <button onclick="details('${doc.id}','analytics','official-assigned-container')" class="btn btn-outline-primary rounded-pill px-4">
+                    <i class="bi bi-file-text"></i> Original Report
+                </button>
+                <button onclick="viewProjectDetails('${doc.id}')" class="btn btn-primary rounded-pill px-4">
+                    <i class="bi bi-info-circle"></i> Project Details
+                </button>
+            </div>
+        </div>
+    </div>
+</div>`;
+        });
+        
+        container.innerHTML = html || '<div class="text-center py-5 w-100"><h3>No projects have been assigned yet.</h3></div>';
+        totalBudgetSpan.innerText = "₹" + totalBudget.toLocaleString();
+        
+    } catch (err) {
+        console.error(err);
+        container.innerHTML = '<div class="text-center py-5 w-100 text-danger"><h3>Error loading analytics.</h3></div>';
+    }
 }
 
 window.recomended = async function () {
     const container = document.getElementById('recommend-container');
+    if (!container) return;
     container.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary"></div></div>';
 
-
-    
     try {
-
         const q = query(collection(db, "reports"), orderBy("priorityScore", "desc"));
-
-
         const querySnapshot = await getDocs(q);
         let html = "";
         let count = 0;
-        const myZone = (currentUser.zone_name || "").toLowerCase().trim();
+        const myZone = currentUser && currentUser.zone_name ? currentUser.zone_name.toLowerCase().trim() : "";
 
         querySnapshot.forEach((doc) => {
             const data = doc.data();
+
             const reportZone = (data.zone_name || "").toLowerCase().trim();
             const hasVoted = data.votedBy?.includes(currentUser.uid);
             const time = timeAgo(data.timestamp);
@@ -1469,9 +1602,9 @@ window.recomended = async function () {
                 count++;
                 const date = data.timestamp ? new Date(data.timestamp.seconds * 1000).toLocaleDateString() : "Just now";
                 const priorityColor = data.priorityScore >= 80 ? 'danger' : data.priorityScore >= 50 ? 'warning' : 'success';
-const severityColor = data.severity >= 8 ? 'danger' : data.severity >= 5 ? 'warning' : 'secondary';
+                const severityColor = data.severity >= 8 ? 'danger' : data.severity >= 5 ? 'warning' : 'secondary';
 
-html += `
+                html += `
 <div class="card shadow-sm border-0 mb-3 official-recommend-card position-relative overflow-hidden">
 
     <div class="position-absolute top-0 start-0 h-100 bg-${priorityColor}" style="width: 5px;"></div>
@@ -1518,11 +1651,21 @@ html += `
 
         </div>
 
-        <div class="d-flex justify-content-end mt-3">
+        <div class="d-flex justify-content-end mt-3 gap-2">
             <button
                 onclick="details('${doc.id}','recomended','recommend-container')"
+                class="btn btn-outline-primary rounded-pill px-4">
+                <i class="bi bi-file-text"></i> Original Report
+            </button>
+            <button
+                onclick="viewProjectDetails('${doc.id}')"
                 class="btn btn-primary rounded-pill px-4">
-                <i class="bi bi-eye"></i> View Details
+                <i class="bi bi-info-circle"></i> Elaborate
+            </button>
+            <button
+                onclick="deleteReport('${doc.id}')"
+                class="btn btn-outline-danger rounded-pill px-4">
+                <i class="bi bi-trash"></i> Delete
             </button>
         </div>
 
@@ -1582,7 +1725,9 @@ window.deleteReport = function (docId) {
         if (result.isConfirmed) {
             try {
                 await deleteDoc(doc(db, "reports", docId));
-                loadDashboard();
+                if (window.loadDashboard) loadDashboard();
+                if (window.recomended) recomended();
+                if (window.loadAssignedProjects) loadAssignedProjects();
                 Swal.fire('Deleted!', 'The report has been removed.', 'success')
             } catch (e) { showPopup("Error", e.message, "error"); }
         }
@@ -1609,7 +1754,7 @@ recordBtn.addEventListener("click", () => {
 
     if (!isRecording) {
 
-        
+
 
 
         console.log("Selected:", localStorage.getItem("appLanguage"));
@@ -1656,7 +1801,7 @@ recognition.onresult = (event) => {
     console.log("Transcript:", transcript);
 
     recordStatus.innerText = transcript;
-    
+
 }
 recognition.onerror = (event) => {
     console.log("❌ Error:", event.error);
@@ -1680,13 +1825,13 @@ recognition.onend = async () => {
                 const genAI = new GoogleGenerativeAI(API_KEY);
                 const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });
                 const prompt = `Analyze this civic issue report transcript: "${window.transcript}". Provide a short title, a detailed description, and the category it belongs to. Valid categories are: Infrastructure, Environment, Education, Health, Other. Return strictly in JSON format like this: {"title": "Short Title Here", "description": "Detailed description here.", "category": "Environment"}`;
-                
+
                 const result = await model.generateContent([prompt]);
                 let textResult = (await result.response).text();
-                
+
                 textResult = textResult.replace(/```json/g, '').replace(/```/g, '').trim();
                 const aiData = JSON.parse(textResult);
-                
+
                 const devTitle = document.getElementById('devTitle');
                 const devDescription = document.getElementById('devDescription');
                 const devCategory = document.getElementById('devCategory');
@@ -1694,7 +1839,7 @@ recognition.onend = async () => {
                 if (devTitle) devTitle.value = aiData.title || "";
                 if (devDescription) devDescription.value = aiData.description || "";
                 if (devCategory && aiData.category) devCategory.value = aiData.category;
-                
+
                 recordStatus.innerText = "Voice analysis complete! Form auto-filled.";
             } catch (e) {
                 console.error("Voice AI Error:", e);
@@ -1766,9 +1911,9 @@ window.initCitizenHeatmap = async function () {
             // 2. Fetch Firebase Data
             const querySnapshot = await getDocs(collection(db, "reports"));
             const heatPoints = [];
-            
+
             const lang = document.documentElement.lang || 'en';
-            
+
             // Generate month keys dynamically based on the current language
             const monthKeys = [];
             for (let i = 0; i < 12; i++) {
@@ -1776,9 +1921,9 @@ window.initCitizenHeatmap = async function () {
                 const localMonth = tempDate.toLocaleString(lang, { month: 'short' });
                 monthKeys.push(localMonth);
             }
-            
+
             const categoryStats = {};
-            
+
             let pendingCount = 0;
             let inProgressCount = 0;
             let resolvedCount = 0;
@@ -1791,7 +1936,7 @@ window.initCitizenHeatmap = async function () {
                     // Heat intensity (0.5 to 1.0)
                     heatPoints.push([data.location.lat, data.location.lng, 0.8]);
                 }
-                
+
                 const category = data.category || 'Other';
                 if (!categoryStats[category]) {
                     categoryStats[category] = {};
@@ -1835,13 +1980,13 @@ window.initCitizenHeatmap = async function () {
             if (typeof Chart !== 'undefined') {
                 Chart.defaults.font.family = "'Poppins', sans-serif";
                 Chart.defaults.color = '#6c757d';
-                
+
                 // Get localized Status Labels
                 const getTrans = (key, defaultStr) => (typeof translations !== 'undefined' && translations[lang] && translations[lang][key]) ? translations[lang][key] : defaultStr;
                 const labelPending = getTrans('status-pending', 'Pending');
                 const labelInProgress = getTrans('status-progress', 'In Progress');
                 const labelResolved = getTrans('status-resolved', 'Resolved');
-                
+
                 // Predefined colors for categories
                 const catColors = {
                     'Water': { border: 'rgba(54, 162, 235, 1)', bg: 'rgba(54, 162, 235, 0.1)' }, // Blue
@@ -1851,17 +1996,17 @@ window.initCitizenHeatmap = async function () {
                     'Education': { border: 'rgba(153, 102, 255, 1)', bg: 'rgba(153, 102, 255, 0.1)' }, // Purple
                     'Health': { border: 'rgba(255, 99, 132, 1)', bg: 'rgba(255, 99, 132, 0.1)' } // Pink
                 };
-                
+
                 const getCatColor = (cat, idx) => {
                     if (catColors[cat]) return catColors[cat];
                     const hue = (idx * 137.5) % 360;
                     return { border: `hsl(${hue}, 70%, 50%)`, bg: `hsl(${hue}, 70%, 50%, 0.1)` };
                 };
-                
+
                 const lineDatasets = Object.keys(categoryStats).map((cat, idx) => {
                     const color = getCatColor(cat, idx);
                     return {
-                        label: getTrans('cat-' + cat.toLowerCase().replace(/ /g, '-'), cat), 
+                        label: getTrans('cat-' + cat.toLowerCase().replace(/ /g, '-'), cat),
                         data: monthKeys.map(m => categoryStats[cat][m]),
                         borderColor: color.border,
                         backgroundColor: color.bg,
@@ -1907,24 +2052,24 @@ window.initCitizenHeatmap = async function () {
 // 🤖 GLOBAL AI CHATBOT WIDGET
 // ============================================
 
-window.toggleChatbot = function() {
+window.toggleChatbot = function () {
     const chatWindow = document.getElementById('chatbot-window');
     chatWindow.classList.toggle('d-none');
 }
 
-window.sendChatbotQuestion = function(questionText) {
+window.sendChatbotQuestion = function (questionText) {
     const inputField = document.getElementById('chatbot-input-field');
     inputField.value = questionText;
     processChatbotInput();
 }
 
-window.processChatbotInput = async function() {
+window.processChatbotInput = async function () {
     const inputField = document.getElementById('chatbot-input-field');
     const messagesContainer = document.getElementById('chatbot-messages');
     const userText = inputField.value.trim();
-    
+
     if (!userText) return;
-    
+
     // Add user message to UI
     const userMsgHtml = `
         <div class="d-flex flex-column align-items-end mt-2">
@@ -1935,10 +2080,10 @@ window.processChatbotInput = async function() {
     `;
     messagesContainer.insertAdjacentHTML('beforeend', userMsgHtml);
     inputField.value = '';
-    
+
     // Auto-scroll
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    
+
     // Show typing indicator
     const typingId = 'typing-' + Date.now();
     const lang = document.documentElement.lang || 'en';
@@ -1953,13 +2098,13 @@ window.processChatbotInput = async function() {
     `;
     messagesContainer.insertAdjacentHTML('beforeend', typingHtml);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
-    
+
     // Simulate API delay or hook up to Gemini
     setTimeout(() => {
         document.getElementById(typingId).remove();
-        
+
         let reply = (translations && translations[lang] && translations[lang]['chatbot-reply-default']) ? translations[lang]['chatbot-reply-default'] : "I am a helpful civic AI. I've noted your question and can guide you through the platform!";
-        
+
         // Match against common keywords from the hardcoded English buttons
         if (userText.toLowerCase().includes("report") || userText.toLowerCase().includes("pothole")) {
             reply = (translations && translations[lang] && translations[lang]['chatbot-reply-report']) ? translations[lang]['chatbot-reply-report'] : "To report an issue, click on 'Suggest Development' in the top navigation bar. You can upload a photo and our AI will automatically fill in the details for you!";
@@ -1968,7 +2113,7 @@ window.processChatbotInput = async function() {
         } else if (userText.toLowerCase().includes("review") || userText.toLowerCase().includes("who")) {
             reply = (translations && translations[lang] && translations[lang]['chatbot-reply-review']) ? translations[lang]['chatbot-reply-review'] : "Your suggestions are sent directly to the verified official dashboard for your respective zone or ward. They review and update the status in real time.";
         }
-        
+
         const aiMsgHtml = `
             <div class="d-flex flex-column align-items-start mt-2">
                 <div class="bg-light text-dark p-2 rounded-3 small shadow-sm" style="max-width: 85%;">
@@ -1978,7 +2123,7 @@ window.processChatbotInput = async function() {
         `;
         messagesContainer.insertAdjacentHTML('beforeend', aiMsgHtml);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        
+
     }, 1200);
 }
 
@@ -2016,11 +2161,11 @@ window.initOfficialHeatmap = async function () {
 
             // Predefined colors for categories
             const catColors = {
-                'Water': 'blue', 
-                'Roads': 'gray', 
-                'Infrastructure': 'orange', 
-                'Environment': 'teal', 
-                'Education': 'purple', 
+                'Water': 'blue',
+                'Roads': 'gray',
+                'Infrastructure': 'orange',
+                'Environment': 'teal',
+                'Education': 'purple',
                 'Health': 'pink',
                 'Other': 'red'
             };
@@ -2056,7 +2201,7 @@ window.initOfficialHeatmap = async function () {
                         }).addTo(officialMap).bindPopup(`<b>${data.issue}</b><br>${category}`);
                     }
                 }
-                
+
                 categoryStats[category] = (categoryStats[category] || 0) + 1;
                 zoneStats[zone] = (zoneStats[zone] || 0) + 1;
             });
@@ -2107,3 +2252,288 @@ window.initOfficialHeatmap = async function () {
         }
     }, 300);
 }
+// ============================================
+// BUDGET PLANNER & INFRASTRUCTURE GAPS
+// ============================================
+
+window.generateBudgetAllocation = async function() {
+    const budgetInput = document.getElementById("totalBudget").value;
+    const resultsContainer = document.getElementById("allocationResults");
+    const loading = document.getElementById("loadingIndicator");
+
+    if (!budgetInput || budgetInput <= 0) {
+        alert("Please enter a valid budget amount.");
+        return;
+    }
+
+    resultsContainer.innerHTML = "";
+    loading.style.display = "flex";
+
+    try {
+        // 1. Fetch analyzed reports sorted by priority score (limit to top 20 to save API tokens)
+        const q = query(collection(db, "reports"), orderBy("priorityScore", "desc"), limit(20));
+        const snapshot = await getDocs(q);
+        
+        let reports = [];
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            if (data.isAssigned) return; // Skip locked projects
+            
+            reports.push({ 
+                id: doc.id, 
+                issue: data.issue || data.description,
+                category: data.category,
+                priorityScore: data.priorityScore,
+                location: data.zone_name || data.location || "Unknown"
+            });
+        });
+
+        // 2. Initialize Gemini AI
+        const API_KEY = (window.CONFIG && window.CONFIG.GEMINI_API_KEY) ? window.CONFIG.GEMINI_API_KEY : "GEMINI_API_kET";
+        const genAI = new GoogleGenerativeAI(API_KEY);
+        const model = genAI.getGenerativeModel({
+            model: "gemini-flash-latest",
+            generationConfig: { responseMimeType: "application/json" }
+        });
+
+        // 3. Prompt Gemini to act as a financial planner
+        const prompt = `
+            You are an expert municipal financial planner. 
+            Total Available Budget: ₹${budgetInput}
+            
+            Here are the prioritized citizen reports:
+            ${JSON.stringify(reports)}
+
+            Create a list of specific development projects to address these issues. 
+            Distribute the total budget across these projects based on their priority score. 
+            If the budget is too small to cover everything, assign 0 to lower-priority projects and explain the shortfall in a "notes" field.
+
+            Return a JSON array exactly matching this structure:
+            [
+              {
+                "reportId": "the_id_from_reports_data",
+                "projectName": "Name of proposed project",
+                "targetIssue": "Summary of the issue being fixed",
+                "allocatedAmount": 0,
+                "targetBeneficiaries": "Who will benefit from this project",
+                "notes": "Explanation of allocation or shortfall"
+              }
+            ]
+        `;
+
+        const result = await model.generateContent(prompt);
+        let responseText = result.response.text();
+        responseText = responseText.replace(/```json/gi, "").replace(/```/gi, "").trim();
+        const allocations = JSON.parse(responseText);
+
+        // 4. Render the UI
+        loading.style.display = "none";
+        allocations.forEach(project => {
+            const originalReport = reports.find(r => r.id === project.reportId);
+            const isAssigned = originalReport ? originalReport.isAssigned : false;
+            
+            const card = document.createElement("div");
+            card.className = "allocation-card";
+            card.innerHTML = `
+                <div class="card-header">
+                    <h4>${project.projectName}</h4>
+                    <span class="amount">₹${project.allocatedAmount.toLocaleString()}</span>
+                </div>
+                <p><strong>Fixes:</strong> ${project.targetIssue}</p>
+                <p><strong>Beneficiaries:</strong> ${project.targetBeneficiaries}</p>
+                <p class="notes">${project.notes}</p>
+                <div class="d-flex gap-2 mt-2">
+                    <button class="btn btn-sm w-100 ${isAssigned ? 'btn-secondary disabled' : 'btn-success'}" 
+                        onclick="assignBudgetProject(this, '${project.reportId}', '${btoa(JSON.stringify(project))}')">
+                        ${isAssigned ? 'Assigned' : 'Assign Project'}
+                    </button>
+                    <button class="btn btn-sm btn-outline-primary w-100" onclick="viewProjectDetails('${project.reportId}')">
+                        View Details
+                    </button>
+                </div>
+            `;
+            resultsContainer.appendChild(card);
+        });
+
+    } catch (error) {
+        console.error("Error generating budget:", error);
+        loading.style.display = "none";
+        alert("Failed to generate allocation: " + error.message);
+    }
+};
+
+window.assignBudgetProject = async function(btn, docId, b64ProjectData) {
+    if (!docId || docId === 'undefined') {
+        Swal.fire("Error", "Could not identify project ID. Please regenerate.", "error");
+        return;
+    }
+    
+    try {
+        const projectData = b64ProjectData ? JSON.parse(atob(b64ProjectData)) : {};
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Assigning...';
+        btn.classList.add('disabled');
+        
+        await updateDoc(doc(db, "reports", docId), { 
+            isAssigned: true,
+            allocatedAmount: projectData.allocatedAmount || 0,
+            projectName: projectData.projectName || "Unknown Project",
+            targetBeneficiaries: projectData.targetBeneficiaries || "Citizens"
+        });
+        
+        btn.innerHTML = 'Assigned';
+        btn.classList.remove('btn-success');
+        btn.classList.add('btn-secondary');
+        
+        Swal.fire('Assigned!', 'This project is now assigned and visible to citizens.', 'success');
+    } catch (error) {
+        console.error("Assign error:", error);
+        btn.innerHTML = 'Assign Project';
+        btn.classList.remove('disabled');
+        Swal.fire("Error", "Failed to assign project: " + error.message, "error");
+    }
+};
+
+window.loadInfrastructureGaps = async function() {
+    const leaderboardContainer = document.getElementById("gapLeaderboard");
+    leaderboardContainer.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary me-2"></div><span>Analyzing community votes and report data...</span></div>';
+
+    try {
+        // 1. Fetch reports ordered by citizen votes (limit to top 20 to save API tokens)
+        const q = query(collection(db, "reports"), orderBy("vote", "desc"), limit(20)); // Changed from 'votes' to 'vote' based on DB structure
+        const snapshot = await getDocs(q);
+        
+        let reports = [];
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            reports.push({ 
+                location: data.zone_name || data.location || "Unknown",
+                description: data.issue || data.description,
+                votes: data.vote || 0 
+            });
+        });
+
+        // 2. Initialize Gemini AI
+        const API_KEY = (window.CONFIG && window.CONFIG.GEMINI_API_KEY) ? window.CONFIG.GEMINI_API_KEY : "GEMINI_API_kET";
+        const genAI = new GoogleGenerativeAI(API_KEY);
+        const model = genAI.getGenerativeModel({
+            model: "gemini-flash-latest",
+            generationConfig: { responseMimeType: "application/json" }
+        });
+
+        // 3. Prompt Gemini to find the root causes (Infrastructure Gaps)
+        const prompt = `
+            You are an expert urban planner.
+            Analyze the following citizen reports and their vote counts.
+            ${JSON.stringify(reports)}
+
+            Group these reports by their root "Infrastructure Gap" (e.g., "Inadequate Stormwater Drainage", "Failing Road Foundation").
+            For each gap, provide the specific locations affected and sum up the total votes from the reports contributing to this gap.
+            Sort the final array by totalVotes in descending order.
+
+            Return a JSON array exactly matching this structure:
+            [
+              {
+                "gapTitle": "Name of the infrastructure gap",
+                "locations": "List of exact locations affected",
+                "totalVotes": 0,
+                "urgency": "High/Medium/Low"
+              }
+            ]
+        `;
+
+        const result = await model.generateContent(prompt);
+        let responseText = result.response.text();
+        responseText = responseText.replace(/```json/gi, "").replace(/```/gi, "").trim();
+        const gaps = JSON.parse(responseText);
+
+        // 4. Render the Leaderboard UI
+        leaderboardContainer.innerHTML = "";
+        
+        gaps.forEach((gap, index) => {
+            const row = document.createElement("div");
+            row.className = "leaderboard-row";
+            row.innerHTML = `
+                <div class="rank-badge">#${index + 1}</div>
+                <div class="gap-details">
+                    <h4>${gap.gapTitle} <span class="urgency ${gap.urgency.toLowerCase()}">${gap.urgency} Urgency</span></h4>
+                    <p><strong>Affected Locations:</strong> ${gap.locations}</p>
+                </div>
+                <div class="vote-count">
+                    <span class="number">${gap.totalVotes}</span>
+                    <span class="label">Community Votes</span>
+                </div>
+            `;
+            leaderboardContainer.appendChild(row);
+        });
+
+    } catch (error) {
+        console.error("Error analyzing gaps:", error);
+        leaderboardContainer.innerHTML = "<p class='text-danger text-center'>Error loading infrastructure gaps: " + error.message + "</p>";
+    }
+};
+
+window.submitCustomProject = async function (e) {
+    e.preventDefault();
+    try {
+        const title = document.getElementById('cpTitle').value;
+        const description = document.getElementById('cpDescription').value;
+        const amount = document.getElementById('cpAmount').value;
+        const beneficiaries = document.getElementById('cpBeneficiaries').value;
+        
+        await addDoc(collection(db, "reports"), {
+            projectName: title,
+            summary: title,
+            targetIssue: description,
+            issue: description,
+            allocatedAmount: Number(amount),
+            targetBeneficiaries: beneficiaries,
+            isAssigned: true,
+            isManual: true,
+            priorityScore: 100,
+            department: "Official Notice",
+            severity: 10,
+            timestamp: serverTimestamp(),
+            zone_name: window.currentUser ? window.currentUser.zone_name : "All Zones"
+        });
+        
+        const modalElement = document.getElementById('customProjectModal');
+        const modal = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+        modal.hide();
+        document.getElementById('customProjectForm').reset();
+        
+        Swal.fire("Success", "Custom project announced successfully!", "success");
+        if(window.recomended) window.recomended();
+    } catch (err) {
+        Swal.fire("Error", "Could not create project: " + err.message, "error");
+    }
+};
+
+window.viewProjectDetails = async function(docId) {
+    try {
+        const docSnap = await getDoc(doc(db, "reports", docId));
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            document.getElementById('pdTitle').innerText = data.projectName || data.summary || "Project Details";
+            document.getElementById('pdDescription').innerText = data.targetIssue || data.issue || data.description || "No description provided.";
+            
+            const pdAmount = document.getElementById('pdAmount');
+            if (data.allocatedAmount) {
+                pdAmount.innerText = "₹" + Number(data.allocatedAmount).toLocaleString();
+                pdAmount.classList.remove('fs-6');
+            } else {
+                pdAmount.innerText = "Pending Assignment";
+                pdAmount.classList.add('fs-6');
+            }
+            
+            document.getElementById('pdBeneficiaries').innerText = data.targetBeneficiaries || "Community";
+            
+            const modalElement = document.getElementById('projectDetailsModal');
+            const modal = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+            modal.show();
+        } else {
+            Swal.fire("Error", "Project details not found.", "error");
+        }
+    } catch (err) {
+        Swal.fire("Error", err.message, "error");
+    }
+};

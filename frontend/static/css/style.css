@@ -915,3 +915,28 @@ body.pp-nav-dark .navbar-toggler-icon { filter: invert(1); }
     background: #ccc;
     border-radius: 10px;
 }
+
+/* Budget Planner Styles */
+.dashboard-container { display: flex; gap: 20px; padding: 20px; background: #f4f7f6; min-height: 100vh; }
+.side-panel { flex: 1; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); height: fit-content; }
+.main-content { flex: 3; }
+.budget-input { width: 100%; padding: 10px; margin-top: 5px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; }
+.btn-primary { width: 100%; padding: 10px; background: #2b6cb0; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+.allocation-card { background: #fff; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #48bb78; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+.card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.amount { font-size: 1.2rem; font-weight: bold; color: #2f855a; }
+.notes { font-size: 0.9rem; color: #718096; font-style: italic; }
+
+/* Infrastructure Gap Leaderboard Styles */
+.single-column { flex-direction: column; max-width: 900px; margin: 0 auto; }
+.leaderboard-row { display: flex; align-items: center; background: #fff; padding: 15px 20px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+.rank-badge { font-size: 1.5rem; font-weight: bold; color: #a0aec0; width: 50px; }
+.gap-details { flex: 1; }
+.gap-details h4 { margin: 0 0 5px 0; color: #2d3748; display: flex; align-items: center; gap: 10px; }
+.urgency { font-size: 0.7rem; padding: 3px 8px; border-radius: 12px; text-transform: uppercase; }
+.urgency.high { background: #fed7d7; color: #c53030; }
+.urgency.medium { background: #feebc8; color: #c05621; }
+.urgency.low { background: #c6f6d5; color: #2f855a; }
+.vote-count { text-align: center; background: #ebf8ff; padding: 10px 15px; border-radius: 6px; color: #3182ce; }
+.vote-count .number { display: block; font-size: 1.3rem; font-weight: bold; }
+.vote-count .label { font-size: 0.7rem; text-transform: uppercase; }

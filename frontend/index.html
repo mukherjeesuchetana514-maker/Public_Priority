@@ -46,13 +46,17 @@
         body::before {
             content: '';
             position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
             /* Enchanting abstract blue/fluid background */
             background-image: url('https://images.unsplash.com/photo-1557683316-973673baf926?auto=format&fit=crop&w=1920&q=80');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
-            opacity: 1; /* Full opacity to let glassmorphism work */
+            opacity: 1;
+            /* Full opacity to let glassmorphism work */
             z-index: -2;
             pointer-events: none;
         }
@@ -160,11 +164,21 @@
             animation: recordPulse 1.2s ease-in-out infinite;
             background-color: #dc3545 !important;
         }
+
         @keyframes recordPulse {
-            0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.5); }
-            70% { box-shadow: 0 0 0 12px rgba(220, 53, 69, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+            0% {
+                box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.5);
+            }
+
+            70% {
+                box-shadow: 0 0 0 12px rgba(220, 53, 69, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(220, 53, 69, 0);
+            }
         }
+
         #recordBtn:disabled {
             opacity: 0.5;
             cursor: not-allowed;
@@ -194,40 +208,41 @@
                 padding-right: 15px !important;
             }
         }
-            /*For Community votings*/
-            .vote-btn {
-                transition: all 0.2s ease;
-                border-width: 2px;
-            }
-          /*For AI Recommendations*/
-            .reco-match-badge {
-            background: linear-gradient(135deg,#6f42c1 0%,#0d6efd 100%);
-            color:#fff;
-            font-weight:600;
-            font-size:.75rem;
-            padding:6px 12px;
+
+        /*For Community votings*/
+        .vote-btn {
+            transition: all 0.2s ease;
+            border-width: 2px;
+        }
+
+        /*For AI Recommendations*/
+        .reco-match-badge {
+            background: linear-gradient(135deg, #6f42c1 0%, #0d6efd 100%);
+            color: #fff;
+            font-weight: 600;
+            font-size: .75rem;
+            padding: 6px 12px;
         }
 
         .reco-reason {
-            background:#f4f7ff;
-            border-radius:12px;
-            padding:8px 12px;
-            font-size:.8rem;
-            color:#495057;
+            background: #f4f7ff;
+            border-radius: 12px;
+            padding: 8px 12px;
+            font-size: .8rem;
+            color: #495057;
         }
 
         .reco-card {
-            transition:transform .2s ease,
-                    box-shadow .2s ease;
-            border:1px solid transparent;
+            transition: transform .2s ease,
+                box-shadow .2s ease;
+            border: 1px solid transparent;
         }
 
         .reco-card:hover {
-            transform:translateY(-4px);
-            box-shadow:0 10px 25px rgba(13,110,253,.1)!important;
-            border-color:rgba(13,110,253,.15);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(13, 110, 253, .1) !important;
+            border-color: rgba(13, 110, 253, .15);
         }
-
     </style>
 </head>
 
@@ -238,7 +253,8 @@
             <!-- Brand Section -->
             <div class="brand" onclick="showSection('home-section')" style="cursor: pointer;">
                 <!-- Unique Custom SVG Logo: Civic Shield + Double P Monogram -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 64 64" fill="none" style="margin-right: 6px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 64 64" fill="none"
+                    style="margin-right: 6px;">
                     <defs>
                         <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                             <stop offset="0%" stop-color="#ffffff" />
@@ -248,22 +264,21 @@
                             <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.2" flood-color="#0d6efd" />
                         </filter>
                     </defs>
-                    
+
                     <!-- Civic Shield Background -->
-                    <path d="M 32 4 L 8 14 L 8 32 C 8 48 20 58 32 62 C 44 58 56 48 56 32 L 56 14 Z" 
-                          fill="url(#shieldGrad)" 
-                          stroke="#0d6efd" 
-                          stroke-width="3" 
-                          stroke-linejoin="round"
-                          filter="url(#logoShadow)"/>
-                          
+                    <path d="M 32 4 L 8 14 L 8 32 C 8 48 20 58 32 62 C 44 58 56 48 56 32 L 56 14 Z"
+                        fill="url(#shieldGrad)" stroke="#0d6efd" stroke-width="3" stroke-linejoin="round"
+                        filter="url(#logoShadow)" />
+
                     <!-- 'P' for Public (Blue) -->
-                    <path d="M 22 20 L 22 42" stroke="#0d6efd" stroke-width="5" stroke-linecap="round"/>
-                    <path d="M 22 20 C 35 20, 35 32, 22 32" stroke="#0d6efd" stroke-width="5" stroke-linecap="round" fill="none"/>
-                    
+                    <path d="M 22 20 L 22 42" stroke="#0d6efd" stroke-width="5" stroke-linecap="round" />
+                    <path d="M 22 20 C 35 20, 35 32, 22 32" stroke="#0d6efd" stroke-width="5" stroke-linecap="round"
+                        fill="none" />
+
                     <!-- 'P' for Priority (Orange/Priority) -->
-                    <path d="M 34 28 L 34 50" stroke="#fd7e14" stroke-width="5" stroke-linecap="round"/>
-                    <path d="M 34 28 C 47 28, 47 40, 34 40" stroke="#fd7e14" stroke-width="5" stroke-linecap="round" fill="none"/>
+                    <path d="M 34 28 L 34 50" stroke="#fd7e14" stroke-width="5" stroke-linecap="round" />
+                    <path d="M 34 28 C 47 28, 47 40, 34 40" stroke="#fd7e14" stroke-width="5" stroke-linecap="round"
+                        fill="none" />
                 </svg>
                 <span class="brand-name">Public Priority</span>
             </div>
@@ -276,43 +291,53 @@
 
                 <ul class="navbar-nav nav-links" id="nav-citizen">
                     <li class="nav-item">
-                        <button class="lang-btn bg-white" data-bs-toggle="modal" data-bs-target="#languageModal" title="Change Language">
+                        <button class="lang-btn bg-white" data-bs-toggle="modal" data-bs-target="#languageModal"
+                            title="Change Language">
                             <i class="bi bi-translate"></i> <span data-i18n="nav-lang">Language</span>
                         </button>
                     </li>
-                    <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('home-section')" data-i18n="nav-home">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" onclick="checkAuthAndShow('report-section')" data-i18n="nav-suggest">Suggest Development</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" onclick="checkAuthAndShow('user-dashboard-section')" data-i18n="nav-my-reports">My Reports</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#" onclick="checkAuthAndShow('community-section'); community();" data-i18n="nav-community">Community Suggestions</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('home-section')"
+                            data-i18n="nav-home">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" onclick="checkAuthAndShow('report-section')"
+                            data-i18n="nav-suggest">Suggest Development</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#"
+                            onclick="checkAuthAndShow('user-dashboard-section')" data-i18n="nav-my-reports">My
+                            Reports</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#"
+                            onclick="checkAuthAndShow('community-section'); community();"
+                            data-i18n="nav-community">Community Suggestions</a></li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="checkAuthAndShow('recommendations-section')" data-i18n="nav-recommended">
-                        Recommendations
+                        <a class="nav-link" href="#" onclick="checkAuthAndShow('recommendations-section')"
+                            data-i18n="nav-assigned">
+                            Assigned Projects
                         </a>
                     </li>
                     <li class="nav-item"><a class="nav-link fw-bold text-danger" href="#"
-                            onclick="checkAuthAndShow('citizen-heatmap-section')"
-                            data-i18n="nav-citizen-heatmap">
+                            onclick="checkAuthAndShow('citizen-heatmap-section')" data-i18n="nav-citizen-heatmap">
                             Heat Map</a>
                     </li>
-                    <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('about-section')" data-i18n="nav-about">About Us</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('about-section')"
+                            data-i18n="nav-about">About Us</a></li>
                 </ul>
 
                 <div class="d-flex ms-auto citizen-auth-btns">
-                    <button id="loginBtn" class="auth-btn login-btn" data-bs-toggle="modal"
-                        data-bs-target="#loginModal" data-i18n="nav-login">Login</button>
-                    <button id="logoutBtn" class="auth-btn logout-btn btn-danger text-white border-danger" onclick="handleLogout()"
-                        style="display:none;" data-i18n="nav-logout">Logout</button>
+                    <button id="loginBtn" class="auth-btn login-btn" data-bs-toggle="modal" data-bs-target="#loginModal"
+                        data-i18n="nav-login">Login</button>
+                    <button id="logoutBtn" class="auth-btn logout-btn btn-danger text-white border-danger"
+                        onclick="handleLogout()" style="display:none;" data-i18n="nav-logout">Logout</button>
                 </div>
 
                 <ul class="navbar-nav ms-auto align-items-center gap-2" id="nav-official" style="display:none;">
                     <li class="nav-item me-lg-2">
-                        <button class="btn btn-outline-info rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#languageModal" title="Change Language">
+                        <button class="btn btn-outline-info rounded-pill px-3" data-bs-toggle="modal"
+                            data-bs-target="#languageModal" title="Change Language">
                             <i class="bi bi-translate"></i> <span data-i18n="nav-lang">Language</span>
                         </button>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="checkAuthAndShow('admin-section'); officialMenu('dash'); dashbord();">
+                        <a class="nav-link" href="#"
+                            onclick="checkAuthAndShow('admin-section'); officialMenu('dash'); dashbord();">
                             🏛️ <span data-i18n="nav-dashboard">Dashboard</span>
                         </a>
                     </li>
@@ -347,11 +372,13 @@
             <div class="container text-center hero-content py-5">
                 <h1 class="mb-3 display-3 fw-bold text-white"
                     style="animation: fadeIn 1s ease-out; text-shadow: 0 4px 15px rgba(0,0,0,0.3);">
-                    <span data-i18n="home-title1">Build A Better City,</span> <br><span class="text-warning" data-i18n="home-title2">Together</span>
+                    <span data-i18n="home-title1">Build A Better City,</span> <br><span class="text-warning"
+                        data-i18n="home-title2">Together</span>
                 </h1>
                 <p class="lead text-white opacity-75 mb-4 px-lg-5 mx-lg-5 fs-4"
                     style="text-shadow: 0 2px 10px rgba(0,0,0,0.2);">
-                    <span data-i18n="home-desc">Public Priority connects you directly with local authorities to build, repair, and grow your community.</span>
+                    <span data-i18n="home-desc">Public Priority connects you directly with local authorities to build,
+                        repair, and grow your community.</span>
                 </p>
                 <button class="btn btn-enchanting btn-lg rounded-pill px-5 py-3 shadow border-0 mt-3"
                     onclick="checkAuthAndShow('report-section')" style="font-size: 1.1rem;">
@@ -372,18 +399,24 @@
                 <div class="glass-card p-4 rounded-4 shadow-sm h-100 d-flex flex-column justify-content-center"
                     style="background: linear-gradient(135deg, #0f4c75 0%, #3282b8 100%); color: white; border: none;">
                     <h3 class="fw-bold mb-3">
-                        <i class="bi bi-lightbulb-fill text-warning"></i> <span data-i18n="report-card-title">Your Voice Matters</span>
+                        <i class="bi bi-lightbulb-fill text-warning"></i> <span data-i18n="report-card-title">Your Voice
+                            Matters</span>
                     </h3>
-                    <p class="opacity-75 mb-4" data-i18n="report-card-desc">Public Priority connects citizens with local authorities. By suggesting development projects, you actively participate in building a smarter, safer, and cleaner city.</p>
+                    <p class="opacity-75 mb-4" data-i18n="report-card-desc">Public Priority connects citizens with local
+                        authorities. By suggesting development projects, you actively participate in building a smarter,
+                        safer, and cleaner city.</p>
                     <ul class="list-unstyled">
                         <li class="mb-3">
-                            <i class="bi bi-check-circle-fill me-2 text-success"></i> <span data-i18n="report-card-li1">Official Government Routing</span>
+                            <i class="bi bi-check-circle-fill me-2 text-success"></i> <span
+                                data-i18n="report-card-li1">Official Government Routing</span>
                         </li>
                         <li class="mb-3">
-                            <i class="bi bi-check-circle-fill me-2 text-success"></i> <span data-i18n="report-card-li2">Direct Impact Tracking</span>
+                            <i class="bi bi-check-circle-fill me-2 text-success"></i> <span
+                                data-i18n="report-card-li2">Direct Impact Tracking</span>
                         </li>
                         <li class="mb-3">
-                            <i class="bi bi-check-circle-fill me-2 text-success"></i> <span data-i18n="report-card-li3">Civic Points Rewards</span>
+                            <i class="bi bi-check-circle-fill me-2 text-success"></i> <span
+                                data-i18n="report-card-li3">Civic Points Rewards</span>
                         </li>
                     </ul>
                 </div>
@@ -393,10 +426,13 @@
             <div class="col-lg-8 mb-4">
                 <div class="glass-card p-5 rounded-4 shadow-sm">
                     <h2 class="mb-2 text-dark fw-bold" data-i18n="nav-suggest">Suggest Development</h2>
-                    <p class="text-muted mb-3" data-i18n="report-form-desc">Share your ideas, record a voice note, or upload photos of the area.</p>
+                    <p class="text-muted mb-3" data-i18n="report-form-desc">Share your ideas, record a voice note, or
+                        upload photos of the area.</p>
                     <div class="alert alert-info rounded-4 border-0 shadow-sm mb-4">
                         <i class="bi bi-magic text-primary"></i>
-                        <i class="bi bi-magic text-primary"></i> <span data-i18n="report-pro-tip">Pro Tip: Upload an image or record a voice note, and our AI will automatically fill out this form and detect the location for you!</span>
+                        <i class="bi bi-magic text-primary"></i> <span data-i18n="report-pro-tip">Pro Tip: Upload an
+                            image or record a voice note, and our AI will automatically fill out this form and detect
+                            the location for you!</span>
                     </div>
 
                     <div class="row">
@@ -407,16 +443,19 @@
                                 placeholder="Short title for your suggestion" data-i18n="placeholder-title">
                         </div>
                         <div class="col-md-6 mb-3 text-start">
-                            <label class="form-label fw-bold small text-muted" data-i18n="label-category">Category</label>
+                            <label class="form-label fw-bold small text-muted"
+                                data-i18n="label-category">Category</label>
                             <div class="position-relative">
-                                <select id="devCategory" class="form-select rounded-pill bg-light border-0 px-4 py-2" style="appearance: none; -webkit-appearance: none;">
+                                <select id="devCategory" class="form-select rounded-pill bg-light border-0 px-4 py-2"
+                                    style="appearance: none; -webkit-appearance: none;">
                                     <option value="Infrastructure" data-i18n="cat-infra">Infrastructure</option>
                                     <option value="Environment" data-i18n="cat-env">Environment</option>
                                     <option value="Education" data-i18n="cat-edu">Education</option>
                                     <option value="Health" data-i18n="cat-health">Health</option>
                                     <option value="Other" data-i18n="cat-other">Other</option>
                                 </select>
-                                <i class="bi bi-chevron-down position-absolute top-50 end-0 translate-middle-y me-3 text-muted" style="pointer-events: none;"></i>
+                                <i class="bi bi-chevron-down position-absolute top-50 end-0 translate-middle-y me-3 text-muted"
+                                    style="pointer-events: none;"></i>
                             </div>
                         </div>
                     </div>
@@ -424,7 +463,8 @@
                     <div class="mb-3 text-start">
                         <label class="form-label fw-bold small text-muted" data-i18n="label-desc">Description</label>
                         <textarea id="devDescription" class="form-control rounded-4 bg-light border-0 p-3" rows="3"
-                            placeholder="Type your text and suggestions here..." data-i18n="placeholder-desc"></textarea>
+                            placeholder="Type your text and suggestions here..."
+                            data-i18n="placeholder-desc"></textarea>
                     </div>
 
                     <div class="mb-3 text-start">
@@ -442,17 +482,21 @@
 
                     <div class="row mt-4">
                         <div class="col-md-6 mb-4 text-start position-relative">
-                            <label class="form-label fw-bold small text-muted"><i class="bi bi-camera"></i> <span data-i18n="label-image">Image Upload</span></label>
+                            <label class="form-label fw-bold small text-muted"><i class="bi bi-camera"></i> <span
+                                    data-i18n="label-image">Image Upload</span></label>
                             <input type="file" id="cameraInput" accept="image/*" capture="environment"
                                 class="form-control rounded-pill mb-3 bg-light border-0">
                             <img id="preview" src="" alt="Issue Preview" class="img-fluid rounded-4 shadow-sm mb-3"
                                 style="display:none; max-height: 150px;">
-                            <button type="button" id="aiAnalyzeBtn" class="btn btn-outline-primary rounded-pill w-100 mb-2" style="display:none;">
-                                <i class="bi bi-robot"></i> <span data-i18n="btn-ai-autofill">Auto-fill Details with AI</span>
+                            <button type="button" id="aiAnalyzeBtn"
+                                class="btn btn-outline-primary rounded-pill w-100 mb-2" style="display:none;">
+                                <i class="bi bi-robot"></i> <span data-i18n="btn-ai-autofill">Auto-fill Details with
+                                    AI</span>
                             </button>
                             <div id="aiLoading" class="mt-2 text-center" style="display:none;">
                                 <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
-                                <span class="text-muted small ms-2" data-i18n="ai-analyzing">AI is analyzing image...</span>
+                                <span class="text-muted small ms-2" data-i18n="ai-analyzing">AI is analyzing
+                                    image...</span>
                             </div>
                         </div>
 
@@ -462,26 +506,22 @@
                             </label>
                             <div class="bg-light rounded-4 p-3">
                                 <div class="d-flex align-items-center gap-2 mb-2">
-                                    <button id="recordBtn"
-                                            class="btn btn-danger rounded-circle"
-                                            type="button"
-                                            style="width:45px;height:45px;">
+                                    <button id="recordBtn" class="btn btn-danger rounded-circle" type="button"
+                                        style="width:45px;height:45px;">
                                         <i class="bi bi-mic-fill" id="micIcon"></i>
                                     </button>
                                     <span id="recordStatus" class="small text-muted" data-i18n="record-status">
                                         Tap to record
                                     </span>
-                                    <span id="recordDuration" class="small fw-bold text-danger ms-1" style="display:none;">
+                                    <span id="recordDuration" class="small fw-bold text-danger ms-1"
+                                        style="display:none;">
                                         00:00
                                     </span>
                                 </div>
-                                <audio id="audioPlayback"
-                                       controls
-                                       style="display:none;width:100%;margin-top:10px;">
+                                <audio id="audioPlayback" controls style="display:none;width:100%;margin-top:10px;">
                                 </audio>
-                                <button id="deleteAudioBtn"
-                                        class="btn btn-outline-danger btn-sm mt-2"
-                                        style="display:none;">
+                                <button id="deleteAudioBtn" class="btn btn-outline-danger btn-sm mt-2"
+                                    style="display:none;">
                                     🗑 <span data-i18n="btn-delete-audio">Delete Recording</span>
                                 </button>
                             </div>
@@ -496,12 +536,14 @@
                         <div class="spinner-grow text-primary" role="status"></div>
                         <div class="spinner-grow text-primary mx-2" role="status"></div>
                         <div class="spinner-grow text-primary" role="status"></div>
-                        <p class="mt-2 text-muted fw-bold"><span data-i18n="loading-msg">Connecting to Government Database...</span></p>
+                        <p class="mt-2 text-muted fw-bold"><span data-i18n="loading-msg">Connecting to Government
+                                Database...</span></p>
                     </div>
 
                     <div id="result" class="mt-4" style="display:none;">
                         <div class="alert alert-success rounded-4 text-start shadow-sm border-0">
-                            <h5 class="fw-bold text-success"><i class="bi bi-check-circle-fill"></i> <span data-i18n="success-msg">Submission Successful</span></h5>
+                            <h5 class="fw-bold text-success"><i class="bi bi-check-circle-fill"></i> <span
+                                    data-i18n="success-msg">Submission Successful</span></h5>
                             <p id="aiText" class="mb-2 text-dark"></p>
                         </div>
                     </div>
@@ -514,8 +556,10 @@
         <div class="section-banner"
             style="background-image: url('https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=1920&q=80');">
             <div class="section-banner-content text-center text-white">
-                <h2 class="fw-bold display-5" style="text-shadow: 0 2px 10px rgba(0,0,0,0.5);"><span data-i18n="dash-title">My Report Status</span> 📋</h2>
-                <p class="fs-5 opacity-75"><span data-i18n="dash-desc">Track the impact of your civic contributions</span></p>
+                <h2 class="fw-bold display-5" style="text-shadow: 0 2px 10px rgba(0,0,0,0.5);"><span
+                        data-i18n="dash-title">My Report Status</span> 📋</h2>
+                <p class="fs-5 opacity-75"><span data-i18n="dash-desc">Track the impact of your civic
+                        contributions</span></p>
             </div>
         </div>
         <div class="container position-relative" style="z-index: 10;">
@@ -528,7 +572,8 @@
 
                 <div class="text-end mb-3">
                     <button onclick="loadUserDashboard()" class="btn btn-outline-primary rounded-pill px-4"><i
-                            class="bi bi-arrow-clockwise"></i> <span data-i18n="btn-refresh">Refresh Status</span></button>
+                            class="bi bi-arrow-clockwise"></i> <span data-i18n="btn-refresh">Refresh
+                            Status</span></button>
                 </div>
                 <div id="user-reports-container" class="row">
                     <div class="text-center text-muted py-5">Loading your history...</div>
@@ -538,372 +583,420 @@
     </div>
 
     <!--COMMUNITY SUGGESTIONS SECTION-->
-<div id="community-section" class="section-view">
+    <div id="community-section" class="section-view">
 
-    <div class="section-banner"
-        style="background-image: url('https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1920&q=80');">
+        <div class="section-banner"
+            style="background-image: url('https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=1920&q=80');">
 
-        <div class="section-banner-content text-center text-white">
+            <div class="section-banner-content text-center text-white">
 
-            <h2 class="fw-bold display-5"
-                style="text-shadow: 0 2px 10px rgba(0,0,0,0.5);">
-                🗳️
-                <span data-i18n="community-title">
-                    Community Suggestions
-                </span>
-            </h2>
+                <h2 class="fw-bold display-5" style="text-shadow: 0 2px 10px rgba(0,0,0,0.5);">
+                    🗳️
+                    <span data-i18n="community-title">
+                        Community Suggestions
+                    </span>
+                </h2>
 
-            <p class="fs-5 opacity-75">
-                <span data-i18n="community-desc">
-                    Support the ideas you care about most
-                </span>
-            </p>
-        </div>
-    </div>
-    <div class="container position-relative" style="z-index: 10;">
-        <div id="community-reports-container" class="row g-4">
-            
-        </div>
-    </div>
-</div>
-
-<!--Recommendations section-->
-
-<div id="recommendations-section" class="section-view">
-    <div class="section-banner"
-         style="background-image: url('https://images.unsplash.com/photo-1518186285589-2f7649de83e0?auto=format&fit=crop&w=1920&q=80');">
-
-        <div class="section-banner-content text-center text-white">
-
-            <h2 class="fw-bold display-5"
-                style="text-shadow: 0 2px 10px rgba(0,0,0,0.5);">
-
-                <i class="bi bi-stars text-warning"></i>
-                <span data-i18n="reco-title">
-                    Recommended For You
-                </span>
-            </h2>
-            <p class="fs-5 opacity-75">
-                <span data-i18n="reco-desc">
-                    Suggestions picked by AI based on your location and activity
-                </span>
-            </p>
-        </div>
-    </div>
-    <div class="container position-relative"
-         style="z-index: 10;">
-
-        <!-- AI Information Box -->
-        <div class="alert alert-light border-0 shadow-sm rounded-4 mb-4 d-flex align-items-center gap-3">
-            <i class="bi bi-robot fs-3 text-primary"></i>
-            <div>
-                <strong data-i18n="reco-how-title">
-                    How this works
-                </strong>
-                <p class="mb-0 small text-muted"
-                   data-i18n="reco-how-desc">
-                    Our AI looks at your location,
-                    your past reports,
-                    and trending issues nearby
-                    to surface development projects
-                    you're most likely to care about.
+                <p class="fs-5 opacity-75">
+                    <span data-i18n="community-desc">
+                        Support the ideas you care about most
+                    </span>
                 </p>
             </div>
         </div>
+        <div class="container position-relative" style="z-index: 10;">
+            <div id="community-reports-container" class="row g-4">
 
-        <div class="row g-4"
-             id="full-recommendations-container">
-
-            <div class="text-center text-muted py-5">
-                <i class="bi bi-stars fs-1 d-block mb-2"></i>
-                <span data-i18n="reco-empty">Personalized recommendations will appear here.</span>
             </div>
         </div>
     </div>
-</div>
+
+    <!--Recommendations section-->
+
+    <div id="recommendations-section" class="section-view">
+        <div class="section-banner"
+            style="background-image: url('https://images.unsplash.com/photo-1518186285589-2f7649de83e0?auto=format&fit=crop&w=1920&q=80');">
+
+            <div class="section-banner-content text-center text-white">
+
+                <h2 class="fw-bold display-5" style="text-shadow: 0 2px 10px rgba(0,0,0,0.5);">
+                    <span>
+                        Assigned Projects
+                    </span>
+                </h2>
+                <p class="fs-5 opacity-75">
+                    <span>
+                        Assigned by the officials of the locality for the benefit of the community and the society.
+                    </span>
+                </p>
+            </div>
+        </div>
+        <div class="container position-relative" style="z-index: 10;">
+
+            <div class="row g-4" id="full-recommendations-container">
+
+                <div class="text-center text-muted py-5">
+                    <i class="bi bi-stars fs-1 d-block mb-2"></i>
+                    <span data-i18n="reco-empty">Personalized recommendations will appear here.</span>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
     <!--Admin section-->
     <div id="admin-section" class="section-view">
         <div class="official-wrapper">
-        <div class="official-sidebar">
-        <div class="official-logo">
+            <div class="official-sidebar">
+                <div class="official-logo">
 
-        🏛️ <span>Modern Civic Platform</span>
+                    🏛️ <span>Modern Civic Platform</span>
 
-        </div>
-
-        <ul class="official-menu">
-
-        <li><a href="#" onclick="officialMenu('dash'); dashbord();">📊 Dashboard</a></li>
-
-        <li><a href="#" onclick="officialMenu('suggestion');loadDashboard();">🏗 Development Suggestions</a></li>
-
-        <li><a href="#" onclick="officialMenu('analysis'); recomended();">🤖 AI Analysis</a></li>
-
-        <li><a href="#" onclick="officialMenu('heatmap')">🗺 Heatmap</a></li>
-
-        <li><a href="#" onclick="officialMenu('infra')">🏥 Infrastructure Gap</a></li>
-
-        <li><a href="#" onclick="officialMenu('budget')">💰 Budget Planner</a></li>
-
-        <li><a href="#" onclick="officialMenu('analytics')">📈 Analytics</a></li>
-
-        <li><a href="#" onclick="officialMenu('assistant-section')">💬 AI Assistant</a></li>
-
-        <li><a href="#" onclick="officialMenu('settings')">⚙ Settings</a></li>
-
-        </ul>
-
-        </div>
-
-        <div id="dash" class="official-content official-page">
-
-        <div class="top-header">
-
-        <div>
-
-        <h2>
-
-        Official Dashboard
-
-        </h2>
-
-        <p>
-
-        Welcome,
-
-        <span id="officialName">
-
-        Municipality
-
-        </span>
-
-        </p>
-
-        </div>
-
-        <button class="btn btn-primary">
-
-        Refresh
-
-        </button>
-
-        </div>
-
-        <div class="welcome-card">
-
-        <h3>
-
-        AI Powered Development Portal
-
-        </h3>
-
-        <p>
-
-        Monitor citizen development requests, prioritize projects using AI and manage constituency development from one dashboard.
-
-        </p>
-
-        </div>
-
-        <div class="stats-grid">
-
-        <div class="stat-card blue">
-
-        <h5>
-
-        Development Suggestions
-
-        </h5>
-
-        <div id="development_suggstion" class="stat-number">
-
-        124
-
-        </div>
-
-        </div>
-
-        <div class="stat-card green">
-
-        <h5>
-
-        Approved Projects
-
-        </h5>
-
-        <div id="approve_project" class="stat-number">
-
-        38
-
-        </div>
-
-        </div>
-
-        <div class="stat-card orange">
-
-        <h5>
-
-        Pending Review
-
-        </h5>
-
-        <div id="pending_review" class="stat-number">
-
-        57
-
-        </div>
-
-        </div>
-
-        <div class="stat-card red">
-
-        <h5>
-
-        High Priority
-
-        </h5>
-
-        <div class="stat-number">
-
-        1
-
-        </div>
-
-        </div>
-
-        </div>
-        
-
-        </div>
-
-        <!-- Recent Suggestions -->
-
-        <div id="suggestion" class="dashboard-panel official-page mt-4">
-
-            <div class="panel-header">
-                <h4>📋 Recent Development Suggestions</h4>
-                <button class="btn btn-sm btn-primary">View All</button>
-            </div>
-
-            <div class="row mb-4">
-            <div class="col-md-4">
-                <div class="card p-3 border-0 shadow-sm text-center rounded-4">
-                    <h1 id="total-reports" class="display-4 fw-bold text-danger">0</h1>
-                    <small class="text-muted">Active Complaints</small>
                 </div>
+
+                <ul class="official-menu">
+
+                    <li><a href="#" onclick="officialMenu('dash'); dashbord();">📊 Dashboard</a></li>
+
+                    <li><a href="#" onclick="officialMenu('suggestion');loadDashboard();">🏗 Development Suggestions</a>
+                    </li>
+
+                    <li><a href="#" onclick="officialMenu('analysis'); recomended();">🤖 AI Analysis</a></li>
+
+                    <li><a href="#" onclick="officialMenu('heatmap')">🗺 Heatmap</a></li>
+
+                    <li><a href="#" onclick="officialMenu('infra')">🏥 Infrastructure Gap</a></li>
+
+                    <li><a href="#" onclick="officialMenu('budget')">💰 Budget Planner</a></li>
+
+                    <li><a href="#" onclick="officialMenu('analytics')">📈 Analytics</a></li>
+
+                    <li><a href="#" onclick="officialMenu('assistant-section')">💬 AI Assistant</a></li>
+
+                    <li><a href="#" onclick="officialMenu('settings')">⚙ Settings</a></li>
+
+                </ul>
+
             </div>
-            <div class="col-md-8 d-flex align-items-center justify-content-end">
-                <button onclick="loadDashboard()" class="btn btn-outline-primary rounded-pill px-4 me-2"><i class="bi bi-arrow-clockwise"></i> Refresh</button>
-            </div>
-        </div>
-        <div id="reports-container" class="row">
-            <div class="text-center text-muted">Loading reports...</div>
-        </div>
-    </div>
 
-    <div id="analysis" class="dashboard-row official-page">
-        
-        <div class="recommendation-panel">
+            <div id="dash" class="official-content official-page">
 
-        <h4>🤖 AI Recommended Projects</h4>
-            <button class="btn btn-success w-100 mb-3" onclick="analysis()">
+                <div class="top-header">
 
-        Analysis
+                    <div>
 
-        </button>
-        
-        <div id="recommend-container" class="recommend-container">
-            
-        </div>
+                        <h2>
 
-        </div>
-        <div class="quick-panel">
+                            Official Dashboard
 
-        <h4>⚡ Quick Actions</h4>
+                        </h2>
 
-        <button class="btn btn-primary w-100 mb-3">
+                        <p>
 
-        ➕ Add Development Project
+                            Welcome,
 
-        </button>
+                            <span id="officialName">
 
-        <button class="btn btn-success w-100 mb-3">
+                                Municipality
 
-        📊 Analytics
+                            </span>
 
-        </button>
+                        </p>
 
-        <button class="btn btn-warning w-100 mb-3">
-
-        🗺 Demand Heatmap
-
-        </button>
-
-        <button class="btn btn-dark w-100">
-
-        💰 Budget Planner
-
-        </button>
-
-        </div>
-
-        </div>
-        
-        <div id="heatmap" class="official-content official-page">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h4 class="mb-0 fw-bold">🗺️ Official Heat Map & Spatial Tracking</h4>
-            </div>
-            
-            <div class="row g-4 h-100">
-                <!-- Map on the Left -->
-                <div class="col-lg-8">
-                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden h-100">
-                        <div id="officialHeatmap" style="height: 650px; width: 100%;"></div>
                     </div>
+
+                    <button class="btn btn-primary">
+
+                        Refresh
+
+                    </button>
+
                 </div>
 
-                <!-- Charts on the Right -->
-                <div class="col-lg-4 d-flex flex-column gap-4">
-                    <div class="card border-0 shadow-sm rounded-4 p-4 flex-grow-1">
-                        <h5 class="fw-bold text-dark mb-3 text-center">Issue Types</h5>
-                        <div style="height: 250px; position: relative; width: 100%;">
-                            <canvas id="officialCategoryChart"></canvas>
+                <div class="welcome-card">
+
+                    <h3>
+
+                        AI Powered Development Portal
+
+                    </h3>
+
+                    <p>
+
+                        Monitor citizen development requests, prioritize projects using AI and manage constituency
+                        development from one dashboard.
+
+                    </p>
+
+                </div>
+
+                <div class="stats-grid">
+
+                    <div class="stat-card blue">
+
+                        <h5>
+
+                            Development Suggestions
+
+                        </h5>
+
+                        <div id="development_suggstion" class="stat-number">
+
+                            124
+
+                        </div>
+
+                    </div>
+
+                    <div class="stat-card green">
+
+                        <h5>
+
+                            Approved Projects
+
+                        </h5>
+
+                        <div id="approve_project" class="stat-number">
+
+                            38
+
+                        </div>
+
+                    </div>
+
+                    <div class="stat-card orange">
+
+                        <h5>
+
+                            Pending Review
+
+                        </h5>
+
+                        <div id="pending_review" class="stat-number">
+
+                            57
+
+                        </div>
+
+                    </div>
+
+                    <div class="stat-card red">
+
+                        <h5>
+
+                            High Priority
+
+                        </h5>
+
+                        <div class="stat-number">
+
+                            1
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+            <!-- Recent Suggestions -->
+
+            <div id="suggestion" class="dashboard-panel official-page mt-4">
+
+                <div class="panel-header">
+                    <h4>📋 Recent Development Suggestions</h4>
+                    <button class="btn btn-sm btn-primary">View All</button>
+                </div>
+
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="card p-3 border-0 shadow-sm text-center rounded-4">
+                            <h1 id="total-reports" class="display-4 fw-bold text-danger">0</h1>
+                            <small class="text-muted">Active Complaints</small>
                         </div>
                     </div>
-                    <div class="card border-0 shadow-sm rounded-4 p-4 flex-grow-1">
-                        <h5 class="fw-bold text-dark mb-3 text-center">Affected Zones</h5>
-                        <div style="height: 250px; position: relative; width: 100%;">
-                            <canvas id="officialZoneChart"></canvas>
-                        </div>
+                    <div class="col-md-8 d-flex align-items-center justify-content-end">
+                        <button onclick="loadDashboard()" class="btn btn-outline-primary rounded-pill px-4 me-2"><i
+                                class="bi bi-arrow-clockwise"></i> Refresh</button>
                     </div>
                 </div>
+                <div id="reports-container" class="row">
+                    <div class="text-center text-muted">Loading reports...</div>
+                </div>
             </div>
-        </div>
 
-        <!-- Move AI Assistant inside official-wrapper -->
-        <div id="assistant-section" class="official-content official-page">
-            <div class="container mt-4">
-                <h2 class="mb-4">🤖 Official AI Assistant</h2>
-                <div class="card shadow-lg">
-                    <div class="card-body">
-                        <div id="chatBox" style="height:450px;overflow-y:auto;">
-                            <div class="alert alert-primary">
-                                Hello Official 👋<br>
-                                I can help you analyze reports, projects and citizen suggestions.
+            <div id="analysis" class="dashboard-row official-page">
+
+                <div class="recommendation-panel">
+
+                    <h4>🤖 AI Recommended Projects</h4>
+                    <button class="btn btn-success w-100 mb-3" onclick="analysis()">
+
+                        Analysis
+
+                    </button>
+
+                    <div id="recommend-container" class="recommend-container">
+
+                    </div>
+
+                </div>
+                <div class="quick-panel">
+
+                    <h4>⚡ Quick Actions</h4>
+
+                    <button class="btn btn-primary w-100 mb-3">
+
+                        ➕ Add Development Project
+
+                    </button>
+
+                    <button class="btn btn-success w-100 mb-3" onclick="officialMenu('analytics')">
+                        📊 Analytics
+                    </button>
+
+                    <button class="btn btn-warning w-100 mb-3">
+
+                        🗺 Demand Heatmap
+
+                    </button>
+
+                    <button class="btn btn-dark w-100">
+
+                        💰 Budget Planner
+
+                    </button>
+
+                </div>
+
+            </div>
+
+            <div id="heatmap" class="official-content official-page">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="mb-0 fw-bold">🗺️ Official Heat Map & Spatial Tracking</h4>
+                </div>
+
+                <div class="row g-4 h-100">
+                    <!-- Map on the Left -->
+                    <div class="col-lg-8">
+                        <div class="card border-0 shadow-sm rounded-4 overflow-hidden h-100">
+                            <div id="officialHeatmap" style="height: 650px; width: 100%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Charts on the Right -->
+                    <div class="col-lg-4 d-flex flex-column gap-4">
+                        <div class="card border-0 shadow-sm rounded-4 p-4 flex-grow-1">
+                            <h5 class="fw-bold text-dark mb-3 text-center">Issue Types</h5>
+                            <div style="height: 250px; position: relative; width: 100%;">
+                                <canvas id="officialCategoryChart"></canvas>
                             </div>
                         </div>
-                        <div class="input-group mt-3">
-                            <input id="chatInput" type="text" class="form-control" placeholder="Ask something...">
-                            <button class="btn btn-primary" onclick="sendMessage()">Send</button>
+                        <div class="card border-0 shadow-sm rounded-4 p-4 flex-grow-1">
+                            <h5 class="fw-bold text-dark mb-3 text-center">Affected Zones</h5>
+                            <div style="height: 250px; position: relative; width: 100%;">
+                                <canvas id="officialZoneChart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-    </div> <!-- Close official-wrapper -->
+            <!-- Move AI Assistant inside official-wrapper -->
+            <div id="assistant-section" class="official-content official-page">
+                <div class="container mt-4">
+                    <h2 class="mb-4">🤖 Official AI Assistant</h2>
+                    <div class="card shadow-lg">
+                        <div class="card-body">
+                            <div id="chatBox" style="height:450px;overflow-y:auto;">
+                                <div class="alert alert-primary">
+                                    Hello Official 👋<br>
+                                    I can help you analyze reports, projects and citizen suggestions.
+                                </div>
+                            </div>
+                            <div class="input-group mt-3">
+                                <input id="chatInput" type="text" class="form-control" placeholder="Ask something...">
+                                <button class="btn btn-primary" onclick="sendMessage()">Send</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Budget Planner Section -->
+            <div id="budget" class="official-content official-page">
+                <div class="dashboard-container">
+                    <!-- Side Panel for Budget Input -->
+                    <div class="side-panel">
+                        <h3>Budget Planning</h3>
+                        <p class="text-muted small">Enter the total allocated funds for development projects in your locality.</p>
+                        <div class="mb-3">
+                            <label for="totalBudget" class="fw-bold mb-1">Total Budget (₹)</label>
+                            <input type="number" id="totalBudget" placeholder="e.g. 5000000" class="budget-input form-control">
+                        </div>
+                        <button onclick="generateBudgetAllocation()" class="btn-primary mt-2 w-100">Generate Allocation</button>
+                        
+                        <hr class="my-4">
+                        <h4>Custom Projects</h4>
+                        <p class="text-muted small">Manually announce a new project to citizens.</p>
+                        <button class="btn btn-outline-primary w-100" data-bs-toggle="modal" data-bs-target="#customProjectModal">
+                            <i class="bi bi-plus-circle me-1"></i>Create Custom Project
+                        </button>
+                        
+                        <div id="loadingIndicator" style="display: none; margin-top: 20px;">
+                            <div class="d-flex align-items-center text-primary">
+                                <div class="spinner-border spinner-border-sm me-2"></div>
+                                <small>AI is analyzing priorities...</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Content for Allocation Results -->
+                    <div class="main-content">
+                        <h2 class="mb-4">AI-Recommended Allocations</h2>
+                        <div id="allocationResults" class="results-grid">
+                            <p class="placeholder-text text-muted">Awaiting budget input...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics / Assigned Projects Section -->
+            <div id="analytics" class="official-content official-page">
+                <div class="dashboard-container single-column">
+                    <div class="header-section mb-4">
+                        <h2 class="fw-bold">Assigned Projects Analytics</h2>
+                        <p class="text-muted">A comprehensive view of all locked projects and their allocated budgets.</p>
+                        <div class="alert alert-success d-inline-block px-4 py-2 mt-2 rounded-pill shadow-sm">
+                            <strong>Total Budget Allocated:</strong> <span id="total-allocated-budget" class="fs-5 ms-2">₹0</span>
+                        </div>
+                    </div>
+                    <div id="official-assigned-container" class="row g-4 mt-2">
+                        <div class="text-center text-muted py-5">
+                            <div class="spinner-border text-success"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Infrastructure Gap Section -->
+            <div id="infra" class="official-content official-page">
+                <div class="dashboard-container single-column">
+                    <div class="header-section mb-4">
+                        <h2 class="fw-bold">Critical Infrastructure Gaps</h2>
+                        <p class="text-muted">AI-identified systemic issues ranked by community voting volume.</p>
+                        <button class="btn btn-primary" onclick="loadInfrastructureGaps()">Analyze Now</button>
+                    </div>
+
+                    <div id="gapLeaderboard" class="leaderboard-container mt-3">
+                        <p class="text-muted text-center py-4">Click "Analyze Now" to generate insights.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div> <!-- Close official-wrapper -->
     </div> <!-- Close admin-section -->
 
     <div id="map-section" class="section-view container mt-5 pt-5">
@@ -917,7 +1010,8 @@
         <div class="section-banner"
             style="background-image: url('https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1920&q=80');">
             <div class="section-banner-content text-center text-white">
-                <h2 class="fw-bold display-5 text-warning" style="text-shadow: 0 2px 10px rgba(0,0,0,0.5);">🏆 <span data-i18n="lead-title">Top Contributors</span></h2>
+                <h2 class="fw-bold display-5 text-warning" style="text-shadow: 0 2px 10px rgba(0,0,0,0.5);">🏆 <span
+                        data-i18n="lead-title">Top Contributors</span></h2>
                 <p class="fs-5 opacity-75"><span data-i18n="lead-desc">The heroes making our society better</span></p>
             </div>
         </div>
@@ -958,14 +1052,18 @@
                 </div>
                 <div class="col-md-6 p-5 d-flex flex-column justify-content-center text-start">
                     <h2 class="fw-bold text-primary mb-4" data-i18n="about-title">About Public Priority</h2>
-                    <p class="text-muted mb-4 fs-5"><span data-i18n="about-desc">We are a team of students from MCKV Institute of Engineering dedicated to solving civic issues using modern technology. Our goal is to connect citizens directly with local authorities.</span></p>
+                    <p class="text-muted mb-4 fs-5"><span data-i18n="about-desc">We are a team of students from MCKV
+                            Institute of Engineering dedicated to solving civic issues using modern technology. Our goal
+                            is to connect citizens directly with local authorities.</span></p>
                     <hr class="mb-4">
                     <h5 class="fw-bold" data-i18n="about-contact">Contact Support</h5>
                     <p class="mb-4"><i class="bi bi-envelope-at text-primary me-2"></i> <a
                             href="mailto:support@publicpriority.com"
                             class="text-decoration-none">support@publicpriority.com</a></p>
                     <div class="mt-auto p-3 bg-light rounded-3 text-center border border-primary border-opacity-25">
-                        <p class="text-primary mb-0 fw-bold"><i class="bi bi-tree-fill me-2"></i> <span data-i18n="about-footer">Dedicated to the Sustainable Development of Our Society</span></p>
+                        <p class="text-primary mb-0 fw-bold"><i class="bi bi-tree-fill me-2"></i> <span
+                                data-i18n="about-footer">Dedicated to the Sustainable Development of Our Society</span>
+                        </p>
                     </div>
                 </div>
             </div>
@@ -982,32 +1080,38 @@
 
                 <div class="modal-body p-4">
                     <div class="nav nav-pills nav-fill mb-4">
-                        <button class="nav-link active" id="tab-citizen" onclick="setLoginType('citizen')">👤 <span data-i18n="login-tab-citizen">Citizen</span></button>
-                        <button class="nav-link" id="tab-official" onclick="setLoginType('official')">🏛️ <span data-i18n="login-tab-official">Official</span></button>
+                        <button class="nav-link active" id="tab-citizen" onclick="setLoginType('citizen')">👤 <span
+                                data-i18n="login-tab-citizen">Citizen</span></button>
+                        <button class="nav-link" id="tab-official" onclick="setLoginType('official')">🏛️ <span
+                                data-i18n="login-tab-official">Official</span></button>
                     </div>
 
                     <form onsubmit="event.preventDefault(); handleLogin();">
 
                         <div class="mb-3" id="orgInputGroup" style="display:none;">
-                            <label class="fw-bold small text-muted ms-3 mb-1"><span data-i18n="login-lbl-org">Municipality / Org Name</span></label>
+                            <label class="fw-bold small text-muted ms-3 mb-1"><span
+                                    data-i18n="login-lbl-org">Municipality / Org Name</span></label>
                             <input type="text" id="loginOrg" class="form-control rounded-pill"
                                 placeholder="e.g. Howrah Municipal Corp" data-i18n="login-ph-org">
                         </div>
 
                         <div class="mb-3">
-                            <label class="fw-bold small text-muted ms-3 mb-1"><span data-i18n="login-lbl-email">Email Address</span></label>
+                            <label class="fw-bold small text-muted ms-3 mb-1"><span data-i18n="login-lbl-email">Email
+                                    Address</span></label>
                             <input type="email" id="loginEmail" class="form-control rounded-pill"
                                 placeholder="name@example.com" required>
                         </div>
 
                         <div class="mb-3">
-                            <label class="fw-bold small text-muted ms-3 mb-1"><span data-i18n="login-lbl-pass">Password</span></label>
+                            <label class="fw-bold small text-muted ms-3 mb-1"><span
+                                    data-i18n="login-lbl-pass">Password</span></label>
                             <input type="password" id="loginPass" class="form-control rounded-pill"
                                 placeholder="••••••••" required>
                         </div>
 
                         <div class="d-flex justify-content-between align-items-center mb-4 px-2">
-                            <a href="#" onclick="forgotPassPopup()" class="text-decoration-none small text-muted" data-i18n="login-forgot">Forgot Password?</a>
+                            <a href="#" onclick="forgotPassPopup()" class="text-decoration-none small text-muted"
+                                data-i18n="login-forgot">Forgot Password?</a>
                             <a href="#" onclick="prepareSignupModal()" data-bs-toggle="modal"
                                 data-bs-target="#signupModal" class="text-decoration-none small fw-bold text-success"
                                 id="createAccountLink" data-i18n="login-create">Create Account</a>
@@ -1039,13 +1143,15 @@
             <!-- Charts on the Right -->
             <div class="col-lg-4 d-flex flex-column gap-4">
                 <div class="card border-0 shadow-sm rounded-4 p-4 flex-grow-1">
-                    <h5 class="fw-bold text-dark mb-3 text-center" data-i18n="heatmap-chart1-title">Issues Arising (Over Time)</h5>
+                    <h5 class="fw-bold text-dark mb-3 text-center" data-i18n="heatmap-chart1-title">Issues Arising (Over
+                        Time)</h5>
                     <div style="height: 250px; position: relative;">
                         <canvas id="categoryChart"></canvas>
                     </div>
                 </div>
                 <div class="card border-0 shadow-sm rounded-4 p-4 flex-grow-1">
-                    <h5 class="fw-bold text-dark mb-3 text-center" data-i18n="heatmap-chart2-title">Resolution Status</h5>
+                    <h5 class="fw-bold text-dark mb-3 text-center" data-i18n="heatmap-chart2-title">Resolution Status
+                    </h5>
                     <div style="height: 250px; position: relative;">
                         <canvas id="resolutionChart"></canvas>
                     </div>
@@ -1058,55 +1164,64 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content p-2 rounded-4">
                 <div class="modal-header border-0">
-                    <h4 class="modal-title fw-bold ms-2" id="signupTitle"><span data-i18n="signup-title">Join the Movement</span> 🌍</h4>
+                    <h4 class="modal-title fw-bold ms-2" id="signupTitle"><span data-i18n="signup-title">Join the
+                            Movement</span> 🌍</h4>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body p-4">
                     <form onsubmit="event.preventDefault(); handleSignup();">
 
                         <div class="mb-3">
-                            <input type="text" id="signupName" class="form-control rounded-pill" placeholder="Full Name" data-i18n="signup-ph-name"
-                                required>
+                            <input type="text" id="signupName" class="form-control rounded-pill" placeholder="Full Name"
+                                data-i18n="signup-ph-name" required>
                         </div>
 
                         <div class="mb-3" id="zonename" style="display: none;">
-                            <label class="ms-3 mb-1 small text-muted fw-bold"><span data-i18n="signup-lbl-loc">Where are you located?</span></label>
+                            <label class="ms-3 mb-1 small text-muted fw-bold"><span data-i18n="signup-lbl-loc">Where are
+                                    you located?</span></label>
                             <div class="d-flex align-items-center gap-2">
                                 <div class="position-relative" style="width: 35%;">
-                                    <select id="signupZoneType" class="form-select rounded-pill pe-5" style="appearance: none; -webkit-appearance: none;">
+                                    <select id="signupZoneType" class="form-select rounded-pill pe-5"
+                                        style="appearance: none; -webkit-appearance: none;">
                                         <option value="Municipality" data-i18n="signup-zone-muni">Municipality</option>
                                         <option value="Panchayat" data-i18n="signup-zone-panch">Panchayat</option>
                                     </select>
-                                    <i class="bi bi-chevron-down position-absolute top-50 end-0 translate-middle-y me-3 text-muted" style="pointer-events: none;"></i>
+                                    <i class="bi bi-chevron-down position-absolute top-50 end-0 translate-middle-y me-3 text-muted"
+                                        style="pointer-events: none;"></i>
                                 </div>
                                 <input type="text" id="signupZoneName" class="form-control rounded-pill"
-                                    placeholder="Name (e.g. Howrah)" data-i18n="signup-ph-zone" required style="width: 40%;">
+                                    placeholder="Name (e.g. Howrah)" data-i18n="signup-ph-zone" required
+                                    style="width: 40%;">
                                 <button class="btn btn-outline-primary rounded-pill px-3" type="button"
                                     onclick="detectSignupLocation()" style="width: 25%;">
                                     <i class="bi bi-geo-alt"></i> <span data-i18n="btn-detect">Detect</span>
                                 </button>
                             </div>
                             <div class="form-text ms-3 small">
-                                <span data-i18n="signup-help-loc">For Citizens: Ensures reports reach the right office.</span>
+                                <span data-i18n="signup-help-loc">For Citizens: Ensures reports reach the right
+                                    office.</span>
                             </div>
                         </div>
 
                         <div class="mb-3">
                             <input type="email" id="signupEmail" class="form-control rounded-pill"
-                                placeholder="<span data-i18n="login-lbl-email">Email Address</span>" required>
+                                placeholder="<span data-i18n=" login-lbl-email">Email Address</span>" required>
                         </div>
 
                         <div class="mb-3">
                             <input type="password" id="signupPass" class="form-control rounded-pill"
-                                placeholder="Password (Min 8 chars, 1 Upper, 1 Sym)" data-i18n="signup-ph-pass" required>
+                                placeholder="Password (Min 8 chars, 1 Upper, 1 Sym)" data-i18n="signup-ph-pass"
+                                required>
                         </div>
 
                         <button type="submit" id="signupSubmitBtn"
-                            class="btn btn-enchanting w-100 rounded-pill py-3 fw-bold" data-i18n="login-create">Create Account</button>
+                            class="btn btn-enchanting w-100 rounded-pill py-3 fw-bold" data-i18n="login-create">Create
+                            Account</button>
                     </form>
                     <div class="text-center mt-3">
-                        <small><span data-i18n="signup-already">Already have an account?</span> <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal"
-                                class="fw-bold text-success" data-i18n="nav-login">Login</a></small>
+                        <small><span data-i18n="signup-already">Already have an account?</span> <a href="#"
+                                data-bs-toggle="modal" data-bs-target="#loginModal" class="fw-bold text-success"
+                                data-i18n="nav-login">Login</a></small>
                     </div>
                 </div>
             </div>
@@ -1114,16 +1229,20 @@
     </div>
 
     <!-- Language Selection Modal -->
-    <div class="modal fade" id="languageModal" tabindex="-1" aria-labelledby="languageModalLabel" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal fade" id="languageModal" tabindex="-1" aria-labelledby="languageModalLabel" aria-hidden="true"
+        data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content bg-white rounded-4 border-0 shadow-lg">
                 <div class="modal-header border-0">
-                    <h5 class="modal-title fw-bold text-dark" id="languageModalLabel"><i class="bi bi-globe"></i> <span data-i18n="lang-title">Select Your Language</span></h5>
+                    <h5 class="modal-title fw-bold text-dark" id="languageModalLabel"><i class="bi bi-globe"></i> <span
+                            data-i18n="lang-title">Select Your Language</span></h5>
                 </div>
                 <div class="modal-body">
-                    <p class="text-secondary small mb-3"><span data-i18n="lang-desc">Choose the language you are most comfortable with. The entire application will be translated instantly.</span></p>
+                    <p class="text-secondary small mb-3"><span data-i18n="lang-desc">Choose the language you are most
+                            comfortable with. The entire application will be translated instantly.</span></p>
                     <div class="position-relative mb-3">
-                        <select id="appLanguageSelect" class="form-select rounded-pill bg-light border-0 px-4 py-2" style="appearance: none; -webkit-appearance: none;">
+                        <select id="appLanguageSelect" class="form-select rounded-pill bg-light border-0 px-4 py-2"
+                            style="appearance: none; -webkit-appearance: none;">
                             <option value="en" selected>English</option>
                             <option value="hi">Hindi (हिंदी)</option>
                             <option value="bn">Bengali (বাংলা)</option>
@@ -1132,15 +1251,17 @@
                             <option value="es">Spanish (Español)</option>
                             <option value="fr">French (Français)</option>
                         </select>
-                        <i class="bi bi-chevron-down position-absolute top-50 end-0 translate-middle-y me-4 text-muted" style="pointer-events: none;"></i>
+                        <i class="bi bi-chevron-down position-absolute top-50 end-0 translate-middle-y me-4 text-muted"
+                            style="pointer-events: none;"></i>
                     </div>
-                    <button class="btn btn-enchanting w-100 rounded-pill py-2 fw-bold" onclick="saveLanguageAndReload()" data-i18n="btn-continue">Continue</button>
+                    <button class="btn btn-enchanting w-100 rounded-pill py-2 fw-bold" onclick="saveLanguageAndReload()"
+                        data-i18n="btn-continue">Continue</button>
                 </div>
             </div>
         </div>
     </div>
 
-    
+
     <!-- AI Chatbot Widget -->
     <div id="ai-chatbot-widget">
         <button id="chatbot-toggle-btn" class="btn btn-primary rounded-circle shadow-lg" onclick="toggleChatbot()">
@@ -1157,23 +1278,32 @@
                     <i class="bi bi-x-lg"></i>
                 </button>
             </div>
-            
-            <div id="chatbot-messages" class="p-3 overflow-auto" style="height: 300px; display: flex; flex-direction: column; gap: 10px;">
+
+            <div id="chatbot-messages" class="p-3 overflow-auto"
+                style="height: 300px; display: flex; flex-direction: column; gap: 10px;">
                 <div class="d-flex flex-column align-items-start">
                     <div class="bg-light text-dark p-2 rounded-3 small shadow-sm" style="max-width: 85%;">
-                        <span data-i18n="chatbot-greeting">Hello! I am your AI assistant. How can I help you today?</span>
+                        <span data-i18n="chatbot-greeting">Hello! I am your AI assistant. How can I help you
+                            today?</span>
                     </div>
                 </div>
             </div>
 
             <div class="chatbot-suggestions p-2 d-flex flex-wrap gap-2 border-top bg-light">
-                <button class="btn btn-sm btn-outline-primary rounded-pill small" onclick="sendChatbotQuestion('How do I report a pothole?')" data-i18n="chatbot-q1">How do I report a pothole?</button>
-                <button class="btn btn-sm btn-outline-primary rounded-pill small" onclick="sendChatbotQuestion('Who reviews my suggestions?')" data-i18n="chatbot-q2">Who reviews my suggestions?</button>
-                <button class="btn btn-sm btn-outline-primary rounded-pill small" onclick="sendChatbotQuestion('How are Civic Points calculated?')" data-i18n="chatbot-q3">How are Civic Points calculated?</button>
+                <button class="btn btn-sm btn-outline-primary rounded-pill small"
+                    onclick="sendChatbotQuestion('How do I report a pothole?')" data-i18n="chatbot-q1">How do I report a
+                    pothole?</button>
+                <button class="btn btn-sm btn-outline-primary rounded-pill small"
+                    onclick="sendChatbotQuestion('Who reviews my suggestions?')" data-i18n="chatbot-q2">Who reviews my
+                    suggestions?</button>
+                <button class="btn btn-sm btn-outline-primary rounded-pill small"
+                    onclick="sendChatbotQuestion('How are Civic Points calculated?')" data-i18n="chatbot-q3">How are
+                    Civic Points calculated?</button>
             </div>
 
             <div class="chatbot-input p-2 border-top d-flex gap-2">
-                <input type="text" id="chatbot-input-field" class="form-control rounded-pill border-0 bg-light" placeholder="Type a message..." data-i18n="chatbot-ph">
+                <input type="text" id="chatbot-input-field" class="form-control rounded-pill border-0 bg-light"
+                    placeholder="Type a message..." data-i18n="chatbot-ph">
                 <button class="btn btn-primary rounded-circle" onclick="processChatbotInput()">
                     <i class="bi bi-send-fill"></i>
                 </button>
@@ -1187,6 +1317,73 @@
     <script src="static/js/i18n.js"></script>
     <script type="module" src="static/js/logic.js"></script>
     <script src="static/js/official.js"></script>
+
+    <!-- Custom Project Modal -->
+    <div class="modal fade" id="customProjectModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-3 rounded-4 border-0 shadow-lg">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="fw-bold mb-0"><i class="bi bi-building me-2 text-primary"></i>Announce Custom Project</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="customProjectForm" onsubmit="submitCustomProject(event)">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Project Title</label>
+                            <input type="text" id="cpTitle" class="form-control bg-light" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Description</label>
+                            <textarea id="cpDescription" class="form-control bg-light" rows="3" required></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Allocated Amount (₹)</label>
+                                <input type="number" id="cpAmount" class="form-control bg-light" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">Target Beneficiaries</label>
+                                <input type="text" id="cpBeneficiaries" class="form-control bg-light" placeholder="e.g. Local Residents" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 rounded-pill py-2 fw-bold mt-2">Announce Project</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Project Details Modal -->
+    <div class="modal fade" id="projectDetailsModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content p-2 rounded-4 border-0 shadow-lg">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="fw-bold mb-0 text-primary" id="pdTitle">Project Title</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="p-3 bg-light rounded-3 mb-3">
+                        <small class="text-muted fw-bold d-block mb-1">DESCRIPTION</small>
+                        <p id="pdDescription" class="mb-0">Project description here.</p>
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <div class="p-3 bg-primary-subtle text-primary-emphasis rounded-3 h-100">
+                                <small class="fw-bold d-block mb-1 opacity-75">BUDGET ALLOCATED</small>
+                                <h5 id="pdAmount" class="mb-0 fw-bold">₹0</h5>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-3 bg-success-subtle text-success-emphasis rounded-3 h-100">
+                                <small class="fw-bold d-block mb-1 opacity-75">BENEFICIARIES</small>
+                                <h6 id="pdBeneficiaries" class="mb-0 fw-bold">Citizens</h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
 </body>
