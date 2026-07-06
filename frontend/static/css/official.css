@@ -24,6 +24,7 @@
     background:var(--sidebar);
     color:white;
     padding:25px 15px;
+    flex-shrink: 0;
 }
 
 .official-logo{
@@ -159,13 +160,7 @@ width:100%;
     box-shadow:0 10px 25px rgba(0,0,0,.08);
 }
 
-.recommend-card{
-    border-left:5px solid #0d6efd;
-    background:#f8f9fa;
-    padding:15px;
-    border-radius:10px;
-    margin-top:20px;
-}
+
 
 .quick-panel button{
     font-weight:600;
@@ -180,6 +175,9 @@ width:100%;
 .official-page.active{
     display:block;
 }
+
+
+
 
 
 
