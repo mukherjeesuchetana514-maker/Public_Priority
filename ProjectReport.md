@@ -5,9 +5,9 @@
 
 ## 1. Introduction & Current Scenario
 
-In today's fast-paced urban environments, the gap between citizens and local authorities often leads to delayed infrastructure repairs, ignored community needs, and a general sense of civic disconnect. Currently, if a citizen spots a broken streetlight, an overflowing garbage bin, or a dangerous pothole, the process to report it involves navigating bureaucratic red tape, outdated municipal websites, or standing in long queues at local offices. 
+In today's fast-paced urban and rural environments, the gap between citizens and local authorities often leads to delayed resolutions, ignored community needs, and a general sense of civic disconnect. Currently, if a citizen spots a broken streetlight, severe environmental pollution, encounters an act of social humiliation, or identifies any systemic community issue, the process to report it involves navigating bureaucratic red tape, outdated municipal websites, or standing in long queues at local offices. 
 
-**Public Priority** is built precisely for this current scenario. It is a modern, AI-powered civic platform designed to democratize urban development. By providing a streamlined, digital-first approach to community management, it empowers citizens to instantly report issues, suggest developmental projects, and directly engage with their local officials. In an era where digital immediacy is expected, Public Priority bridges the crucial gap between identifying a societal problem and executing its solution.
+**Public Priority** is built precisely for this current scenario. It is a modern, AI-powered civic platform designed to democratize societal development. By providing a streamlined, digital-first approach to community management, it empowers citizens to instantly report any issue—from physical infrastructure failures to social and environmental hazards—suggest developmental projects, and directly engage with their local officials. In an era where digital immediacy is expected, Public Priority bridges the crucial gap between identifying a societal problem and executing its solution.
 
 ---
 
@@ -16,7 +16,7 @@ In today's fast-paced urban environments, the gap between citizens and local aut
 Public Priority offers a comprehensive suite of features split between two primary user roles: **Citizens** and **Officials**.
 
 ### Citizen Functions
-*   **Suggest Development / Report Issues:** Citizens can easily submit reports regarding local infrastructure gaps (e.g., sanitation, road repairs, public safety) complete with descriptions, location tagging, and image uploads.
+*   **Suggest Development / Report Issues:** Citizens can easily submit reports regarding any community concern (e.g., physical infrastructure gaps, environmental pollution, social humiliation, or public safety hazards) complete with descriptions, location tagging, and image uploads.
 *   **Community Suggestions Feed:** A public feed where citizens can view reports made by others in their community, fostering a sense of shared responsibility.
 *   **Civic Points System:** To gamify and encourage engagement, citizens are rewarded with "Civic Points" for active participation and reporting.
 *   **My Reports Tracking:** A personalized dashboard where citizens can track the real-time status of their submitted issues (Pending, In Progress, Resolved) and view official replies.
