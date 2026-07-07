@@ -114,6 +114,7 @@ onAuthStateChanged(auth, async (user) => {
 
                 const pointsEl = document.getElementById("civic-points");
                 if (pointsEl) pointsEl.innerText = userData.civicPoints || 0;
+                checkNotifications();
             }
         }
     } else {
@@ -1493,7 +1494,7 @@ window.loadAssignedProjects = async function () {
     container.innerHTML = '<div class="text-center py-5 w-100"><div class="spinner-border text-primary"></div></div>';
 
     try {
-        const q = query(collection(db, "reports"), orderBy("priorityScore", "desc"));
+        const q = query(collection(db, "projects"), orderBy("priorityScore", "desc"));
         const querySnapshot = await getDocs(q);
         let html = "";
         let count = 0;
@@ -1525,9 +1526,6 @@ window.loadAssignedProjects = async function () {
             </div>
             <h5 class="fw-bold mb-3">${data.projectName || data.summary}</h5>
             <div class="d-flex justify-content-end mt-3 gap-2">
-                <button onclick="details('${doc.id}','recomended','full-recommendations-container')" class="btn btn-outline-primary rounded-pill px-4">
-                    <i class="bi bi-file-text"></i> Original Report
-                </button>
                 <button onclick="viewProjectDetails('${doc.id}')" class="btn btn-primary rounded-pill px-4">
                     <i class="bi bi-info-circle"></i> Project Details
                 </button>
@@ -1554,7 +1552,7 @@ window.loadOfficialAnalytics = async function () {
     container.innerHTML = '<div class="text-center py-5 w-100"><div class="spinner-border text-success"></div></div>';
 
     try {
-        const q = query(collection(db, "reports"), orderBy("priorityScore", "desc"));
+        const q = query(collection(db, "projects"), orderBy("priorityScore", "desc"));
         const querySnapshot = await getDocs(q);
         let html = "";
         let totalBudget = 0;
@@ -1590,9 +1588,7 @@ window.loadOfficialAnalytics = async function () {
             </div>
             <h5 class="fw-bold mb-3">${data.projectName || data.summary}</h5>
             <div class="d-flex justify-content-end mt-3 gap-2">
-                <button onclick="details('${doc.id}','analytics','official-assigned-container')" class="btn btn-outline-primary rounded-pill px-4">
-                    <i class="bi bi-file-text"></i> Original Report
-                </button>
+                
                 <button onclick="viewProjectDetails('${doc.id}')" class="btn btn-primary rounded-pill px-4">
                     <i class="bi bi-info-circle"></i> Project Details
                 </button>
@@ -2394,56 +2390,84 @@ window.generateBudgetAllocation = async function() {
             
             reports.push({ 
                 id: doc.id, 
-                issue: data.issue || data.description,
+                issue: data.description,
                 category: data.category,
                 priorityScore: data.priorityScore,
-                location: data.zone_name || data.location || "Unknown"
+                lat:data.location.lat,
+                lng:data.location.lng
             });
         });
 
         // 2. Initialize Gemini AI
-        const API_KEY = (window.CONFIG && window.CONFIG.GEMINI_API_KEY) ? window.CONFIG.GEMINI_API_KEY : "GEMINI_API_kET";
+        const API_KEY = (window.CONFIG && window.CONFIG.GEMINI_API_KEY) ? window.CONFIG.GEMINI_API_KEY : "GEMINI_API_KEY";
         const genAI = new GoogleGenerativeAI(API_KEY);
         const model = genAI.getGenerativeModel({
-            model: "gemini-flash-latest",
+            model: "gemini-2.5-flash",
             generationConfig: { responseMimeType: "application/json" }
         });
 
         // 3. Prompt Gemini to act as a financial planner
         const prompt = `
-            You are an expert municipal financial planner. 
-            Total Available Budget: ₹${budgetInput}
-            
-            Here are the prioritized citizen reports:
-            ${JSON.stringify(reports)}
+            You are an AI planning officer for a municipal corporation.
 
-            Create a list of specific development projects to address these issues. 
-            Distribute the total budget across these projects based on their priority score. 
-            If the budget is too small to cover everything, assign 0 to lower-priority projects and explain the shortfall in a "notes" field.
+Total Available Budget:
+₹${budgetInput}
 
-            Return a JSON array exactly matching this structure:
-            [
-              {
-                "reportId": "the_id_from_reports_data",
-                "projectName": "Name of proposed project",
-                "targetIssue": "Summary of the issue being fixed",
-                "allocatedAmount": 0,
-                "targetBeneficiaries": "Who exactly will benefit from this? DO NOT just say 'Community'. Specify exactly who: e.g. school students, office goers, housewives, farmers, elderly, animals, local businesses, etc.",
-                "notes": "Explanation of allocation or shortfall"
-              }
-            ]
-        `;
+Below are the analyzed citizen reports.
+
+${JSON.stringify(reports)}
+
+Each report contains:
+- reportId
+- issue
+- category
+- priorityScore
+- latitude
+- longitude
+
+Your task is to propose one or more municipal projects.
+
+Rules:
+
+1. A project may cover one or more reports.
+2. Combine reports ONLY if:
+   - they describe the same civic issue, AND
+   - they are geographically close to each other.
+3. Never combine unrelated issue categories.
+4. Every reportId may appear in at most one project.
+5. The sum of allocatedAmount across ALL projects must equal exactly ₹${budgetInput}.
+6. Choose a suitable affected location for each project.
+   - If the project covers one report, use that report's coordinates.
+   - If the project covers multiple nearby reports, return the central location (average or most appropriate point).
+7. Do not invent reports.
+8. Return ONLY valid JSON.
+
+Return exactly this format:
+
+[
+  {
+    "reportIds": ["id1", "id2"],
+    "projectName": "",
+    "targetIssue": "",
+    "allocatedAmount": 0,
+    "targetBeneficiaries": "",
+    "affectedLocation": {
+      "lat": 0,
+      "lng": 0
+    },
+    "notes": ""
+  }
+]`;
 
         const result = await model.generateContent(prompt);
         let responseText = result.response.text();
         responseText = responseText.replace(/```json/gi, "").replace(/```/gi, "").trim();
         const allocations = JSON.parse(responseText);
-
         // 4. Render the UI
         loading.style.display = "none";
         allocations.forEach(project => {
-            const originalReport = reports.find(r => r.id === project.reportId);
-            const isAssigned = originalReport ? originalReport.isAssigned : false;
+            
+            const isAssigned = false;
             
             const card = document.createElement("div");
             card.className = "allocation-card";
@@ -2457,10 +2481,10 @@ window.generateBudgetAllocation = async function() {
                 <p class="notes">${project.notes}</p>
                 <div class="d-flex gap-2 mt-2">
                     <button class="btn btn-sm w-100 ${isAssigned ? 'btn-secondary disabled' : 'btn-success'}" 
-                        onclick="assignBudgetProject(this, '${project.reportId}', '${btoa(JSON.stringify(project))}')">
+                        onclick="assignBudgetProject(this, '${btoa(JSON.stringify(project))}')">
                         ${isAssigned ? 'Assigned' : 'Assign Project'}
                     </button>
-                    <button class="btn btn-sm btn-outline-primary w-100" onclick="viewProjectDetails('${project.reportId}')">
+                    <button class="btn btn-sm btn-outline-primary w-100" onclick="viewsuggestProjectDetails('${btoa(JSON.stringify(project))}')">
                         View Details
                     </button>
                 </div>
@@ -2475,35 +2499,209 @@ window.generateBudgetAllocation = async function() {
     }
 };
 
-window.assignBudgetProject = async function(btn, docId, b64ProjectData) {
-    if (!docId || docId === 'undefined') {
-        Swal.fire("Error", "Could not identify project ID. Please regenerate.", "error");
-        return;
-    }
-    
+// suggest project details
+window.viewsuggestProjectDetails = async function(b64Project){
+
+    const project = JSON.parse(atob(b64Project));
+
+    const snapshots = await Promise.all(
+        project.reportIds.map(id =>
+            getDoc(doc(db,"reports",id))
+        )
+    );
+
+    let html = `
+        <h4>${project.projectName}</h4>
+
+        <p>
+            <b>Budget:</b>
+            ₹${Number(project.allocatedAmount).toLocaleString("en-IN")}
+        </p>
+
+        <p>
+            <b>Beneficiaries:</b>
+            ${project.targetBeneficiaries}
+        </p>
+
+        <hr>
+
+        <h5>Reports Solved</h5>
+    `;
+
+    snapshots.forEach(snap=>{
+
+        if(!snap.exists()) return;
+
+        const report=snap.data();
+
+        html+=`
+            <div class="border rounded p-3 mb-3">
+
+                <h6>${report.title}</h6>
+
+                <p>${report.description}</p>
+
+                <span class="badge bg-primary">
+                    Priority ${report.priorityScore}
+                </span>
+
+            </div>
+        `;
+    });
+
+    Swal.fire({
+        title:"Project Details",
+        html:html,
+        width:800
+    });
+
+}
+
+
+
+
+window.assignBudgetProject = async function (btn, b64ProjectData) {
+
     try {
-        const projectData = b64ProjectData ? JSON.parse(atob(b64ProjectData)) : {};
+
+        btn.disabled = true;
         btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Assigning...';
-        btn.classList.add('disabled');
-        
-        await updateDoc(doc(db, "reports", docId), { 
+
+        const projectData = JSON.parse(atob(b64ProjectData));
+
+        // Read first report to obtain common metadata
+        const firstReportId = projectData.reportIds[0];
+
+        const snap = await getDoc(doc(db, "reports", firstReportId));
+
+        if (!snap.exists()) {
+            Swal.fire("Error", "Report not found.", "error");
+            btn.disabled = false;
+            btn.innerHTML = "Assign Project";
+            return;
+        }
+
+        const report = snap.data();
+
+        const projectRef = await addDoc(collection(db, "projects"), {
+
+            projectName: projectData.projectName,
+            summary: projectData.projectName,
+
+            targetIssue: projectData.targetIssue,
+            issue: projectData.targetIssue,
+
+            allocatedAmount: Number(projectData.allocatedAmount),
+
+            targetBeneficiaries: projectData.targetBeneficiaries,
+
+            notes: projectData.notes,
+
+            coveredReports: projectData.reportIds,
+
             isAssigned: true,
-            allocatedAmount: projectData.allocatedAmount || 0,
-            projectName: projectData.projectName || "Unknown Project",
-            targetBeneficiaries: projectData.targetBeneficiaries || "Citizens"
+            isManual: false,
+
+            priorityScore: report.priorityScore,
+            severity: report.severity,
+            department: report.department,
+
+            timestamp: serverTimestamp(),
+
+            zone_name: report.zone_name,
+
+            affected_lat: projectData.affectedLocation.lat,
+            affected_long: projectData.affectedLocation.lng
         });
-        
-        btn.innerHTML = 'Assigned';
-        btn.classList.remove('btn-success');
-        btn.classList.add('btn-secondary');
-        
-        Swal.fire('Assigned!', 'This project is now assigned and visible to citizens.', 'success');
-    } catch (error) {
-        console.error("Assign error:", error);
-        btn.innerHTML = 'Assign Project';
-        btn.classList.remove('disabled');
-        Swal.fire("Error", "Failed to assign project: " + error.message, "error");
+
+        // Mark every report as assigned
+        await Promise.all(
+            projectData.reportIds.map(id =>
+                updateDoc(doc(db, "reports", id), {
+                    isAssigned: true,
+                    assignedProjectId: projectRef.id,
+                    assignedAt: serverTimestamp()
+                })
+            )
+        );
+
+        console.log(projectData.reportIds);
+
+        btn.innerHTML = "Assigned";
+        btn.classList.remove("btn-success");
+        btn.classList.add("btn-secondary");
+        btn.disabled = true;
+
+        Swal.fire(
+            "Assigned!",
+            "Project assigned successfully.",
+            "success"
+        );
+
+        // Find all unique voters
+        const voterSet = new Set();
+
+        const reportSnapshots = await Promise.all(
+            projectData.reportIds.map(id =>
+                getDoc(doc(db, "reports", id))
+            )
+        );
+
+        for (const snap of reportSnapshots) {
+
+            if (!snap.exists()) continue;
+
+            const data = snap.data();
+
+            // Add all voters
+            (data.votedBy || []).forEach(uid => {
+                voterSet.add(uid);
+            });
+
+            // Add the report creator
+            if (data.userEmail) {
+
+                const userQuery = query(
+                    collection(db, "users"),
+                    where("email", "==", data.userEmail),
+                    limit(1)
+                );
+
+                const userSnapshot = await getDocs(userQuery);
+
+                if (!userSnapshot.empty) {
+                    voterSet.add(userSnapshot.docs[0].id);
+                }
+            }
+        }
+
+        const uniqueVoters = [...voterSet];
+
+
+        // Send notifications
+        try {
+            await notification(uniqueVoters, projectRef.id);
+        } catch (err) {
+            console.error("Notification failed:", err);
+        }
+
+    } catch (err) {
+
+        console.error(err);
+
+        btn.disabled = false;
+        btn.innerHTML = "Assign Project";
+
+        Swal.fire(
+            "Error",
+            err.message,
+            "error"
+        );
     }
+
+
+
+    
 };
 
 window.loadInfrastructureGaps = async function() {
@@ -2592,8 +2790,23 @@ window.submitCustomProject = async function (e) {
         const description = document.getElementById('cpDescription').value;
         const amount = document.getElementById('cpAmount').value;
         const beneficiaries = document.getElementById('cpBeneficiaries').value;
+        const AffectedLocation = document.getElementById('AffectedLocation').value;
+
+        // geocoding of affected location
+
+        const response = await fetch(
+            `https://nominatim.openstreetmap.org/search?format=jsonv2&q=${encodeURIComponent(AffectedLocation)}`
+        );
+
+        const data = await response.json();
+
+        console.log(data[0].lat);
+        console.log(data[0].lon);
+
+
+
         
-        await addDoc(collection(db, "reports"), {
+        const projectRef=await addDoc(collection(db, "projects"), {
             projectName: title,
             summary: title,
             targetIssue: description,
@@ -2606,7 +2819,9 @@ window.submitCustomProject = async function (e) {
             department: "Official Notice",
             severity: 10,
             timestamp: serverTimestamp(),
-            zone_name: window.currentUser ? window.currentUser.zone_name : "All Zones"
+            zone_name: window.currentUser ? window.currentUser.zone_name : "All Zones",
+            affected_lat: data[0].lat,
+            affected_long: data[0].lon
         });
         
         const modalElement = document.getElementById('customProjectModal');
@@ -2615,6 +2830,7 @@ window.submitCustomProject = async function (e) {
         document.getElementById('customProjectForm').reset();
         
         Swal.fire("Success", "Custom project announced successfully!", "success");
+        analyze_affected_repots(projectRef.id,title,description,data[0].lat,data[0].lon)
         if(window.recomended) window.recomended();
     } catch (err) {
         Swal.fire("Error", "Could not create project: " + err.message, "error");
@@ -2623,7 +2839,7 @@ window.submitCustomProject = async function (e) {
 
 window.viewProjectDetails = async function(docId) {
     try {
-        const docSnap = await getDoc(doc(db, "reports", docId));
+        const docSnap = await getDoc(doc(db, "projects", docId));
         if (docSnap.exists()) {
             const data = docSnap.data();
             document.getElementById('pdTitle').innerText = data.projectName || data.summary || "Project Details";
@@ -2650,6 +2866,555 @@ window.viewProjectDetails = async function(docId) {
         Swal.fire("Error", err.message, "error");
     }
 };
+
+
+
+// -------------------find affected problem----------------------------- 
+
+// calculat dustence
+function distanceInKm(lat1, lon1, lat2, lon2) {
+    const R = 6371; // Earth's radius in km
+
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+
+    const a =
+        Math.sin(dLat / 2) ** 2 +
+        Math.cos(lat1 * Math.PI / 180) *
+        Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLon / 2) ** 2;
+
+    return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+// analyze affected problem
+
+window.analyze_affected_repots = async function(projectId,projectTitle,projectDescription,projectLat,projectLng) {
+    const nearbyReports = [];
+    const genAI_2 = new GoogleGenerativeAI("GEMINI_API_KEY");
+
+    const model_Official = genAI_2.getGenerativeModel({
+        model: "gemini-2.5-flash"
+    });
+    const snapshot = await getDocs(collection(db, "reports"));
+    snapshot.forEach(docSnap => {
+
+        const data = docSnap.data();
+
+        const lat = data.location?.lat;
+        const lng = data.location?.lng;
+
+        if (lat == null || lng == null) return;
+
+        const distance = distanceInKm(
+            projectLat,
+            projectLng,
+            lat,
+            lng
+        );
+
+        
+
+        if (distance <= 1) { // 1 km radius
+
+            nearbyReports.push({
+                id: docSnap.id,
+                description: data.description,
+                title: data.title,
+                distance:distance
+            });
+
+        }
+
+    });
+
+    if (nearbyReports.length === 0) {
+        console.log("No nearby reports found.");
+        return;
+    }
+
+    
+    console.log(nearbyReports);
+
+    const prompt = `
+You are an AI assistant helping a municipal corporation evaluate civic projects.
+
+A government project has been proposed.
+
+Project Title:
+${projectTitle}
+
+Project Description:
+${projectDescription}
+
+The following reports are already geographically nearby to this project.
+Do NOT consider location or distance. It has already been verified that all reports are nearby.
+
+Your task is to identify ONLY the reports that this project is expected to resolve.
+
+Rules:
+- Include ONLY reports that are either "Fully Covered" or "Partially Covered".
+- Do NOT include reports that are "Not Covered".
+- Base your decision only on the project title, project description, and report details.
+- Return ONLY valid JSON.
+- Do NOT use markdown.
+- Do NOT include explanations outside the JSON.
+
+If no reports are covered, return:
+
+[]
+
+Do not invent report IDs.
+Only use the IDs provided below.
+
+Return this exact JSON format:
+
+[
+  {
+    "id": "",
+    "status": "Fully Covered",
+    "confidence": 0,
+    "reason": ""
+  }
+]
+
+Where:
+- status must be either "Fully Covered" or "Partially Covered".
+- confidence must be an integer between 0 and 100.
+- reason must be a short explanation (maximum 20 words).
+
+
+Nearby Reports:
+
+${nearbyReports.map(r => `
+ID: ${r.id}
+Title: ${r.title}
+Description: ${r.description}
+Distance: ${r.distance.toFixed(2)} km
+`).join("\n")}
+`;
+
+
+    const result = await model_Official.generateContent(prompt);
+    const response = result.response;
+    const text = response.text();
+    const cleanText = text
+        .replace(/```json/g, "")
+        .replace(/```/g, "")
+        .trim();
+
+    if (!cleanText) {
+        console.error("Gemini returned an empty response.");
+        return;
+    }
+
+    let aiReports;
+
+    try {
+        aiReports = JSON.parse(cleanText);
+    } catch (e) {
+        console.error("Invalid JSON from Gemini");
+        console.log(cleanText);
+        return;
+    }
+
+    console.log(aiReports);
+
+    if (aiReports.length === 0) {
+        console.log("No reports matched this project.");
+        return;
+    }
+    // Mark reports as assigned
+    await Promise.all(
+        aiReports
+            .filter(report => report.id)
+            .map(report =>
+                updateDoc(doc(db, "reports", report.id), {
+                    isAssigned: true,
+                    assignedProjectId: projectId,
+                    assignedAt: serverTimestamp()
+                })
+            )
+    );
+    const voterSet = new Set();
+
+    const snapshots = await Promise.all(
+        aiReports.map(report =>
+            getDoc(doc(db, "reports", report.id))
+        )
+    );
+
+    for (const snap of snapshots) {
+
+        if (!snap.exists()) continue;
+
+        const data = snap.data();
+
+        // Add everyone who voted
+        (data.votedBy || []).forEach(uid => voterSet.add(uid));
+
+        // Also add the report sender
+        if (data.userEmail && data.userEmail !== "Anonymous") {
+
+            const userQuery = query(
+                collection(db, "users"),
+                where("email", "==", data.userEmail),
+                limit(1)
+            );
+
+            const userSnap = await getDocs(userQuery);
+
+            if (!userSnap.empty) {
+                voterSet.add(userSnap.docs[0].id);
+            }
+        }
+    }
+
+    const uniqueVoters = [...voterSet];
+
+    console.log('uniqueVoters')
+    console.log(uniqueVoters);
+
+    try {
+        await notification(uniqueVoters, projectId);
+    } catch (err) {
+        console.error("Notification failed:", err);
+    }
+
+
+
+}
+
+
+
+// send the notification
+async function notification(uniqueVoters,projectId){
+
+    for(const voter of uniqueVoters){
+        const voterRef = doc(db, "users", voter);
+
+        await updateDoc(voterRef, {
+            notification_storage: arrayUnion({project: projectId,
+                                            seen: false,
+                                            createdAt: new Date()
+                                            })
+            
+        });
+    } 
+}
+
+
+// recive notification
+
+window.checkNotifications = async function () {
+
+    if (!currentUser) return;
+
+    try {
+
+        const userRef = doc(db, "users", currentUser.uid);
+        const userSnap = await getDoc(userRef);
+
+        if (!userSnap.exists()) return;
+
+        const notifications = userSnap.data().notification_storage || [];
+
+        const unseenNotifications = notifications.filter(n => !n.seen);
+
+        if (unseenNotifications.length === 0) return;
+
+        const projectSnapshots = await Promise.all(
+
+            unseenNotifications.map(notification =>
+                getDoc(doc(db, "projects", notification.project))
+            )
+
+        );
+
+        let html = "";
+
+        projectSnapshots.forEach((snap, index) => {
+
+            if (!snap.exists()) return;
+
+            const projectId = unseenNotifications[index].project;
+            const project = snap.data();
+
+            // Has this user already submitted feedback?
+            const existingFeedback = (project.feedback || [])
+                .find(f => f.userId === currentUser.uid);
+
+            html += `
+            <div class="border rounded p-3 mb-4 text-start">
+
+                <h5>📢 ${project.projectName}</h5>
+
+                <p>${project.targetIssue}</p>
+
+                <p>
+                    <strong>Allocated Budget:</strong>
+                    ₹${Number(project.allocatedAmount).toLocaleString("en-IN")}
+                </p>
+
+                <hr>
+
+                ${
+                    existingFeedback
+                    ?
+                    `
+                    <div class="feedback-view mt-3">
+
+
+
+    <div class="alert alert-success mb-0">
+
+
+
+        <div class="d-flex justify-content-between align-items-center mb-2">
+
+
+
+            <strong>
+
+                <i class="bi bi-check-circle-fill text-success"></i>
+
+                Feedback Submitted
+
+            </strong>
+
+
+
+            <span class="badge bg-warning text-dark">
+
+                ⭐ ${existingFeedback.rating}/5
+
+            </span>
+
+
+
+        </div>
+
+
+
+        <div class="text-muted">
+
+            ${existingFeedback.comment}
+
+        </div>
+
+
+
+    </div>
+
+
+
+</div>
+
+`
+
+:
+
+`
+
+<div class="feedback-card mt-4">
+
+
+
+    <div class="card shadow-sm border-0">
+
+
+
+        <div class="card-body">
+
+
+
+            <h6 class="fw-bold mb-3">
+
+                <i class="bi bi-chat-square-heart-fill text-primary"></i>
+
+                Share Your Feedback
+
+            </h6>
+
+
+
+            <div class="mb-3">
+
+
+
+                <label class="form-label fw-semibold">
+
+                    Overall Satisfaction
+
+                </label>
+
+
+
+                <select
+
+                    class="form-select"
+
+                    id="rating_${projectId}">
+
+
+
+                    <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
+
+                    <option value="4">⭐⭐⭐⭐ Very Good</option>
+
+                    <option value="3" selected>⭐⭐⭐ Good</option>
+
+                    <option value="2">⭐⭐ Fair</option>
+
+                    <option value="1">⭐ Poor</option>
+
+
+
+                </select>
+
+
+
+            </div>
+
+
+
+            <div class="mb-3">
+
+
+
+                <label class="form-label fw-semibold">
+
+                    Your Feedback
+
+                </label>
+
+
+
+                <textarea
+
+                    id="comment_${projectId}"
+
+                    class="form-control"
+
+                    rows="4"
+
+                    maxlength="300"
+
+                    placeholder="Tell us how this project will impact your area or suggest any improvements..."></textarea>
+
+
+
+                <div class="form-text">
+
+                    Maximum 300 characters.
+
+                </div>
+
+
+
+            </div>
+
+
+
+        </div>
+
+
+
+    </div>
+
+
+
+</div>
+                    `
+                }
+
+            </div>
+            `;
+
+        });
+
+        const result = await Swal.fire({
+
+            title: "New Government Projects",
+            html: html,
+            width: 750,
+            showCancelButton: true,
+            confirmButtonText: "Submit Feedback",
+            cancelButtonText: "Close",
+            focusConfirm: false,
+
+            preConfirm: async () => {
+
+                for (let i = 0; i < projectSnapshots.length; i++) {
+
+                    const snap = projectSnapshots[i];
+
+                    if (!snap.exists()) continue;
+
+                    const projectId = unseenNotifications[i].project;
+                    const project = snap.data();
+
+                    const alreadySubmitted =
+                        (project.feedback || [])
+                        .some(f => f.userId === currentUser.uid);
+
+                    if (alreadySubmitted) continue;
+
+                    const rating =
+                        document.getElementById(`rating_${projectId}`)?.value;
+
+                    const comment =
+                        document.getElementById(`comment_${projectId}`)?.value.trim();
+
+                    if (!comment) continue;
+
+                    await updateDoc(doc(db, "projects", projectId), {
+
+                        feedback: arrayUnion({
+
+                            userId: currentUser.uid,
+                            rating: Number(rating),
+                            comment: comment,
+                            createdAt: new Date()
+
+                        })
+
+                    });
+
+                }
+
+            }
+
+        });
+
+        // Mark notifications as seen
+        const updatedNotifications = notifications.map(notification => ({
+            ...notification,
+            seen: true
+        }));
+
+        await updateDoc(userRef, {
+            notification_storage: updatedNotifications
+        });
+
+    }
+    catch (err) {
+
+        console.error(err);
+
+    }
+
+};
+
+
+
+
+
+
+
+
+
+
 
 // ==========================================
 // CITIZEN FEEDBACK SYSTEM
