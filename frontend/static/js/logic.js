@@ -2891,7 +2891,8 @@ function distanceInKm(lat1, lon1, lat2, lon2) {
 
 window.analyze_affected_repots = async function(projectId,projectTitle,projectDescription,projectLat,projectLng) {
     const nearbyReports = [];
-    const genAI_2 = new GoogleGenerativeAI("GEMINI_API_KEY");
+    const API_KEY = (window.CONFIG && window.CONFIG.GEMINI_API_KEY) ? window.CONFIG.GEMINI_API_KEY : "GEMINI_API_KEY";
+    const genAI_2 = new GoogleGenerativeAI(API_KEY);
 
     const model_Official = genAI_2.getGenerativeModel({
         model: "gemini-2.5-flash"
