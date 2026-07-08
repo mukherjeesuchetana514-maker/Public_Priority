@@ -975,20 +975,17 @@ window.loadUserDashboard = async function () {
 }
 
 
-window.toggle_official_sidebar = async function () {
+window.toggle_official_sidebar = function () {
 
     const sidebar = document.getElementById("official-sidebar");
-    const toggle = document.getElementById("toggleSidebar");
+    const btn = document.getElementById("toggleSidebar");
 
-    sidebar.classList.toggle("open");
+    sidebar.classList.toggle("collapsed");
 
-    if (sidebar.classList.contains("open")) {
-        toggle.innerHTML = "◀";
-    } else {
-        toggle.innerHTML = "▶";
-    }
-}
-
+    btn.textContent = sidebar.classList.contains("collapsed")
+        ? "▶"
+        : "◀";
+};
 
 window.loadDashboard = async function () {
     const container = document.getElementById('reports-container');
@@ -1779,21 +1776,13 @@ window.recomended = async function () {
         </div>
 
         <div class="d-flex justify-content-end mt-3 gap-2">
+            
             <button
                 onclick="details('${doc.id}','recomended','recommend-container')"
-                class="btn btn-outline-primary rounded-pill px-4">
-                <i class="bi bi-file-text"></i> Original Report
-            </button>
-            <button
-                onclick="viewProjectDetails('${doc.id}')"
                 class="btn btn-primary rounded-pill px-4">
                 <i class="bi bi-info-circle"></i> Elaborate
             </button>
-            <button
-                onclick="deleteReport('${doc.id}')"
-                class="btn btn-outline-danger rounded-pill px-4">
-                <i class="bi bi-trash"></i> Delete
-            </button>
+            
         </div>
 
     </div>

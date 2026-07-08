@@ -725,8 +725,9 @@
     <!--Admin section-->
     <div id="admin-section" class="section-view">
         <div class="official-wrapper">
-            <div class="official-sidebar">
-                <div class="official-logo">
+            <div id="official-sidebar" class="official-sidebar collapsed">
+                <button id="toggleSidebar" onclick="toggle_official_sidebar()">▶</button>
+                <div style="margin-top: 50px;" class="official-logo">
 
                     🏛️ <span>Modern Civic Platform</span>
 
@@ -734,24 +735,24 @@
 
                 <ul class="official-menu">
 
-                    <li><a href="#" onclick="officialMenu('dash'); dashbord();">📊 Dashboard</a></li>
+                    <li><a href="#" onclick="officialMenu('dash'); dashbord();"><span>📊</span> <span>Dashboard</span></a></li>
 
-                    <li><a href="#" onclick="officialMenu('suggestion');loadDashboard();">🏗 Development Suggestions</a>
+                    <li><a href="#" onclick="officialMenu('suggestion');loadDashboard();"><span>🏗 </span><span>Development Suggestions</span></a>
                     </li>
 
-                    <li><a href="#" onclick="officialMenu('analysis'); recomended();">🤖 AI Analysis</a></li>
+                    <li><a href="#" onclick="officialMenu('analysis'); recomended();"><span>🤖</span> <span>AI Analysis</span></a></li>
 
-                    <li><a href="#" onclick="officialMenu('heatmap')">🗺 Heatmap</a></li>
+                    <li><a href="#" onclick="officialMenu('heatmap')"><span>🗺</span> <span>Heatmap</span></a></li>
 
-                    <li><a href="#" onclick="officialMenu('infra')">🏥 Infrastructure Gap</a></li>
+                    <li><a href="#" onclick="officialMenu('infra')"><span>🏥</span> <span>Infrastructure Gap</span></a></li>
 
-                    <li><a href="#" onclick="officialMenu('budget')">💰 Budget Planner</a></li>
+                    <li><a href="#" onclick="officialMenu('budget')"><span>💰</span> <span>Budget Planner</span></a></li>
 
-                    <li><a href="#" onclick="officialMenu('analytics')">📈 Analytics</a></li>
+                    <li><a href="#" onclick="officialMenu('analytics')"><span>📈</span> <span>Analytics</span></a></li>
 
-                    <li><a href="#" onclick="officialMenu('assistant-section')">💬 AI Assistant</a></li>
+                    <li><a href="#" onclick="officialMenu('assistant-section')"><span>💬</span> <span>AI Assistant</span></a></li>
 
-                    <li><a href="#" onclick="officialMenu('settings')">⚙ Settings</a></li>
+                    <li><a href="#" onclick="officialMenu('settings')"><span>⚙</span> <span>Settings</span></a></li>
 
                 </ul>
 
@@ -783,7 +784,7 @@
 
                     </div>
 
-                    <button class="btn btn-primary">
+                    <button style="width: 100px;" class="btn btn-primary">
 
                         Refresh
 
@@ -909,7 +910,7 @@
 
                 <div class="recommendation-panel">
 
-                    <h4>🤖 AI Recommended Projects</h4>
+                    <h4>🤖 AI Recommended Suggestions</h4>
                     <button class="btn btn-success w-100 mb-3" onclick="analysis()">
 
                         Analysis
