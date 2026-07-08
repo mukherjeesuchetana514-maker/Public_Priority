@@ -603,10 +603,26 @@ if (reportBtn) {
             const description = document.getElementById('devDescription').value || "";
             const transcript = window.transcript || "";
             const locationStr = document.getElementById('devLocation').value || "Unknown Location";
+            const cam = document.getElementById('cameraInput').value;
 
             let lat = 0; let lng = 0;
             let detectedZone = locationStr;
             let locationSource = "Manual Entry";
+
+            if(cam == ''){
+                try {
+
+                    const location = await getCurrentLocation();
+
+                    lat = location.lat;
+                    lng = location.lng;
+
+                } catch (e) {
+
+                    console.log("Location permission denied.");
+
+                }
+            }
 
             if (window.detectedGlobalLocation) {
                 lat = window.detectedGlobalLocation.lat;
@@ -694,6 +710,31 @@ if (reportBtn) {
             reportBtn.innerText = "Report Issue";
             reportBtn.disabled = false;
         }
+    });
+}
+
+
+function getCurrentLocation() {
+    return new Promise((resolve, reject) => {
+
+        navigator.geolocation.getCurrentPosition(
+
+            (pos) => {
+                resolve({
+                    lat: pos.coords.latitude,
+                    lng: pos.coords.longitude
+                });
+            },
+
+            reject,
+
+            {
+                enableHighAccuracy: true,
+                timeout: 10000
+            }
+
+        );
+
     });
 }
 
@@ -861,8 +902,7 @@ window.handleReset = async function (email) {
 window.loadUserDashboard = async function () {
     if (!currentUser) return;
     
-    // Also load the all zone reports when opening the dashboard
-    if(window.loadAllZoneReports) window.loadAllZoneReports();
+    
     
     const container = document.getElementById('user-reports-container');
     container.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-success"></div></div>';
@@ -1355,10 +1395,10 @@ function timeAgo(timestamp) {
 window.analysis = async function () {
 
     try {
-        const genAI_2 = new GoogleGenerativeAI("GEMINI_API_kET");
+        const genAI_2 = new GoogleGenerativeAI("GEMINI_API_KEY");
 
         const model_Official = genAI_2.getGenerativeModel({
-            model: "gemini-flash-latest"
+            model: "gemini-2.5-flash"
         });
 
 
@@ -1386,6 +1426,7 @@ window.analysis = async function () {
             return;
         }
 
+        
         const prompt = `
             You are an AI assistant for a municipal corporation.
 
@@ -1426,7 +1467,7 @@ window.analysis = async function () {
             IMPORTANT:
             - Respond ONLY with valid JSON.
             - Do NOT use markdown.
-            - Do NOT wrap the JSON in ````json.
+            - Do NOT wrap the JSON in a Markdown code block.
             - Do NOT include explanations.
             `;
 
@@ -2620,7 +2661,8 @@ window.assignBudgetProject = async function (btn, b64ProjectData) {
                 updateDoc(doc(db, "reports", id), {
                     isAssigned: true,
                     assignedProjectId: projectRef.id,
-                    assignedAt: serverTimestamp()
+                    assignedAt: serverTimestamp(),
+                    status:'In Progress'
                 })
             )
         );
@@ -3033,7 +3075,8 @@ Distance: ${r.distance.toFixed(2)} km
                 updateDoc(doc(db, "reports", report.id), {
                     isAssigned: true,
                     assignedProjectId: projectId,
-                    assignedAt: serverTimestamp()
+                    assignedAt: serverTimestamp(),
+                    status:'In Progress'
                 })
             )
     );
@@ -3487,80 +3530,69 @@ window.showSatisfactionGraph = function() {
 // ==========================================
 
 window.loadAllZoneReports = async function () {
+    if (!currentUser) return;
+    
+    
     const container = document.getElementById('all-zone-reports-container');
-    if (!container) return;
-    container.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-primary"></div></div>';
+    container.innerHTML = '<div class="text-center py-5"><div class="spinner-border text-success"></div></div>';
 
     try {
-        const q = query(collection(db, "reports"), orderBy("timestamp", "desc"));
+        const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+        const pointsEl = document.getElementById("civic-points");
+        if (pointsEl && userDoc.exists()) pointsEl.innerText = userDoc.data().civicPoints || 0;
+    } catch (e) { }
+
+    try {
+        const q = query(
+            collection(db, "reports"),
+            orderBy("timestamp", "desc")
+        );
         const querySnapshot = await getDocs(q);
         let html = "";
-        let count = 0;
-        const myZone = (currentUser && currentUser.zone_name) ? currentUser.zone_name.toLowerCase().trim() : "";
 
         querySnapshot.forEach((doc) => {
             const data = doc.data();
-            const reportZone = (data.zone_name || "").toLowerCase().trim();
-            const hasVoted = data.votedBy?.includes(currentUser ? currentUser.uid : "");
-            
-            // Reusing timeAgo from community if available
-            const time = (typeof timeAgo === 'function') ? timeAgo(data.timestamp) : "Recently";
-
-            if (myZone === reportZone) {
-                count++;
-                
-                let imageUrl = "";
-                if (data.imageUrl) {
-                    imageUrl = data.imageUrl.startsWith('http') ? data.imageUrl : `static/uploads/${data.imageUrl}`;
-                }
-
-                html += `
-                <div class="col-md-6 col-lg-4 mb-4">
-                    <div class="glass-card h-100 rounded-4 shadow-sm position-relative overflow-hidden" style="border: none; background: #fff;">
-                        ${imageUrl ? `<img src="${imageUrl}" class="card-img-top" style="height:200px; object-fit:cover; border-bottom: 3px solid #0d6efd;" onerror="this.style.display='none'">` : ''}
-                        
-                        <div class="p-4 d-flex flex-column h-100">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <span class="badge bg-primary rounded-pill px-3 py-2">${data.category || 'Other'}</span>
-                                <small class="text-muted fw-bold"><i class="bi bi-clock-history"></i> ${time}</small>
-                            </div>
-                            
-                            <h5 class="fw-bold mt-2 text-dark">${data.title || data.issue || data.description || 'Civic Issue'}</h5>
-                            <p class="text-muted small flex-grow-1">${data.description || data.issue || 'No details provided.'}</p>
-                            
-                            <div class="d-flex align-items-center mb-3 text-muted small">
-                                <i class="bi bi-geo-alt-fill text-danger me-2"></i>
-                                <span class="text-truncate">${data.location || data.zone_name || 'Unknown Location'}</span>
-                            </div>
-                            
-                            <div class="d-flex align-items-center justify-content-between pt-3 border-top">
-                                <div class="d-flex align-items-center gap-2">
-                                    <button class="btn btn-sm ${hasVoted ? 'btn-success' : 'btn-outline-success'} rounded-circle vote-btn" 
-                                            onclick="upvoteAllZoneReport('${doc.id}')" 
-                                            title="${hasVoted ? 'You supported this' : 'Support this issue'}"
-                                            style="width: 35px; height: 35px; padding: 0; display: flex; align-items: center; justify-content: center;">
-                                        <i class="bi ${hasVoted ? 'bi-hand-thumbs-up-fill' : 'bi-hand-thumbs-up'}"></i>
-                                    </button>
-                                    <span class="fw-bold text-success" style="font-size: 1.1rem;">${data.vote || 0}</span>
-                                </div>
-                                <span class="badge ${data.status === 'Resolved' ? 'bg-success' : (data.status === 'In Progress' ? 'bg-warning text-dark' : 'bg-secondary')}">${data.status || 'Pending'}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>`;
+            const date = data.timestamp ? new Date(data.timestamp.seconds * 1000).toLocaleDateString() : "Just now";
+            let statusColor = data.status === "Resolved" ? "bg-success" : (data.status === "In Progress" ? "bg-primary" : "bg-warning");
+            let bgImage = data.imageUrl || 'https://via.placeholder.com/600x400?text=No+Image';
+            let replyHtml = `<div class="p-3 bg-light rounded text-muted small text-center mt-3">Waiting for official response...</div>`;
+            if (data.adminComment && data.adminComment.trim() !== "") {
+                replyHtml = `<div class="p-3 bg-info bg-opacity-10 border border-info rounded mt-3"><strong>🏛️ Official Reply:</strong><p class="mb-0 mt-1 text-dark">${data.adminComment}</p></div>`;
             }
+
+            html += `
+            <div class="col-md-6 mb-4">
+                <div class="card h-100 shadow-sm border-0 rounded-4">
+                    <div style="height: 220px; background-image: url('${bgImage}'); background-size: cover; background-position: center; border-radius: 16px 16px 0 0; position: relative;">
+                        <span class="badge ${statusColor} position-absolute top-0 end-0 m-3 px-3 py-2 shadow-sm">${data.status || "Pending"}</span>
+                    </div>
+                    <div class="card-body">
+
+                    <small class="text-muted d-block mb-2">
+                        📅 ${date} • 📍 ${data.zone_name || "Unknown"}
+                    </small>
+
+                    <h5 class="card-title text-capitalize fw-bold">
+                        ${(data.issue || "Issue").substring(0, 40)}.
+                    </h5>
+
+                    <p class="text-muted small">
+                        ${data.issue}
+                    </p>
+
+                    ${replyHtml}
+
+            </div>
+                </div>
+            </div>`;
         });
-
-        if (count === 0) {
-            html = '<div class="col-12 text-center text-muted py-5"><i class="bi bi-inbox fs-1 d-block mb-3"></i>No reports found in your locality.</div>';
-        }
-
-        container.innerHTML = html;
+        container.innerHTML = html || '<div class="text-center text-muted mt-5"><h5>No reports found.</h5></div>';
     } catch (e) {
-        console.error("Error loading all zone reports:", e);
-        container.innerHTML = '<div class="text-center text-danger py-5">Error loading reports.</div>';
+        container.innerHTML = '<p class="text-danger text-center">Error loading history.</p>';
+        console.error(e);
     }
-};
+}
+
 
 window.upvoteAllZoneReport = async function (reportId) {
     if (!currentUser) {
